@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="run" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="go-template" />
+    <working_directory value="$PROJECT_DIR$" />
+    <parameters value="run --config config.yml" />
+    <kind value="PACKAGE" />
+    <package value="github.com/autobrr/go-template/cmd/example" />
+    <directory value="$PROJECT_DIR$/cmd/example" />
+    <filePath value="$PROJECT_DIR$/../go-template|$PROJECT_DIR$/cmd/example/main.go" />
+    <method v="2" />
+  </configuration>
+</component>

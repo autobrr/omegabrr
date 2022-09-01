@@ -1,0 +1,56 @@
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: example-app
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 6
+    main: ./cmd/example/main.go
+    binary: example-app
+
+archives:
+  - id: example-app
+    builds:
+      - example-app
+    files:
+      - none*
+    replacements:
+      amd64: x86_64
+
+release:
+  prerelease: auto
+  footer: |
+    **Full Changelog**: https://github.com/autobrr/example/compare/{{ .PreviousTag }}...{{ .Tag }}
+    
+    ## What to do next?
+    
+    - Read the [documentation](https://autobrr.com)
+    - Join our [Discord server](https://discord.gg/WQ2eUycxyT)
+
+checksum:
+  name_template: '{{ .ProjectName }}_{{ .Version }}_checksums.txt'
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - Merge pull request
+      - Merge remote-tracking branch
+      - Merge branch
+  groups:
+    - title: 'New Features'
+      regexp: "^.*feat[(\\w)]*:+.*$"
+      order: 0
+    - title: 'Bug fixes'
+      regexp: "^.*fix[(\\w)]*:+.*$"
+      order: 10
+    - title: Other work
+      order: 999

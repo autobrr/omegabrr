@@ -8,9 +8,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/autobrr/go-template/internal/domain"
-	"github.com/autobrr/go-template/internal/example"
-	"github.com/autobrr/go-template/internal/http"
+	"github.com/autobrr/filters-go-brr/internal/domain"
+	"github.com/autobrr/filters-go-brr/internal/example"
+	"github.com/autobrr/filters-go-brr/internal/http"
 
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"

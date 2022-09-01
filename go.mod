@@ -1,4 +1,4 @@
-module github.com/autobrr/go-template
+module github.com/autobrr/filters-go-brr
 
 go 1.19
 

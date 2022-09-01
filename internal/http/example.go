@@ -3,7 +3,7 @@ package http
 import (
 	"net/http"
 
-	"github.com/autobrr/go-template/internal/example"
+	"github.com/autobrr/filters-go-brr/internal/example"
 
 	"github.com/go-chi/chi/v5"
 )

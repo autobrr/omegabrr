@@ -1,4 +1,4 @@
-SERVICE = example
+SERVICE = omegabrr
 
 GO ?= go
 RM ?= rm

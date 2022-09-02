@@ -2,9 +2,9 @@ name: build
 
 on:
   push:
-#    branches:
-#      - "main"
-#      - "develop"
+    branches:
+      - "main"
+      - "develop"
     tags:
       - 'v*'
 
@@ -40,5 +40,5 @@ jobs:
       - name: Upload assets
         uses: actions/upload-artifact@v3
         with:
-          name: example
+          name: omegabrr
           path: dist/*

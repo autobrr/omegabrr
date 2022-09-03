@@ -1,5 +1,8 @@
 SERVICE = omegabrr
 
+GIT_COMMIT := $(shell git rev-parse HEAD 2> /dev/null)
+GIT_TAG := $(shell git tag --points-at HEAD 2> /dev/null | head -n 1)
+
 GO ?= go
 RM ?= rm
 GOFLAGS ?= "-X main.commit=$(GIT_COMMIT) -X main.version=$(GIT_TAG)"
@@ -16,6 +19,9 @@ deps:
 
 build: deps
 	go build -ldflags $(GOFLAGS) -o bin/$(SERVICE) cmd/$(SERVICE)/main.go
+
+build/docker:
+	docker build -t omegabrr:dev -f Dockerfile . --build-arg GIT_TAG=$(GIT_TAG) --build-arg GIT_COMMIT=$(GIT_COMMIT)
 
 clean:
 	$(RM) -rf bin

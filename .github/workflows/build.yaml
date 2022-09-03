@@ -62,7 +62,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ghcr.io/autobrr/autobrr
+          images: ghcr.io/autobrr/omegabrr
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2

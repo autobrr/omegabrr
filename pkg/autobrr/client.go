@@ -8,6 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"io"
 	"net/http"
+	"net/http/httputil"
 	"strconv"
 	"time"
 
@@ -60,7 +61,7 @@ func (c *Client) GetFilters(ctx context.Context) ([]Filter, error) {
 		return nil, err
 	}
 
-	req.Header.Add("X-Api-Key", c.APIKey)
+	req.Header.Add("X-API-Token", c.APIKey)
 
 	res, err := c.client.Do(req)
 	if err != nil {
@@ -98,12 +99,20 @@ func (c *Client) UpdateFilterByID(ctx context.Context, filterID int, filter Upda
 		return err
 	}
 
-	req.Header.Add("X-Api-Key", c.APIKey)
+	req.Header.Add("X-API-Token", c.APIKey)
 
 	res, err := c.client.Do(req)
 	if err != nil {
 		return err
 	}
+	defer res.Body.Close()
+
+	dump, err := httputil.DumpResponse(res, true)
+	if err != nil {
+		return errors.Wrap(err, "could not dump response")
+	}
+
+	log.Trace().Msgf("update filter response: %v", string(dump))
 
 	if res.StatusCode != http.StatusNoContent {
 		return errors.New("bad status")

@@ -1,18 +1,27 @@
 ---
 server:
   host: 0.0.0.0
-  port: 4400
+  port: 7441
+  apiToken: ""
+schedule: "* */6 * * *"
 clients:
   autobrr:
     host: http://localhost:7474
     apikey: API_KEY
   radarr:
-    host: http://localhost:7878
-    apikey: API_KEY
-    filters:
-      - 15
+    - name: radarr
+      host: http://localhost:7878
+      apikey: API_KEY
+      filters:
+        - 15
+    - name: radarr4k
+      host: http://localhost:7878
+      apikey: API_KEY
+      filters:
+        - 16
   sonarr:
-    host: http://localhost:8989
-    apikey: API_KEY
-    filters:
-      - 14
+    - name: sonarr
+      host: http://localhost:8989
+      apikey: API_KEY
+      filters:
+        - 14

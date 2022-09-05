@@ -3,7 +3,6 @@ package processor
 import (
 	"context"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/autobrr/omegabrr/internal/domain"
@@ -12,6 +11,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"golang.org/x/sync/errgroup"
 	"golift.io/starr"
 	"golift.io/starr/radarr"
 	"golift.io/starr/sonarr"
@@ -41,42 +41,43 @@ func (s Service) Process(dryRun bool) error {
 
 	start := time.Now()
 
-	var wg sync.WaitGroup
+	var g errgroup.Group
 
 	if s.cfg.Clients.Radarr != nil {
 		for _, arrClient := range s.cfg.Clients.Radarr {
-			wg.Add(1)
-
-			go func(ctx context.Context, wg *sync.WaitGroup, arr *domain.ArrConfig, dryRun bool, brr *autobrr.Client) {
-				if err := s.radarr(ctx, wg, arr, dryRun, a); err != nil {
-					log.Error().Err(err).Msgf("radarr: %v something went wrong", arr.Name)
+			g.Go(func() error {
+				if err := s.radarr(ctx, arrClient, dryRun, a); err != nil {
+					log.Error().Err(err).Msgf("radarr: %v something went wrong", arrClient.Name)
+					return err
 				}
-			}(ctx, &wg, arrClient, dryRun, a)
+				return nil
+			})
 		}
 	}
 
 	if s.cfg.Clients.Sonarr != nil {
 		for _, arrClient := range s.cfg.Clients.Sonarr {
-			wg.Add(1)
-
-			go func(ctx context.Context, wg *sync.WaitGroup, arr *domain.ArrConfig, dryRun bool, brr *autobrr.Client) {
-				if err := s.sonarr(ctx, wg, arr, dryRun, a); err != nil {
-					log.Error().Err(err).Msgf("sonarr: %v something went wrong", arr.Name)
+			g.Go(func() error {
+				if err := s.sonarr(ctx, arrClient, dryRun, a); err != nil {
+					log.Error().Err(err).Msgf("sonarr: %v something went wrong", arrClient.Name)
+					return err
 				}
-			}(ctx, &wg, arrClient, dryRun, a)
+				return nil
+			})
 		}
 	}
 
-	wg.Wait()
+	if err := g.Wait(); err != nil {
+		log.Error().Err(err).Msgf("Something went wrong trying to update filters! Total time: %v", time.Since(start))
+		return err
+	}
 
 	log.Info().Msgf("Successfully updated filters! Total time: %v", time.Since(start))
 
 	return nil
 }
 
-func (s Service) radarr(ctx context.Context, wg *sync.WaitGroup, cfg *domain.ArrConfig, dryRun bool, brr *autobrr.Client) error {
-	defer wg.Done()
-
+func (s Service) radarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool, brr *autobrr.Client) error {
 	l := log.With().Str("type", "sonarr").Str("client", cfg.Name).Logger()
 
 	l.Debug().Msgf("gathering titles...")
@@ -91,6 +92,10 @@ func (s Service) radarr(ctx context.Context, wg *sync.WaitGroup, cfg *domain.Arr
 	joinedTitles := strings.Join(movieTitles, ",")
 
 	l.Trace().Msgf("%v", joinedTitles)
+
+	if len(joinedTitles) == 0 {
+		return nil
+	}
 
 	for _, filterID := range cfg.Filters {
 
@@ -168,9 +173,7 @@ func (s Service) processRadarr(cfg *domain.ArrConfig, logger zerolog.Logger) ([]
 	return titles, nil
 }
 
-func (s Service) sonarr(ctx context.Context, wg *sync.WaitGroup, cfg *domain.ArrConfig, dryRun bool, brr *autobrr.Client) error {
-	defer wg.Done()
-
+func (s Service) sonarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool, brr *autobrr.Client) error {
 	l := log.With().Str("type", "sonarr").Str("client", cfg.Name).Logger()
 
 	l.Debug().Msgf("gathering titles...")
@@ -185,6 +188,10 @@ func (s Service) sonarr(ctx context.Context, wg *sync.WaitGroup, cfg *domain.Arr
 	joinedTitles := strings.Join(movieTitles, ",")
 
 	l.Trace().Msgf("%v", joinedTitles)
+
+	if len(joinedTitles) == 0 {
+		return nil
+	}
 
 	for _, filterID := range cfg.Filters {
 

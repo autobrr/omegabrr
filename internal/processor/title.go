@@ -19,8 +19,6 @@ func processTitle(title string) []string {
 
 	t := NewTitleSlice()
 
-	//titles := []string{}
-
 	//titles = append(titles, rls.MustNormalize(title))
 	t.Add(strings.ReplaceAll(title, " ", "?"))
 
@@ -67,28 +65,30 @@ func processTitle(title string) []string {
 }
 
 type Titles struct {
-	t []string
+	tm map[string]struct{}
 }
 
 func NewTitleSlice() *Titles {
 	ts := Titles{
-		t: []string{},
+		tm: map[string]struct{}{},
 	}
 	return &ts
 }
 
 func (ts *Titles) Add(title string) {
-	ts.t = append(ts.t, fmt.Sprintf("*%v*", title))
+	title = fmt.Sprintf("*%v*", title)
+	_, ok := ts.tm[title]
+	if !ok {
+		ts.tm[title] = struct{}{}
+	}
 }
 
 func (ts *Titles) Titles() []string {
-	return ts.t
-}
-
-type TitleSlice []string
-
-func (s TitleSlice) Add(title string) {
-	s = append(s, fmt.Sprintf("*%v*", title))
+	titles := []string{}
+	for key := range ts.tm {
+		titles = append(titles, key)
+	}
+	return titles
 }
 
 func processTitleShows(title string) []string {

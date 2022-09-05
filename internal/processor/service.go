@@ -3,11 +3,14 @@ package processor
 import (
 	"context"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/autobrr/omegabrr/internal/domain"
 	"github.com/autobrr/omegabrr/pkg/autobrr"
 
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"golift.io/starr"
 	"golift.io/starr/radarr"
@@ -36,62 +39,79 @@ func (s Service) Process(dryRun bool) error {
 
 	log.Debug().Msgf("starting filter processing...")
 
+	start := time.Now()
+
+	var wg sync.WaitGroup
+
 	if s.cfg.Clients.Radarr != nil {
-		for _, arr := range s.cfg.Clients.Radarr {
-			if err := s.radarr(ctx, arr, dryRun, a); err != nil {
-				log.Error().Err(err).Msgf("radarr: %v something went wrong", arr.Name)
-			}
+		for _, arrClient := range s.cfg.Clients.Radarr {
+			wg.Add(1)
+
+			go func(ctx context.Context, wg *sync.WaitGroup, arr *domain.ArrConfig, dryRun bool, brr *autobrr.Client) {
+				if err := s.radarr(ctx, wg, arr, dryRun, a); err != nil {
+					log.Error().Err(err).Msgf("radarr: %v something went wrong", arr.Name)
+				}
+			}(ctx, &wg, arrClient, dryRun, a)
 		}
 	}
 
 	if s.cfg.Clients.Sonarr != nil {
-		for _, arr := range s.cfg.Clients.Sonarr {
-			if err := s.sonarr(ctx, arr, dryRun, a); err != nil {
-				log.Error().Err(err).Msgf("sonarr: %v something went wrong", arr.Name)
-			}
+		for _, arrClient := range s.cfg.Clients.Sonarr {
+			wg.Add(1)
+
+			go func(ctx context.Context, wg *sync.WaitGroup, arr *domain.ArrConfig, dryRun bool, brr *autobrr.Client) {
+				if err := s.sonarr(ctx, wg, arr, dryRun, a); err != nil {
+					log.Error().Err(err).Msgf("sonarr: %v something went wrong", arr.Name)
+				}
+			}(ctx, &wg, arrClient, dryRun, a)
 		}
 	}
 
-	log.Info().Msgf("Successfully updated filters!")
+	wg.Wait()
+
+	log.Info().Msgf("Successfully updated filters! Total time: %v", time.Since(start))
 
 	return nil
 }
 
-func (s Service) radarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool, brr *autobrr.Client) error {
+func (s Service) radarr(ctx context.Context, wg *sync.WaitGroup, cfg *domain.ArrConfig, dryRun bool, brr *autobrr.Client) error {
+	defer wg.Done()
 
-	log.Debug().Msgf("radarr: gathering titles...")
+	l := log.With().Str("type", "sonarr").Str("client", cfg.Name).Logger()
 
-	movieTitles, err := s.processRadarr(cfg)
+	l.Debug().Msgf("gathering titles...")
+
+	movieTitles, err := s.processRadarr(cfg, l)
 	if err != nil {
 		return err
 	}
 
-	log.Debug().Msgf("radarr: got %v titles", len(movieTitles))
+	l.Debug().Msgf("got %v filter titles", len(movieTitles))
 
 	joinedTitles := strings.Join(movieTitles, ",")
 
-	log.Trace().Msgf("%v", joinedTitles)
+	l.Trace().Msgf("%v", joinedTitles)
 
 	for _, filterID := range cfg.Filters {
 
-		log.Debug().Msgf("radarr: updating filter: %v", filterID)
+		l.Debug().Msgf("updating filter: %v", filterID)
 
 		if !dryRun {
 			f := autobrr.UpdateFilter{MatchReleases: joinedTitles}
 
 			if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
-				log.Error().Err(err).Msgf("radarr: something went wrong updating movie filter: %v", filterID)
+				l.Error().Err(err).Msgf("something went wrong updating movie filter: %v", filterID)
 				continue
 			}
 		}
 
-		log.Debug().Msgf("radarr: successfully updated filter: %v", filterID)
+		l.Debug().Msgf("successfully updated filter: %v", filterID)
 	}
 
 	return nil
 }
 
-func (s Service) processRadarr(cfg *domain.ArrConfig) ([]string, error) {
+func (s Service) processRadarr(cfg *domain.ArrConfig, logger zerolog.Logger) ([]string, error) {
 	c := starr.New(cfg.Apikey, cfg.Host, 0)
 
 	if cfg.BasicAuth != nil {
@@ -110,7 +130,10 @@ func (s Service) processRadarr(cfg *domain.ArrConfig) ([]string, error) {
 		return nil, err
 	}
 
+	logger.Debug().Msgf("found %d movies to process", len(movies))
+
 	var titles []string
+	var monitoredTitles int
 
 	for _, m := range movies {
 		// only want monitored
@@ -118,11 +141,21 @@ func (s Service) processRadarr(cfg *domain.ArrConfig) ([]string, error) {
 			continue
 		}
 
+		monitoredTitles++
+
 		//titles = append(titles, rls.MustNormalize(m.Title))
 		//titles = append(titles, rls.MustNormalize(m.OriginalTitle))
 		//titles = append(titles, rls.MustClean(m.Title))
 
-		titles = append(titles, processTitle(m.Title)...)
+		t := strings.ToLower(m.Title)
+		ot := strings.ToLower(m.OriginalTitle)
+
+		if t == ot {
+			titles = append(titles, processTitle(m.Title)...)
+
+			continue
+		}
+
 		titles = append(titles, processTitle(m.OriginalTitle)...)
 
 		//for _, title := range m.AlternateTitles {
@@ -130,43 +163,49 @@ func (s Service) processRadarr(cfg *domain.ArrConfig) ([]string, error) {
 		//}
 	}
 
+	logger.Debug().Msgf("from a total of %d movies we found %d monitored and created %d release titles", len(movies), monitoredTitles, len(titles))
+
 	return titles, nil
 }
 
-func (s Service) sonarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool, brr *autobrr.Client) error {
-	log.Debug().Msgf("sonarr: gathering titles...")
+func (s Service) sonarr(ctx context.Context, wg *sync.WaitGroup, cfg *domain.ArrConfig, dryRun bool, brr *autobrr.Client) error {
+	defer wg.Done()
 
-	movieTitles, err := s.processSonarr(cfg)
+	l := log.With().Str("type", "sonarr").Str("client", cfg.Name).Logger()
+
+	l.Debug().Msgf("gathering titles...")
+
+	movieTitles, err := s.processSonarr(cfg, l)
 	if err != nil {
 		return err
 	}
 
-	log.Debug().Msgf("sonarr: got %v titles", len(movieTitles))
+	l.Debug().Msgf("got %v filter titles", len(movieTitles))
 
 	joinedTitles := strings.Join(movieTitles, ",")
 
-	log.Trace().Msgf("%v", joinedTitles)
+	l.Trace().Msgf("%v", joinedTitles)
 
 	for _, filterID := range cfg.Filters {
 
-		log.Debug().Msgf("radarr: updating filter: %v", filterID)
+		l.Debug().Msgf("updating filter: %v", filterID)
 
 		if !dryRun {
 			f := autobrr.UpdateFilter{MatchReleases: joinedTitles}
 
 			if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
-				log.Error().Err(err).Msgf("sonarr: something went wrong updating movie filter: %v", filterID)
+				l.Error().Err(err).Msgf("something went wrong updating movie filter: %v", filterID)
 				continue
 			}
 		}
 
-		log.Debug().Msgf("sonarr: successfully updated filter: %v", filterID)
+		l.Debug().Msgf("successfully updated filter: %v", filterID)
 	}
 
 	return nil
 }
 
-func (s Service) processSonarr(cfg *domain.ArrConfig) ([]string, error) {
+func (s Service) processSonarr(cfg *domain.ArrConfig, logger zerolog.Logger) ([]string, error) {
 	c := starr.New(cfg.Apikey, cfg.Host, 0)
 
 	if cfg.BasicAuth != nil {
@@ -185,13 +224,18 @@ func (s Service) processSonarr(cfg *domain.ArrConfig) ([]string, error) {
 		return nil, err
 	}
 
+	logger.Debug().Msgf("found %d shows to process", len(shows))
+
 	var titles []string
+	var monitoredTitles int
 
 	for _, m := range shows {
 		// only want monitored
 		if !m.Monitored {
 			continue
 		}
+
+		monitoredTitles++
 
 		//titles = append(titles, rls.MustNormalize(m.Title))
 
@@ -203,6 +247,8 @@ func (s Service) processSonarr(cfg *domain.ArrConfig) ([]string, error) {
 		//	titles = append(titles, processTitle(title.Title)...)
 		//}
 	}
+
+	logger.Debug().Msgf("from a total of %d shows we found %d monitored and created %d release titles", len(shows), monitoredTitles, len(titles))
 
 	return titles, nil
 }

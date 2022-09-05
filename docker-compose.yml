@@ -1,0 +1,11 @@
+version: '3.9'
+
+services:
+  omegabrr:
+    container_name: omegabrr
+    image: ghcr.io/autobrr/omegabrr:latest
+    ports:
+      - "7441:7441"
+    user: 1000:1000
+    volumes:
+      - "./config:/config"

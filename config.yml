@@ -8,19 +8,21 @@ clients:
   autobrr:
     host: http://localhost:7474
     apikey: API_KEY
-  radarr:
+  arr:
     - name: radarr
+      type: radarr
       host: http://localhost:7878
       apikey: API_KEY
       filters:
         - 15
     - name: radarr4k
+      type: radarr
       host: http://localhost:7878
       apikey: API_KEY
       filters:
         - 16
-  sonarr:
     - name: sonarr
+      type: sonarr
       host: http://localhost:8989
       apikey: API_KEY
       filters:

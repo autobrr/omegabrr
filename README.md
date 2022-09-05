@@ -18,14 +18,16 @@ clients:
   autobrr:
     host: http://localhost:7474
     apikey: YOUR_API_KEY
-  radarr:
+  arr:
     - name: radarr
+      type: radarr
       host: https://yourdomain.com/radarr
       apikey: YOUR_API_KEY
       filters:
         - 15
-  sonarr:
+
     - name: sonarr
+      type: sonarr
       # host: http://localhost:PORT
       # host: http://sonarr
       host: https://yourdomain.com/sonarr
@@ -40,8 +42,9 @@ clients:
 If you're trying to reach radarr or sonarr hosted on swizzin from some other location, you need to do it like this with basic auth:
 
 ```yaml
-  radarr:
+  arr:
     - name: radarr
+      type: radarr
       host: https://domain.com/radarr
       apikey: YOUR_API_KEY
       basicAuth:

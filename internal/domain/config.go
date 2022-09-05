@@ -22,11 +22,19 @@ type BasicAuth struct {
 
 type ArrConfig struct {
 	Name      string     `koanf:"name"`
+	Type      ArrType    `koanf:"type"`
 	Host      string     `koanf:"host"`
 	Apikey    string     `koanf:"apikey"`
 	BasicAuth *BasicAuth `koanf:"basicAuth"`
 	Filters   []int      `koanf:"filters"`
 }
+
+type ArrType string
+
+var (
+	ArrTypeRadarr ArrType = "radarr"
+	ArrTypeSonarr ArrType = "sonarr"
+)
 
 type AutobrrConfig struct {
 	Host      string     `koanf:"host"`
@@ -43,8 +51,7 @@ type Config struct {
 	Schedule string `koanf:"schedule"`
 	Clients  struct {
 		Autobrr *AutobrrConfig `koanf:"autobrr"`
-		Radarr  []*ArrConfig   `koanf:"radarr"`
-		Sonarr  []*ArrConfig   `koanf:"sonarr"`
+		Arr     []*ArrConfig   `koanf:"arr"`
 	} `koanf:"clients"`
 }
 
@@ -55,8 +62,7 @@ func (c *Config) defaults() {
 	c.Schedule = "0 */6 * * *"
 
 	c.Clients.Autobrr = nil
-	c.Clients.Sonarr = nil
-	c.Clients.Radarr = nil
+	c.Clients.Arr = nil
 }
 
 var k = koanf.New(".")
@@ -152,19 +158,24 @@ clients:
   autobrr:
     host: http://localhost:7474
     apikey: API_KEY
-  radarr:
+
+  arr:
     - name: radarr
+      type: radarr
       host: http://localhost:7878
       apikey: API_KEY
       filters:
         - 15
-    #- name: radarr4k
-    #  host: http://localhost:7878
-    #  apikey: API_KEY
-    #  filters:
-    #    - 16
-  sonarr:
+
+    - name: radarr4k
+      type: radarr
+      host: http://localhost:7878
+      apikey: API_KEY
+      filters:
+        - 16
+
     - name: sonarr
+      type: sonarr
       host: http://localhost:8989
       apikey: API_KEY
       filters:

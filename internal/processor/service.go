@@ -28,8 +28,6 @@ func NewService(cfg *domain.Config) *Service {
 }
 
 func (s Service) Process(dryRun bool) error {
-	ctx := context.TODO()
-
 	if s.cfg.Clients.Autobrr == nil {
 		log.Fatal().Msg("must supply autobrr configuration!")
 		return errors.New("must supply autobrr configuration")
@@ -41,29 +39,24 @@ func (s Service) Process(dryRun bool) error {
 
 	start := time.Now()
 
-	var g errgroup.Group
+	g, ctx := errgroup.WithContext(context.Background())
 
-	if s.cfg.Clients.Radarr != nil {
-		for _, arrClient := range s.cfg.Clients.Radarr {
-			g.Go(func() error {
-				if err := s.radarr(ctx, arrClient, dryRun, a); err != nil {
-					log.Error().Err(err).Msgf("radarr: %v something went wrong", arrClient.Name)
-					return err
-				}
-				return nil
-			})
-		}
-	}
+	if s.cfg.Clients.Arr != nil {
+		for _, arrClient := range s.cfg.Clients.Arr {
+			// https://golang.org/doc/faq#closures_and_goroutines
+			arrClient := arrClient
 
-	if s.cfg.Clients.Sonarr != nil {
-		for _, arrClient := range s.cfg.Clients.Sonarr {
-			g.Go(func() error {
-				if err := s.sonarr(ctx, arrClient, dryRun, a); err != nil {
-					log.Error().Err(err).Msgf("sonarr: %v something went wrong", arrClient.Name)
-					return err
-				}
-				return nil
-			})
+			switch arrClient.Type {
+			case domain.ArrTypeRadarr:
+				g.Go(func() error {
+					return s.radarr(ctx, arrClient, dryRun, a)
+				})
+
+			case domain.ArrTypeSonarr:
+				g.Go(func() error {
+					return s.sonarr(ctx, arrClient, dryRun, a)
+				})
+			}
 		}
 	}
 
@@ -78,11 +71,11 @@ func (s Service) Process(dryRun bool) error {
 }
 
 func (s Service) radarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool, brr *autobrr.Client) error {
-	l := log.With().Str("type", "sonarr").Str("client", cfg.Name).Logger()
+	l := log.With().Str("type", "radarr").Str("client", cfg.Name).Logger()
 
 	l.Debug().Msgf("gathering titles...")
 
-	movieTitles, err := s.processRadarr(cfg, l)
+	movieTitles, err := s.processRadarr(cfg, &l)
 	if err != nil {
 		return err
 	}
@@ -116,7 +109,7 @@ func (s Service) radarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 	return nil
 }
 
-func (s Service) processRadarr(cfg *domain.ArrConfig, logger zerolog.Logger) ([]string, error) {
+func (s Service) processRadarr(cfg *domain.ArrConfig, logger *zerolog.Logger) ([]string, error) {
 	c := starr.New(cfg.Apikey, cfg.Host, 0)
 
 	if cfg.BasicAuth != nil {
@@ -178,7 +171,7 @@ func (s Service) sonarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 
 	l.Debug().Msgf("gathering titles...")
 
-	movieTitles, err := s.processSonarr(cfg, l)
+	movieTitles, err := s.processSonarr(cfg, &l)
 	if err != nil {
 		return err
 	}
@@ -212,7 +205,7 @@ func (s Service) sonarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 	return nil
 }
 
-func (s Service) processSonarr(cfg *domain.ArrConfig, logger zerolog.Logger) ([]string, error) {
+func (s Service) processSonarr(cfg *domain.ArrConfig, logger *zerolog.Logger) ([]string, error) {
 	c := starr.New(cfg.Apikey, cfg.Host, 0)
 
 	if cfg.BasicAuth != nil {

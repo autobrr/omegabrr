@@ -13,7 +13,7 @@ server:
   host: 0.0.0.0
   port: 7441
   apiToken: GENERATED_TOKEN
-schedule: "* */6 * * *"
+schedule: "0 */6 * * *"
 clients:
   autobrr:
     host: http://localhost:7474
@@ -74,7 +74,7 @@ Supports to run with `--dry-run` to only fetch shows and skip filter update.
 
 ### run
 
-Run as a service and process on cron schedule. Defaults to every 6 hour `* */6 * * *`.
+Run as a service and process on cron schedule. Defaults to every 6 hour `0 */6 * * *`.
 
 ## Service
 

@@ -49,11 +49,11 @@ func (s *Service) Stop() {
 
 func (s *Service) AddJob(job cron.Job, interval string, identifier string) (int, error) {
 	if interval == "" {
-		interval = "* */6 * * *"
+		interval = "0 */6 * * *"
 	}
 
 	if id, err := s.cron.AddJob(interval, cron.NewChain(
-		cron.SkipIfStillRunning(cron.DiscardLogger)).Then(job),
+		cron.SkipIfStillRunning(cron.DefaultLogger)).Then(job),
 	); err != nil {
 		return 0, err
 	} else {

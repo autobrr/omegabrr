@@ -24,6 +24,7 @@ func newWebhookHandler(cfg *domain.Config, processorSvc *processor.Service) *web
 
 func (h webhookHandler) Routes(r chi.Router) {
 	r.Get("/trigger", h.run)
+	r.Post("/trigger", h.run)
 }
 
 func (h webhookHandler) run(w http.ResponseWriter, r *http.Request) {

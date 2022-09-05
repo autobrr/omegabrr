@@ -1,8 +1,6 @@
 package main
 
 import (
-	"crypto/rand"
-	"encoding/hex"
 	"flag"
 	"fmt"
 	"os"
@@ -10,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/autobrr/omegabrr/internal/apitoken"
 	"github.com/autobrr/omegabrr/internal/domain"
 	"github.com/autobrr/omegabrr/internal/http"
 	"github.com/autobrr/omegabrr/internal/processor"
@@ -51,8 +50,6 @@ func main() {
 
 	pflag.Parse()
 
-	cfg := domain.NewConfig(configPath)
-
 	// setup logger
 	zerolog.TimeFieldFormat = time.RFC3339
 	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
@@ -62,16 +59,20 @@ func main() {
 	case "version":
 		fmt.Fprintf(flag.CommandLine.Output(), "Version: %v\nCommit: %v\n", version, commit)
 	case "generate-token":
-		key := GenerateSecureToken(16)
+		key := apitoken.GenerateToken(16)
 		fmt.Fprintf(flag.CommandLine.Output(), "API Token: %v\nCopy and paste into your config file config.yaml\n", key)
 
 	case "arr":
+		cfg := domain.NewConfig(configPath)
+
 		p := processor.NewService(cfg)
 		if err := p.Process(dryRun); err != nil {
 			return
 		}
 
 	case "run":
+		cfg := domain.NewConfig(configPath)
+
 		log.Info().Msg("starting omegabrr")
 		log.Info().Msgf("running on schedule: %v", cfg.Schedule)
 
@@ -121,12 +122,4 @@ func main() {
 			os.Exit(0)
 		}
 	}
-}
-
-func GenerateSecureToken(length int) string {
-	b := make([]byte, length)
-	if _, err := rand.Read(b); err != nil {
-		return ""
-	}
-	return hex.EncodeToString(b)
 }

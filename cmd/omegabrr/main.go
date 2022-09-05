@@ -5,13 +5,13 @@ import (
 	"encoding/hex"
 	"flag"
 	"fmt"
-	"github.com/autobrr/omegabrr/internal/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
 	"github.com/autobrr/omegabrr/internal/domain"
+	"github.com/autobrr/omegabrr/internal/http"
 	"github.com/autobrr/omegabrr/internal/processor"
 	"github.com/autobrr/omegabrr/internal/scheduler"
 
@@ -56,7 +56,7 @@ func main() {
 	// setup logger
 	zerolog.TimeFieldFormat = time.RFC3339
 	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339})
 
 	switch cmd := pflag.Arg(0); cmd {
 	case "version":

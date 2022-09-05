@@ -65,6 +65,8 @@ server:
   port: 7441
   apiToken: MY_NEW_LONG_SECURE_TOKEN
 ```
+Call with `omegabrr generate-token`
+If you are using docker `docker exec omegabrr omegabrr generate-token`
 
 ### arr
 

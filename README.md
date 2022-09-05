@@ -78,8 +78,17 @@ Run as a service and process on cron schedule. Defaults to every 6 hour `* */6 *
 
 ## Service
 
-When run as a service it exposes an HTTP server as well. Generate an API Token (see instructions above) and add to your config.
+When run as a service it exposes an HTTP server as well. Generate an **API Token** (see instructions above) and add to your config.
 
-To refresh the filters you can make a POST or GET request to `http://localhost:7441/api/webhook/trigger`.
+To refresh the filters you can make a **POST** or **GET** request to `http://localhost:7441/api/webhook/trigger`.
 
 The API Token can be set as either an HTTP header like `X-API-Token`, or be passed in the url as a query param like `?apikey=MY_NEW_LONG_SECURE_TOKEN`.
+
+## Docker compose
+
+Check the `docker-compose.yml` example. 
+
+1. Set `user: 1000:1000` with your user id you can get with the `id` command, or remove to run as **root**.
+2. Set the `volume` so it matches your system. To run from the same path as the `docker-compose` first create a config dir like `mkdir config`, and place this `./config:/config` in the compose file. This will create a default config on the first run.
+
+If you have custom networks then make sure to add those, so it can communicate with autobrr, sonarr and radarr.

@@ -110,7 +110,7 @@ func (s Service) radarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 }
 
 func (s Service) processRadarr(cfg *domain.ArrConfig, logger *zerolog.Logger) ([]string, error) {
-	c := starr.New(cfg.Apikey, cfg.Host, 0)
+	c := starr.New(cfg.Apikey, cfg.Host, 60*time.Second)
 
 	if cfg.BasicAuth != nil {
 		if cfg.BasicAuth.User != "" {
@@ -206,7 +206,7 @@ func (s Service) sonarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 }
 
 func (s Service) processSonarr(cfg *domain.ArrConfig, logger *zerolog.Logger) ([]string, error) {
-	c := starr.New(cfg.Apikey, cfg.Host, 0)
+	c := starr.New(cfg.Apikey, cfg.Host, 60*time.Second)
 
 	if cfg.BasicAuth != nil {
 		if cfg.BasicAuth.User != "" {

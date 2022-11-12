@@ -54,6 +54,36 @@ If you're trying to reach radarr or sonarr hosted on swizzin from some other loc
         - 15
 ```
 
+### Tags
+
+This works for both sonarr and radarr.
+
+If you want to match only certain tags you can use the `tagsInclude`.
+
+```yaml
+- name: sonarr
+  type: sonarr
+  host: http://localhost:8989
+  apikey: API_KEY
+  filters:
+    - 14
+  tagsInclude:
+    - mytag
+```
+
+If you want to exclude certain tags, you can use the `tagsExclude`.
+
+```yaml
+- name: sonarr
+  type: sonarr
+  host: http://localhost:8989
+  apikey: API_KEY
+  filters:
+    - 14
+  tagsExclude:
+    - myothertag
+```
+
 ## Commands
 
 Available commands.

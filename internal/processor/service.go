@@ -123,6 +123,15 @@ func (s Service) processRadarr(cfg *domain.ArrConfig, logger *zerolog.Logger) ([
 
 	r := radarr.New(c)
 
+	var tags []*starr.Tag
+	if len(cfg.TagsExclude) > 0 || len(cfg.TagsInclude) > 0 {
+		t, err := r.GetTags()
+		if err != nil {
+			logger.Debug().Msg("could not get tags")
+		}
+		tags = t
+	}
+
 	movies, err := r.GetMovie(0)
 	if err != nil {
 		return nil, err
@@ -136,6 +145,10 @@ func (s Service) processRadarr(cfg *domain.ArrConfig, logger *zerolog.Logger) ([
 	for _, m := range movies {
 		// only want monitored
 		if !m.Monitored {
+			continue
+		}
+
+		if !processTags(tags, m.Tags, cfg.TagsInclude, cfg.TagsExclude) {
 			continue
 		}
 
@@ -219,6 +232,15 @@ func (s Service) processSonarr(cfg *domain.ArrConfig, logger *zerolog.Logger) ([
 
 	r := sonarr.New(c)
 
+	var tags []*starr.Tag
+	if len(cfg.TagsExclude) > 0 || len(cfg.TagsInclude) > 0 {
+		t, err := r.GetTags()
+		if err != nil {
+			logger.Debug().Msg("could not get tags")
+		}
+		tags = t
+	}
+
 	shows, err := r.GetAllSeries()
 	if err != nil {
 		return nil, err
@@ -232,6 +254,10 @@ func (s Service) processSonarr(cfg *domain.ArrConfig, logger *zerolog.Logger) ([
 	for _, m := range shows {
 		// only want monitored
 		if !m.Monitored {
+			continue
+		}
+
+		if !processTags(tags, m.Tags, cfg.TagsInclude, cfg.TagsExclude) {
 			continue
 		}
 

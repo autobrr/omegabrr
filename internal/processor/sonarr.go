@@ -3,7 +3,6 @@ package processor
 import (
 	"context"
 	"strings"
-	"sync/atomic"
 	"time"
 
 	"github.com/autobrr/omegabrr/internal/domain"
@@ -84,21 +83,33 @@ func (s Service) processSonarr(ctx context.Context, cfg *domain.ArrConfig, logge
 	logger.Debug().Msgf("found %d shows to process", len(shows))
 
 	var titles []string
-	var monitoredTitles int32
+	var monitoredTitles int
 
 	for _, show := range shows {
 		s := show
-		// only want monitored
 
+		// only want monitored
 		if !s.Monitored {
 			continue
 		}
 
-		if !processTags(tags, s.Tags, cfg.TagsInclude, cfg.TagsExclude) {
-			continue
+		if len(cfg.TagsInclude) > 0 {
+			if len(s.Tags) == 0 {
+				continue
+			}
+			if !containsTag(tags, s.Tags, cfg.TagsInclude) {
+				continue
+			}
 		}
 
-		atomic.AddInt32(&monitoredTitles, 1)
+		if len(cfg.TagsExclude) > 0 {
+			if containsTag(tags, s.Tags, cfg.TagsExclude) {
+				continue
+			}
+		}
+
+		// increment monitored titles
+		monitoredTitles++
 
 		//titles = append(titles, rls.MustNormalize(s.Title))
 		//titles = append(titles, rls.MustClean(s.Title))

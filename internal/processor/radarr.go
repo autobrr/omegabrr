@@ -3,7 +3,6 @@ package processor
 import (
 	"context"
 	"strings"
-	"sync/atomic"
 	"time"
 
 	"github.com/autobrr/omegabrr/internal/domain"
@@ -84,7 +83,7 @@ func (s Service) processRadarr(ctx context.Context, cfg *domain.ArrConfig, logge
 	logger.Debug().Msgf("found %d movies to process", len(movies))
 
 	var titles []string
-	var monitoredTitles int32
+	var monitoredTitles int
 
 	for _, movie := range movies {
 		m := movie
@@ -94,11 +93,23 @@ func (s Service) processRadarr(ctx context.Context, cfg *domain.ArrConfig, logge
 			continue
 		}
 
-		if !processTags(tags, m.Tags, cfg.TagsInclude, cfg.TagsExclude) {
-			continue
+		if len(cfg.TagsInclude) > 0 {
+			if len(m.Tags) == 0 {
+				continue
+			}
+			if !containsTag(tags, m.Tags, cfg.TagsInclude) {
+				continue
+			}
 		}
 
-		atomic.AddInt32(&monitoredTitles, 1)
+		if len(cfg.TagsExclude) > 0 {
+			if containsTag(tags, m.Tags, cfg.TagsExclude) {
+				continue
+			}
+		}
+
+		// increment monitored titles
+		monitoredTitles++
 
 		//titles = append(titles, rls.MustNormalize(m.Title))
 		//titles = append(titles, rls.MustNormalize(m.OriginalTitle))

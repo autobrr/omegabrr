@@ -6,6 +6,10 @@ import (
 
 func processTags(tags []*starr.Tag, titleTags []int, includeTags []string, excludeTags []string) bool {
 
+	if len(includeTags) == 0 && len(excludeTags) == 0 {
+		return true
+	}
+
 	tagLabels := []string{}
 
 	// match tag id's with labels

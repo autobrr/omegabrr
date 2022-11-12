@@ -1,8 +1,9 @@
 package http
 
 import (
-	"github.com/autobrr/omegabrr/internal/processor"
 	"net/http"
+
+	"github.com/autobrr/omegabrr/internal/processor"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
@@ -23,7 +24,7 @@ func (h processorHandler) Routes(r chi.Router) {
 }
 
 func (h processorHandler) getFilters(w http.ResponseWriter, r *http.Request) {
-	filters, err := h.ProcessorService.GetFilters()
+	filters, err := h.ProcessorService.GetFilters(r.Context())
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 	}

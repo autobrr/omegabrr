@@ -68,6 +68,19 @@ func Test_processTags(t *testing.T) {
 			},
 			want: false,
 		},
+		{
+			name: "test_4",
+			args: args{
+				tags: []*starr.Tag{{
+					ID:    1,
+					Label: "Want",
+				}},
+				movieTags:   []int{},
+				includeTags: nil,
+				excludeTags: nil,
+			},
+			want: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

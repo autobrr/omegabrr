@@ -27,3 +27,7 @@ clients:
       apikey: API_KEY
       filters:
         - 14
+      tagsInclude:
+        - mytag
+      tagsExclude:
+        - myothertag

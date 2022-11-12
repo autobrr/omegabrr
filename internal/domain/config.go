@@ -21,12 +21,14 @@ type BasicAuth struct {
 }
 
 type ArrConfig struct {
-	Name      string     `koanf:"name"`
-	Type      ArrType    `koanf:"type"`
-	Host      string     `koanf:"host"`
-	Apikey    string     `koanf:"apikey"`
-	BasicAuth *BasicAuth `koanf:"basicAuth"`
-	Filters   []int      `koanf:"filters"`
+	Name        string     `koanf:"name"`
+	Type        ArrType    `koanf:"type"`
+	Host        string     `koanf:"host"`
+	Apikey      string     `koanf:"apikey"`
+	BasicAuth   *BasicAuth `koanf:"basicAuth"`
+	Filters     []int      `koanf:"filters"`
+	TagsInclude []string   `koanf:"tagsInclude"`
+	TagsExclude []string   `koanf:"tagsExclude"`
 }
 
 type ArrType string
@@ -107,7 +109,7 @@ func (c *Config) writeFile(configPath string) error {
 	} else if pd, _ := os.Open("/proc/1/cgroup"); pd != nil {
 		defer pd.Close()
 		b := make([]byte, 4096, 4096)
-		pd.Read(b)
+		_, _ = pd.Read(b)
 		if strings.Contains(string(b), "/docker") || strings.Contains(string(b), "/lxc") {
 			host = "0.0.0.0"
 		}
@@ -165,18 +167,18 @@ clients:
       host: http://localhost:7878
       apikey: API_KEY
       filters:
-        - 15
+        - 15 # Change me
 
     - name: radarr4k
       type: radarr
       host: http://localhost:7878
       apikey: API_KEY
       filters:
-        - 16
+        - 16 # Change me
 
     - name: sonarr
       type: sonarr
       host: http://localhost:8989
       apikey: API_KEY
       filters:
-        - 14`
+        - 14 # Change me`

@@ -1,5 +1,7 @@
 *.idea
 *.dist
+dist
+.dev
 
 # Binaries for programs and plugins
 *.exe

@@ -11,6 +11,7 @@ func processTags(tags []*starr.Tag, titleTags []int, includeTags []string, exclu
 	}
 
 	tagLabels := []string{}
+	ret := false
 
 	// match tag id's with labels
 	for _, movieTag := range titleTags {
@@ -21,24 +22,24 @@ func processTags(tags []*starr.Tag, titleTags []int, includeTags []string, exclu
 		}
 	}
 
-	if len(includeTags) > 0 {
-		for _, includeTag := range includeTags {
-			for _, label := range tagLabels {
-				if includeTag == label {
-					return true
-				}
+	// check included tags and set ret to true if we have a match
+	for _, includeTag := range includeTags {
+		for _, label := range tagLabels {
+			if includeTag == label {
+				ret = true
+				continue
 			}
 		}
-	} else if len(excludeTags) > 0 {
-		for _, excludeTag := range excludeTags {
-			for _, label := range tagLabels {
-				if excludeTag == label {
-					return false
-				}
-			}
-		}
-
 	}
 
-	return false
+	// check exclude tags and return false on first match
+	for _, excludeTag := range excludeTags {
+		for _, label := range tagLabels {
+			if excludeTag == label {
+				return false
+			}
+		}
+	}
+
+	return ret
 }

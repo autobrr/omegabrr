@@ -2,7 +2,6 @@ package processor
 
 import (
 	"fmt"
-	"github.com/moistari/rls"
 	"regexp"
 	"strings"
 )
@@ -38,6 +37,13 @@ func processTitle(title string) []string {
 		replace := strings.ReplaceAll(strip, " ", "?")
 		t.Add(replace)
 	}
+
+	if strings.ContainsAny(title, "!") {
+		strip := strings.ReplaceAll(title, "!", "?")
+		replace := strings.ReplaceAll(strip, " ", "?")
+		t.Add(replace)
+	}
+
 	if strings.ContainsAny(title, ":") {
 		strip := strings.ReplaceAll(title, ":", "")
 		replace := strings.ReplaceAll(strip, " ", "?")
@@ -53,6 +59,7 @@ func processTitle(title string) []string {
 		}
 
 	}
+
 	if strings.ContainsAny(title, "&") {
 		t.Add(strings.ReplaceAll(title, " ", "?"))
 
@@ -88,68 +95,5 @@ func (ts *Titles) Titles() []string {
 	for key := range ts.tm {
 		titles = append(titles, key)
 	}
-	return titles
-}
-
-func processTitleShows(title string) []string {
-	// replace - : _
-	if title == "" || title == " " {
-		return nil
-	}
-
-	// Example: She-hulk: Attorney at law
-
-	var re = regexp.MustCompile(`(?m)\s(\(\d+\))`)
-
-	title = re.ReplaceAllString(title, "")
-
-	//var titles []string
-	titles := []string{title}
-	//if strings.ContainsAny(title, "-:&") {
-	//
-	//}
-	titles = append(titles, rls.MustNormalize(title))
-	titles = append(titles, strings.ReplaceAll(title, " ", "?"))
-
-	//fmt.Println(rls.MustClean(title))
-	fmt.Println(rls.MustNormalize(title))
-
-	if strings.ContainsAny(title, "-") {
-		strip := strings.ReplaceAll(title, "-", "?")
-		replace := strings.ReplaceAll(strip, " ", "?")
-		titles = append(titles, replace)
-	}
-	if strings.ContainsAny(title, ":") {
-		//titles = append(titles, strings.ReplaceAll(title, ":", ""))
-
-		strip := strings.ReplaceAll(title, ":", "")
-		replace := strings.ReplaceAll(strip, " ", "?")
-		titles = append(titles, replace)
-
-		split := strings.Split(title, ":")
-		if len(split) > 1 {
-			first := strings.ReplaceAll(split[0], " ", "?")
-			second := strings.ReplaceAll(strings.Trim(split[1], " "), " ", "?")
-			part := fmt.Sprintf("%v*%v*", first, second)
-
-			titles = append(titles, part)
-		}
-
-	}
-	if strings.ContainsAny(title, "&") {
-		titles = append(titles, strings.ReplaceAll(title, " ", "?"))
-
-		strip := strings.ReplaceAll(title, "&", "and")
-		titles = append(titles, strip)
-
-		replace := strings.ReplaceAll(strip, " ", "?")
-		titles = append(titles, replace)
-	}
-
-	//var alts []string
-	//for _, t := range titles {
-	//	alts = append(alts, strings.ReplaceAll(t, " ", "?"))
-	//}
-
 	return titles
 }

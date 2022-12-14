@@ -5,12 +5,13 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
-	"github.com/rs/zerolog/log"
 	"io"
 	"net/http"
 	"net/http/httputil"
 	"strconv"
 	"time"
+
+	"github.com/rs/zerolog/log"
 
 	"github.com/pkg/errors"
 )
@@ -129,5 +130,6 @@ type Filter struct {
 }
 
 type UpdateFilter struct {
-	Shows string `json:"shows"`
+	Shows         string `json:"shows"`
+	MatchReleases string `json:"match_releases"`
 }

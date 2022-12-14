@@ -129,5 +129,5 @@ type Filter struct {
 }
 
 type UpdateFilter struct {
-	MatchReleases string `json:"match_releases"`
+	Shows string `json:"shows"`
 }

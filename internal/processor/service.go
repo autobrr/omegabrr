@@ -29,6 +29,9 @@ func (s Service) Process(dryRun bool) error {
 	}
 
 	a := autobrr.NewClient(s.cfg.Clients.Autobrr.Host, s.cfg.Clients.Autobrr.Apikey)
+	if s.cfg.Clients.Autobrr.BasicAuth != nil {
+		a.SetBasicAuth(s.cfg.Clients.Autobrr.BasicAuth.User, s.cfg.Clients.Autobrr.BasicAuth.Pass)
+	}
 
 	log.Debug().Msgf("starting filter processing...")
 
@@ -72,6 +75,10 @@ func (s Service) GetFilters(ctx context.Context) ([]autobrr.Filter, error) {
 	}
 
 	a := autobrr.NewClient(s.cfg.Clients.Autobrr.Host, s.cfg.Clients.Autobrr.Apikey)
+	if s.cfg.Clients.Autobrr.BasicAuth != nil {
+		a.SetBasicAuth(s.cfg.Clients.Autobrr.BasicAuth.User, s.cfg.Clients.Autobrr.BasicAuth.Pass)
+	}
+
 	filters, err := a.GetFilters(ctx)
 	if err != nil {
 		return nil, err

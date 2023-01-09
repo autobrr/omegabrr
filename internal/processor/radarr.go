@@ -7,6 +7,7 @@ import (
 
 	"github.com/autobrr/omegabrr/internal/domain"
 	"github.com/autobrr/omegabrr/pkg/autobrr"
+
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"golift.io/starr"
@@ -18,14 +19,14 @@ func (s Service) radarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 
 	l.Debug().Msgf("gathering titles...")
 
-	movieTitles, err := s.processRadarr(ctx, cfg, &l)
+	titles, err := s.processRadarr(ctx, cfg, &l)
 	if err != nil {
 		return err
 	}
 
-	l.Debug().Msgf("got %v filter titles", len(movieTitles))
+	l.Debug().Msgf("got %v filter titles", len(titles))
 
-	joinedTitles := strings.Join(movieTitles, ",")
+	joinedTitles := strings.Join(titles, ",")
 
 	l.Trace().Msgf("%v", joinedTitles)
 

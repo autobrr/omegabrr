@@ -54,6 +54,17 @@ If you're trying to reach radarr or sonarr hosted on swizzin from some other loc
         - 15
 ```
 
+Same goes for autobrr if it's behind basic auth.
+
+```yaml
+  autobrr:
+    host: http://localhost:7474
+    apikey: YOUR_API_KEY
+    basicAuth:
+      user: username
+      pass: password
+```
+
 ### Tags
 
 This works for both sonarr and radarr.

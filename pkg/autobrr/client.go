@@ -20,6 +20,9 @@ type Client struct {
 	Host   string
 	APIKey string
 
+	BasicUser string
+	BasicPass string
+
 	client *http.Client
 }
 
@@ -45,6 +48,15 @@ func NewClient(host string, apikey string) *Client {
 	return c
 }
 
+func (c *Client) SetBasicAuth(user, pass string) {
+	if user != "" {
+		c.BasicUser = user
+	}
+	if pass != "" {
+		c.BasicPass = pass
+	}
+}
+
 func (c *Client) baseClient() {
 
 }
@@ -62,6 +74,7 @@ func (c *Client) GetFilters(ctx context.Context) ([]Filter, error) {
 		return nil, err
 	}
 
+	req.SetBasicAuth(c.BasicUser, c.BasicPass)
 	req.Header.Add("X-API-Token", c.APIKey)
 
 	res, err := c.client.Do(req)
@@ -100,6 +113,7 @@ func (c *Client) UpdateFilterByID(ctx context.Context, filterID int, filter Upda
 		return err
 	}
 
+	req.SetBasicAuth(c.BasicUser, c.BasicPass)
 	req.Header.Add("X-API-Token", c.APIKey)
 
 	res, err := c.client.Do(req)

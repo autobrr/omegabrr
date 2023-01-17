@@ -7,6 +7,7 @@ import (
 
 	"github.com/autobrr/omegabrr/internal/domain"
 	"github.com/autobrr/omegabrr/pkg/autobrr"
+
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"golift.io/starr"
@@ -18,14 +19,14 @@ func (s Service) sonarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 
 	l.Debug().Msgf("gathering titles...")
 
-	movieTitles, err := s.processSonarr(ctx, cfg, &l)
+	titles, err := s.processSonarr(ctx, cfg, &l)
 	if err != nil {
 		return err
 	}
 
-	l.Debug().Msgf("got %v filter titles", len(movieTitles))
+	l.Debug().Msgf("got %v filter titles", len(titles))
 
-	joinedTitles := strings.Join(movieTitles, ",")
+	joinedTitles := strings.Join(titles, ",")
 
 	l.Trace().Msgf("%v", joinedTitles)
 
@@ -41,7 +42,7 @@ func (s Service) sonarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 			f := autobrr.UpdateFilter{Shows: joinedTitles}
 
 			if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
-				l.Error().Err(err).Msgf("something went wrong updating movie filter: %v", filterID)
+				l.Error().Err(err).Msgf("something went wrong updating tv filter: %v", filterID)
 				continue
 			}
 		}

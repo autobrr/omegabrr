@@ -54,6 +54,17 @@ func (s Service) Process(dryRun bool) error {
 				g.Go(func() error {
 					return s.sonarr(ctx, arrClient, dryRun, a)
 				})
+
+			case domain.ArrTypeReadarr:
+				g.Go(func() error {
+					return s.readarr(ctx, arrClient, dryRun, a)
+				})
+
+			case domain.ArrTypeLidarr:
+				g.Go(func() error {
+					return s.lidarr(ctx, arrClient, dryRun, a)
+				})
+
 			}
 		}
 	}

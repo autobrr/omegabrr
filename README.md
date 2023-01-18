@@ -37,6 +37,20 @@ clients:
         pass: password
       filters:
         - 14
+
+    - name: lidarr
+      type: lidarr
+      host: https://yourdomain.com/lidarr
+      apikey: YOUR_API_KEY
+      filters:
+        - 13
+
+    - name: readarr
+      type: readarr
+      host: https://yourdomain.com/readarr
+      apikey: YOUR_API_KEY
+      filters:
+        - 12
 ```
 
 If you're trying to reach radarr or sonarr hosted on swizzin from some other location, you need to do it like this with basic auth:

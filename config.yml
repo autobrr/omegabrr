@@ -15,12 +15,16 @@ clients:
       apikey: API_KEY
       filters:
         - 15
+      #matchRelease: false / true
+
     - name: radarr4k
       type: radarr
       host: http://localhost:7878
       apikey: API_KEY
       filters:
         - 16
+      #matchRelease: false / true
+
     - name: sonarr
       type: sonarr
       host: http://localhost:8989
@@ -31,3 +35,20 @@ clients:
         - mytag
       tagsExclude:
         - myothertag
+      #matchRelease: false / true
+
+    - name: lidarr
+      type: lidarr
+      host: http://localhost:8686
+      apikey: API_KEY
+      filters:
+        - 13
+      #matchRelease: false / true
+
+    - name: readarr
+      type: readarr
+      host: http://localhost:8787
+      apikey: API_KEY
+      filters:
+        - 12
+      #matchRelease: false # will not use other fields yet, so not needed.

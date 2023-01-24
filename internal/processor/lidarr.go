@@ -38,27 +38,20 @@ func (s Service) lidarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 
 		l.Debug().Msgf("updating filter: %v", filterID)
 
-		if !cfg.MatchRelease {
-			if !dryRun {
-				f := autobrr.UpdateFilter{Albums: joinedTitles}
+		f := autobrr.UpdateFilter{Albums: joinedTitles}
 
-				if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
-					l.Error().Err(err).Msgf("something went wrong updating music filter: %v", filterID)
-					continue
-				}
-			}
+		if cfg.MatchRelease {
+			f = autobrr.UpdateFilter{MatchReleases: joinedTitles}
+		}
 
-			l.Debug().Msgf("successfully updated filter: %v", filterID)
-		} else {
-			if !dryRun {
-				f := autobrr.UpdateFilter{MatchReleases: joinedTitles}
-
-				if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
-					l.Error().Err(err).Msgf("something went wrong updating music filter: %v", filterID)
-					continue
-				}
+		if !dryRun {
+			if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
+				l.Error().Err(err).Msgf("something went wrong updating music filter: %v", filterID)
+				continue
 			}
 		}
+
+		l.Debug().Msgf("successfully updated filter: %v", filterID)
 
 	}
 

@@ -25,6 +25,7 @@ clients:
       apikey: YOUR_API_KEY
       filters:
         - 15
+      #matchRelease: false / true
 
     - name: sonarr
       type: sonarr
@@ -37,6 +38,7 @@ clients:
         pass: password
       filters:
         - 14
+      #matchRelease: false / true
 
     - name: lidarr
       type: lidarr
@@ -44,6 +46,7 @@ clients:
       apikey: YOUR_API_KEY
       filters:
         - 13
+      #matchRelease: false / true
 
     - name: readarr
       type: readarr
@@ -108,6 +111,12 @@ If you want to exclude certain tags, you can use the `tagsExclude`.
   tagsExclude:
     - myothertag
 ```
+
+## Optionally use Match Releases field in your autobrr filter
+
+By setting `matchRelease: true` in your config, it will use the `Match releases` field in your autobrr filter instead of fields like `Movies / Shows` and `Albums`.
+
+Readarr will only use the `Match releases` field for now, so setting `matchRelease: false` for Readarr will be ignored.
 
 ## Commands
 

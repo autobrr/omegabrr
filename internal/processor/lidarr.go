@@ -38,16 +38,21 @@ func (s Service) lidarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 
 		l.Debug().Msgf("updating filter: %v", filterID)
 
-		if !dryRun {
-			f := autobrr.UpdateFilter{MatchReleases: joinedTitles}
+		f := autobrr.UpdateFilter{Albums: joinedTitles}
 
+		if cfg.MatchRelease {
+			f = autobrr.UpdateFilter{MatchReleases: joinedTitles}
+		}
+
+		if !dryRun {
 			if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
-				l.Error().Err(err).Msgf("something went wrong updating album filter: %v", filterID)
+				l.Error().Err(err).Msgf("something went wrong updating music filter: %v", filterID)
 				continue
 			}
 		}
 
 		l.Debug().Msgf("successfully updated filter: %v", filterID)
+
 	}
 
 	return nil
@@ -83,7 +88,7 @@ func (s Service) processLidarr(ctx context.Context, cfg *domain.ArrConfig, logge
 		return nil, err
 	}
 
-	logger.Debug().Msgf("found %d albums to process", len(albums))
+	logger.Debug().Msgf("found %d releases to process", len(albums))
 
 	var titles []string
 	var monitoredTitles int
@@ -120,7 +125,7 @@ func (s Service) processLidarr(ctx context.Context, cfg *domain.ArrConfig, logge
 		//titles = append(titles, rls.MustNormalize(m.OriginalTitle))
 		//titles = append(titles, rls.MustClean(m.Title))
 
-		titles = append(titles, processTitle(m.Title)...)
+		titles = append(titles, processTitle(m.Title, cfg.MatchRelease)...)
 
 		//	titles = append(titles, processTitle(m.OriginalTitle)...)
 
@@ -129,7 +134,7 @@ func (s Service) processLidarr(ctx context.Context, cfg *domain.ArrConfig, logge
 		//}
 	}
 
-	logger.Debug().Msgf("from a total of %d albums we found %d monitored and created %d release titles", len(albums), monitoredTitles, len(titles))
+	logger.Debug().Msgf("from a total of %d releases we found %d monitored and created %d release titles", len(albums), monitoredTitles, len(titles))
 
 	return titles, nil
 }

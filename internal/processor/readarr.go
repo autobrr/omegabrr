@@ -120,7 +120,7 @@ func (s Service) processReadarr(ctx context.Context, cfg *domain.ArrConfig, logg
 		//titles = append(titles, rls.MustNormalize(m.OriginalTitle))
 		//titles = append(titles, rls.MustClean(m.Title))
 
-		titles = append(titles, processTitle(m.Title)...)
+		titles = append(titles, processTitle(m.Title, cfg.MatchRelease)...)
 
 		//	titles = append(titles, processTitle(m.OriginalTitle)...)
 

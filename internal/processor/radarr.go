@@ -38,9 +38,13 @@ func (s Service) radarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 
 		l.Debug().Msgf("updating filter: %v", filterID)
 
-		if !dryRun {
-			f := autobrr.UpdateFilter{MatchReleases: joinedTitles}
+		f := autobrr.UpdateFilter{Shows: joinedTitles}
 
+		if cfg.MatchRelease {
+			f = autobrr.UpdateFilter{MatchReleases: joinedTitles}
+		}
+
+		if !dryRun {
 			if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
 				l.Error().Err(err).Msgf("something went wrong updating movie filter: %v", filterID)
 				continue
@@ -48,6 +52,7 @@ func (s Service) radarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 		}
 
 		l.Debug().Msgf("successfully updated filter: %v", filterID)
+
 	}
 
 	return nil
@@ -120,11 +125,11 @@ func (s Service) processRadarr(ctx context.Context, cfg *domain.ArrConfig, logge
 		ot := strings.ToLower(m.OriginalTitle)
 
 		if t == ot {
-			titles = append(titles, processTitle(m.Title)...)
+			titles = append(titles, processTitle(m.Title, cfg.MatchRelease)...)
 			continue
 		}
 
-		titles = append(titles, processTitle(m.OriginalTitle)...)
+		titles = append(titles, processTitle(m.OriginalTitle, cfg.MatchRelease)...)
 
 		//for _, title := range m.AlternateTitles {
 		//	titles = append(titles, processTitle(title.Title)...)

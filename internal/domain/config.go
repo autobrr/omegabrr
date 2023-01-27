@@ -21,14 +21,15 @@ type BasicAuth struct {
 }
 
 type ArrConfig struct {
-	Name        string     `koanf:"name"`
-	Type        ArrType    `koanf:"type"`
-	Host        string     `koanf:"host"`
-	Apikey      string     `koanf:"apikey"`
-	BasicAuth   *BasicAuth `koanf:"basicAuth"`
-	Filters     []int      `koanf:"filters"`
-	TagsInclude []string   `koanf:"tagsInclude"`
-	TagsExclude []string   `koanf:"tagsExclude"`
+	Name         string     `koanf:"name"`
+	Type         ArrType    `koanf:"type"`
+	Host         string     `koanf:"host"`
+	Apikey       string     `koanf:"apikey"`
+	BasicAuth    *BasicAuth `koanf:"basicAuth"`
+	Filters      []int      `koanf:"filters"`
+	TagsInclude  []string   `koanf:"tagsInclude"`
+	TagsExclude  []string   `koanf:"tagsExclude"`
+	MatchRelease bool       `koanf:"matchRelease"`
 }
 
 type ArrType string

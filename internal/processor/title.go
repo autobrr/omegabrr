@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func processTitle(title string) []string {
+func processTitle(title string, matchRelease bool) []string {
 	// replace - : _
 	if title == "" || title == " " {
 		return nil
@@ -19,35 +19,35 @@ func processTitle(title string) []string {
 	t := NewTitleSlice()
 
 	//titles = append(titles, rls.MustNormalize(title))
-	t.Add(strings.ReplaceAll(title, " ", "?"))
+	t.Add(strings.ReplaceAll(title, " ", "?"), matchRelease)
 
 	//fmt.Println(rls.MustClean(title))
 	//fmt.Println(rls.MustNormalize(title))
 
 	if strings.Contains(title, ". ") {
-		t.Add(strings.ReplaceAll(title, ". ", "??"))
+		t.Add(strings.ReplaceAll(title, ". ", "??"), matchRelease)
 
 		strip := strings.ReplaceAll(title, ". ", " ")
 		replace := strings.ReplaceAll(strip, " ", "?")
-		t.Add(replace)
+		t.Add(replace, matchRelease)
 	}
 
 	if strings.ContainsAny(title, "-") {
 		strip := strings.ReplaceAll(title, "-", "?")
 		replace := strings.ReplaceAll(strip, " ", "?")
-		t.Add(replace)
+		t.Add(replace, matchRelease)
 	}
 
 	if strings.ContainsAny(title, "!") {
 		strip := strings.ReplaceAll(title, "!", "?")
 		replace := strings.ReplaceAll(strip, " ", "?")
-		t.Add(replace)
+		t.Add(replace, matchRelease)
 	}
 
 	if strings.ContainsAny(title, ":") {
 		strip := strings.ReplaceAll(title, ":", "")
 		replace := strings.ReplaceAll(strip, " ", "?")
-		t.Add(replace)
+		t.Add(replace, matchRelease)
 
 		split := strings.Split(title, ":")
 		if len(split) > 1 {
@@ -55,17 +55,17 @@ func processTitle(title string) []string {
 			second := strings.ReplaceAll(strings.Trim(split[1], " "), " ", "?")
 			part := fmt.Sprintf("%v*%v", first, second)
 
-			t.Add(part)
+			t.Add(part, matchRelease)
 		}
 
 	}
 
 	if strings.ContainsAny(title, "&") {
-		t.Add(strings.ReplaceAll(title, " ", "?"))
+		t.Add(strings.ReplaceAll(title, " ", "?"), matchRelease)
 
 		strip := strings.ReplaceAll(title, "&", "and")
 		replace := strings.ReplaceAll(strip, " ", "?")
-		t.Add(replace)
+		t.Add(replace, matchRelease)
 	}
 
 	return t.Titles()
@@ -82,8 +82,11 @@ func NewTitleSlice() *Titles {
 	return &ts
 }
 
-func (ts *Titles) Add(title string) {
-	title = fmt.Sprintf("*%v*", title)
+func (ts *Titles) Add(title string, matchRelease bool) {
+	if matchRelease {
+		title = fmt.Sprintf("*%v*", title)
+	}
+
 	_, ok := ts.tm[title]
 	if !ok {
 		ts.tm[title] = struct{}{}

@@ -38,9 +38,13 @@ func (s Service) sonarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 
 		l.Debug().Msgf("updating filter: %v", filterID)
 
-		if !dryRun {
-			f := autobrr.UpdateFilter{MatchReleases: joinedTitles}
+		f := autobrr.UpdateFilter{Shows: joinedTitles}
 
+		if cfg.MatchRelease {
+			f = autobrr.UpdateFilter{MatchReleases: joinedTitles}
+		}
+
+		if !dryRun {
 			if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
 				l.Error().Err(err).Msgf("something went wrong updating tv filter: %v", filterID)
 				continue
@@ -48,6 +52,7 @@ func (s Service) sonarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 		}
 
 		l.Debug().Msgf("successfully updated filter: %v", filterID)
+
 	}
 
 	return nil
@@ -115,7 +120,7 @@ func (s Service) processSonarr(ctx context.Context, cfg *domain.ArrConfig, logge
 		//titles = append(titles, rls.MustNormalize(s.Title))
 		//titles = append(titles, rls.MustClean(s.Title))
 
-		titles = append(titles, processTitle(s.Title)...)
+		titles = append(titles, processTitle(s.Title, cfg.MatchRelease)...)
 
 		//for _, title := range s.AlternateTitles {
 		//	titles = append(titles, processTitle(title.Title)...)

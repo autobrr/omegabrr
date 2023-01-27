@@ -67,7 +67,8 @@ func main() {
 
 		p := processor.NewService(cfg)
 		if err := p.Process(dryRun); err != nil {
-			return
+			log.Error().Err(err).Msgf("error during processing")
+			os.Exit(1)
 		}
 
 	case "run":
@@ -98,7 +99,7 @@ func main() {
 			time.Sleep(15 * time.Second)
 
 			if err := p.Process(false); err != nil {
-				return
+				log.Error().Err(err).Msgf("error during initial processing")
 			}
 		}()
 

@@ -125,7 +125,7 @@ func (s Service) processLidarr(ctx context.Context, cfg *domain.ArrConfig, logge
 		//titles = append(titles, rls.MustNormalize(m.OriginalTitle))
 		//titles = append(titles, rls.MustClean(m.Title))
 
-		titles = append(titles, processTitle(m.Title, cfg)...)
+		titles = append(titles, processTitle(m.Title, cfg.MatchRelease)...)
 
 		//	titles = append(titles, processTitle(m.OriginalTitle)...)
 

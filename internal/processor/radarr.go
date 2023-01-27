@@ -125,11 +125,11 @@ func (s Service) processRadarr(ctx context.Context, cfg *domain.ArrConfig, logge
 		ot := strings.ToLower(m.OriginalTitle)
 
 		if t == ot {
-			titles = append(titles, processTitle(m.Title, cfg)...)
+			titles = append(titles, processTitle(m.Title, cfg.MatchRelease)...)
 			continue
 		}
 
-		titles = append(titles, processTitle(m.OriginalTitle, cfg)...)
+		titles = append(titles, processTitle(m.Title, cfg.MatchRelease)...)
 
 		//for _, title := range m.AlternateTitles {
 		//	titles = append(titles, processTitle(title.Title)...)

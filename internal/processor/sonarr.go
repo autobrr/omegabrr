@@ -120,7 +120,7 @@ func (s Service) processSonarr(ctx context.Context, cfg *domain.ArrConfig, logge
 		//titles = append(titles, rls.MustNormalize(s.Title))
 		//titles = append(titles, rls.MustClean(s.Title))
 
-		titles = append(titles, processTitle(s.Title, cfg)...)
+		titles = append(titles, processTitle(s.Title, cfg.MatchRelease)...)
 
 		//for _, title := range s.AlternateTitles {
 		//	titles = append(titles, processTitle(title.Title)...)

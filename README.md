@@ -184,10 +184,10 @@ After that create the config directory for your user:
 
     mkdir -p ~/.config/omegabrr
 
-You will then need to create a service file in `/etc/systemd/system/` called `autobrr@.service`.
+You will then need to create a service file in `/etc/systemd/system/` called `omegabrr@.service`.
 
 ```shell
-touch /etc/systemd/system/autobrr@.service
+touch /etc/systemd/system/omegabrr@.service
 ```
 
 Then place the following content inside the file (e.g. via nano/vim/ed) or [copy the file ](./distrib/systemd/omegabrr@.service).
@@ -209,11 +209,11 @@ WantedBy=multi-user.target
 
 Start the service. Enable will make it startup on reboot.
 
-    sudo systemctl enable -q --now autobrr@USERNAME
+    sudo systemctl enable -q --now omegabrr@USERNAME
 
 Make sure it's running and **active**
 
-    sudo systemctl status autobrr@USERNAME.service
+    sudo systemctl status omegabrr@USERNAME.service
 
 By default, the config is set to listen on only `127.0.0.1`. It's highly advised to put it behind a reverse-proxy like nginx or traefik etc.
 
@@ -221,4 +221,4 @@ If you are not running a reverse proxy change host in the `config.toml` to `0.0.
 
 On first run it will create a default config, `~/.config/omegabrr/config.yaml` that you will need to edit.
 
-After the config is edited you need to restart the service `systemctl restart autobrr@USERNAME.service`.
+After the config is edited you need to restart the service `systemctl restart omegabrr@USERNAME.service`.

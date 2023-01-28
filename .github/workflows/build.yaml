@@ -53,7 +53,7 @@ jobs:
         with:
           distribution: goreleaser
           version: latest
-          args: release --rm-dist --skip-publish
+          args: release --snapshot
 
       - name: Run GoReleaser build and publish tags
         uses: goreleaser/goreleaser-action@v4

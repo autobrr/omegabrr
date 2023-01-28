@@ -74,7 +74,7 @@ func main() {
 	case "run":
 		cfg := domain.NewConfig(configPath)
 
-		log.Info().Msg("starting omegabrr")
+		log.Info().Msgf("starting omegabrr: %s", version)
 		log.Info().Msgf("running on schedule: %v", cfg.Schedule)
 
 		p := processor.NewService(cfg)

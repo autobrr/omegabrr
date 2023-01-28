@@ -161,44 +161,44 @@ server:
 schedule: 0 */6 * * *
 clients:
   autobrr:
-    host: http://localhost:7474
-    apikey: API_KEY
-    #basicAuth:
-    #  user: username
-    #  pass: password
+  #  host: http://localhost:7474
+  #  apikey: API_KEY
+  #    basicAuth:
+  #    user: username
+  #    pass: password
 
   arr:
-    - name: radarr
-      type: radarr
-      host: http://localhost:7878
-      apikey: API_KEY
-      filters:
-        - 15 # Change me
+  #  - name: radarr
+  #    type: radarr
+  #    host: http://localhost:7878
+  #    apikey: API_KEY
+  #    filters:
+  #      - 15 # Change me
 
-    - name: radarr4k
-      type: radarr
-      host: http://localhost:7878
-      apikey: API_KEY
-      filters:
-        - 16 # Change me
+  #  - name: radarr4k
+  #    type: radarr
+  #    host: http://localhost:7878
+  #    apikey: API_KEY
+  #    filters:
+  #      - 16 # Change me
 
-	- name: sonarr
-	  type: sonarr
-	  host: http://localhost:8989
-	  apikey: API_KEY
-	  filters:
-	    - 14 # Change me
+  #  - name: sonarr
+  #    type: sonarr
+  #    host: http://localhost:8989
+  #    apikey: API_KEY
+  #    filters:
+  #      - 14 # Change me
 	
-	- name: readarr
-	  type: readarr
-	  host: http://localhost:8787
-	  apikey: API_KEY
-	  filters:
-	    - 18 # Change me
+  #  - name: readarr
+  #    type: readarr
+  #    host: http://localhost:8787
+  #    apikey: API_KEY
+  #    filters:
+  #      - 18 # Change me
 		
-	- name: lidarr
-	  type: lidarr
-	  host: http://localhost:8686
-	  apikey: API_KEY
-	  filters:
-	    - 32 # Change me`
+  # - name: lidarr
+  #   type: lidarr
+  #   host: http://localhost:8686
+  #   apikey: API_KEY
+  #   filters:
+  #     - 32 # Change me`

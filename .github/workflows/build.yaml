@@ -61,7 +61,7 @@ jobs:
         with:
           distribution: goreleaser
           version: latest
-          args: release --rm-dist
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -69,7 +69,11 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: omegabrr
-          path: dist/*
+          path: |
+            dist/*.tar.gz
+            dist/*.json
+            dist/*.yaml
+
   docker:
     name: Build and publish Docker images
     runs-on: ubuntu-latest

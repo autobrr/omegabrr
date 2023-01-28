@@ -153,7 +153,7 @@ To refresh the filters you can make a **POST** or **GET** request to `http://loc
 
 The API Token can be set as either an HTTP header like `X-API-Token`, or be passed in the url as a query param like `?apikey=MY_NEW_LONG_SECURE_TOKEN`.
 
-## Docker compose
+### Docker compose
 
 Check the `docker-compose.yml` example. 
 
@@ -161,3 +161,64 @@ Check the `docker-compose.yml` example.
 2. Set the `volume` so it matches your system. To run from the same path as the `docker-compose` first create a config dir like `mkdir config`, and place this `./config:/config` in the compose file. This will create a default config on the first run.
 
 If you have custom networks then make sure to add those, so it can communicate with autobrr, sonarr and radarr.
+
+### Systemd
+
+On Linux-based systems it is recommended to run omegabrr as a systemd service.
+
+Download the [latest binary](https://github.com/autobrr/omegabrr/releases/latest) for your system and place it in `/usr/bin`. 
+
+Example: Download binary
+
+    wget https://github.com/autobrr/omegabrr/releases/download/$VERSION/omegabrr_$VERISON_linux_x86_64.tar.gz
+
+Extract
+
+    tar -xvf omegabrr_$VERISON_linux_x86_64.tar.gz ~/
+
+Move to somewhere in `$PATH`. Needs to be edited in the systemd service file if using other location.
+
+    sudo mv ~/omegabrr /usr/bin/
+
+After that create the config directory for your user:
+
+    mkdir -p ~/.config/omegabrr
+
+You will then need to create a service file in `/etc/systemd/system/` called `autobrr@.service`.
+
+```shell
+touch /etc/systemd/system/autobrr@.service
+```
+
+Then place the following content inside the file (e.g. via nano/vim/ed) or [copy the file ](./distrib/systemd/omegabrr@.service).
+
+```ini
+[Unit]
+Description=omegabrr service for %i
+After=syslog.target network-online.target
+
+[Service]
+Type=simple
+User=%i
+Group=%i
+ExecStart=/usr/bin/omegabrr --config=/home/%i/.config/omegabrr/config.yaml
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Start the service. Enable will make it startup on reboot.
+
+    sudo systemctl enable -q --now autobrr@USERNAME
+
+Make sure it's running and **active**
+
+    sudo systemctl status autobrr@USERNAME.service
+
+By default, the config is set to listen on only `127.0.0.1`. It's highly advised to put it behind a reverse-proxy like nginx or traefik etc.
+
+If you are not running a reverse proxy change host in the `config.toml` to `0.0.0.0`.
+
+On first run it will create a default config, `~/.config/omegabrr/config.yaml` that you will need to edit.
+
+After the config is edited you need to restart the service `systemctl restart autobrr@USERNAME.service`.

@@ -1,0 +1,12 @@
+[Unit]
+Description=omegabrr service for %i
+After=syslog.target network-online.target
+
+[Service]
+Type=simple
+User=%i
+Group=%i
+ExecStart=/usr/bin/omegabrr --config=/home/%i/.config/omegabrr/config.yaml
+
+[Install]
+WantedBy=multi-user.target

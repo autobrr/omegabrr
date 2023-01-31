@@ -15,7 +15,7 @@ import (
 )
 
 func (s Service) radarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool, brr *autobrr.Client) error {
-	l := log.With().Str("type", "sonarr").Str("client", cfg.Name).Logger()
+	l := log.With().Str("type", "radarr").Str("client", cfg.Name).Logger()
 
 	l.Debug().Msgf("gathering titles...")
 

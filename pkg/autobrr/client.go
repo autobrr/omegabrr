@@ -136,6 +136,43 @@ func (c *Client) UpdateFilterByID(ctx context.Context, filterID int, filter Upda
 	return nil
 }
 
+func (c *Client) UpdateFilterSpecial(ctx context.Context, filterID int, filter UpdateFilterSpecial) error {
+	id := strconv.Itoa(filterID)
+
+	body, err := json.Marshal(filter)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, c.Host+"/api/filters/"+id, bytes.NewBuffer(body))
+	if err != nil {
+		return err
+	}
+
+	req.SetBasicAuth(c.BasicUser, c.BasicPass)
+	req.Header.Add("X-API-Token", c.APIKey)
+
+	res, err := c.client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	dump, err := httputil.DumpResponse(res, true)
+	if err != nil {
+		return errors.Wrap(err, "could not dump response")
+	}
+
+	log.Trace().Msgf("update filter response: %v", string(dump))
+
+	if res.StatusCode != http.StatusNoContent {
+		return errors.New("bad status")
+	}
+
+	return nil
+}
+
+
 type Filter struct {
 	ID        string    `json:"id"`
 	Name      string    `json:"name"`
@@ -147,4 +184,10 @@ type UpdateFilter struct {
 	Shows         string `json:"shows"`
 	Albums        string `json:"albums"`
 	MatchReleases string `json:"match_releases"`
+}
+
+type UpdateFilterSpecial struct {
+	Shows         string `json:"shows"`
+	Albums        string `json:"albums"`
+	MatchReleases string `json:"match_releases,omitempty"`
 }

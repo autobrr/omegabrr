@@ -118,6 +118,10 @@ By setting `matchRelease: true` in your config, it will use the `Match releases`
 
 Readarr will only use the `Match releases` field for now, so setting `matchRelease: false` for Readarr will be ignored.
 
+## Don't clear the Match Releases field when using the `Movies / Shows` and `Albums` fields
+
+By setting `keepReleaseData: true` in your config, it will not clear the Match Releases field whenever omegabrr updates the filters. This can be useful if you want additional filtering, while still having the *arrs occupy the `Movies / Shows` or `Albums` fields.
+
 ## Commands
 
 Available commands.

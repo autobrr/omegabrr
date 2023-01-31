@@ -52,9 +52,7 @@ func (s Service) sonarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 					continue
 				}
 			}
-		}
-
-		if !dryRun {
+		} else if !dryRun {
 			if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
 				l.Error().Err(err).Msgf("something went wrong updating tv filter: %v", filterID)
 				continue

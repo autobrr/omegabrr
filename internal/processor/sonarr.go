@@ -43,19 +43,31 @@ func (s Service) sonarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 
 		if cfg.MatchRelease {
 			f = autobrr.UpdateFilter{MatchReleases: joinedTitles}
-		}
 
-		if cfg.KeepReleaseData {
+			if !dryRun {
+				if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
+					l.Error().Err(err).Msgf("something went wrong updating tv filter: %v", filterID)
+					continue
+				}
+			}
+
+		} else if !cfg.KeepReleaseData {
+			f = autobrr.UpdateFilter{Shows: joinedTitles}
+
+			if !dryRun {
+				if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
+					l.Error().Err(err).Msgf("something went wrong updating tv filter: %v", filterID)
+					continue
+				}
+			}
+		} else if cfg.KeepReleaseData && !cfg.MatchRelease {
+			s = autobrr.UpdateFilterSpecial{Shows: joinedTitles}
+
 			if !dryRun {
 				if err := brr.UpdateFilterSpecial(ctx, filterID, s); err != nil {
 					l.Error().Err(err).Msgf("something went wrong updating tv filter: %v", filterID)
 					continue
 				}
-			}
-		} else if !dryRun {
-			if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
-				l.Error().Err(err).Msgf("something went wrong updating tv filter: %v", filterID)
-				continue
 			}
 		}
 

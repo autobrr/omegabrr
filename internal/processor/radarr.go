@@ -15,7 +15,7 @@ import (
 )
 
 func (s Service) radarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool, brr *autobrr.Client) error {
-	l := log.With().Str("type", "radarr").Str("client", cfg.Name).Logger()
+	l := log.With().Str("type", "sonarr").Str("client", cfg.Name).Logger()
 
 	l.Debug().Msgf("gathering titles...")
 
@@ -39,15 +39,35 @@ func (s Service) radarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 		l.Debug().Msgf("updating filter: %v", filterID)
 
 		f := autobrr.UpdateFilter{Shows: joinedTitles}
+		s := autobrr.UpdateFilterSpecial{Shows: joinedTitles}
 
 		if cfg.MatchRelease {
 			f = autobrr.UpdateFilter{MatchReleases: joinedTitles}
-		}
 
-		if !dryRun {
-			if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
-				l.Error().Err(err).Msgf("something went wrong updating movie filter: %v", filterID)
-				continue
+			if !dryRun {
+				if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
+					l.Error().Err(err).Msgf("something went wrong updating tv filter: %v", filterID)
+					continue
+				}
+			}
+
+		} else if !cfg.KeepReleaseData {
+			f = autobrr.UpdateFilter{Shows: joinedTitles}
+
+			if !dryRun {
+				if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
+					l.Error().Err(err).Msgf("something went wrong updating tv filter: %v", filterID)
+					continue
+				}
+			}
+		} else if cfg.KeepReleaseData && !cfg.MatchRelease {
+			s = autobrr.UpdateFilterSpecial{Shows: joinedTitles}
+
+			if !dryRun {
+				if err := brr.UpdateFilterSpecial(ctx, filterID, s); err != nil {
+					l.Error().Err(err).Msgf("something went wrong updating tv filter: %v", filterID)
+					continue
+				}
 			}
 		}
 

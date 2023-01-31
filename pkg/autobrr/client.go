@@ -172,7 +172,6 @@ func (c *Client) UpdateFilterSpecial(ctx context.Context, filterID int, filter U
 	return nil
 }
 
-
 type Filter struct {
 	ID        string    `json:"id"`
 	Name      string    `json:"name"`

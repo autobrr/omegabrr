@@ -42,7 +42,7 @@ func (s Service) sonarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 		s := autobrr.UpdateFilterSpecial{Shows: joinedTitles}
 
 		if cfg.MatchRelease {
-			s = autobrr.UpdateFilterSpecial{Shows: joinedTitles}
+			f = autobrr.UpdateFilter{MatchReleases: joinedTitles}
 		}
 
 		if cfg.KeepReleaseData {

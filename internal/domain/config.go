@@ -93,6 +93,8 @@ func NewConfig(configPath string) *Config {
 		if err := k.Unmarshal("", &cfg); err != nil {
 			log.Fatal()
 		}
+
+		log.Info().Msgf("using config: %s", configPath)
 	}
 
 	return cfg
@@ -152,13 +154,13 @@ func (c *Config) writeFile(configPath string) error {
 	return f.Sync()
 }
 
-var configTemplate = `# config.toml
+var configTemplate = `# config.yaml
 ---
 server:
   host: {{ .host }}
   port: 7441
   apiToken: {{ .apiToken }}
-schedule: 0 */6 * * *
+schedule: "0 */6 * * *""
 clients:
   autobrr:
   #  host: http://localhost:7474

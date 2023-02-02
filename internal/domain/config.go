@@ -160,7 +160,7 @@ server:
   host: {{ .host }}
   port: 7441
   apiToken: {{ .apiToken }}
-schedule: "0 */6 * * *""
+schedule: "0 */6 * * *"
 clients:
   autobrr:
   #  host: http://localhost:7474

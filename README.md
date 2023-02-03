@@ -54,6 +54,14 @@ clients:
       apikey: YOUR_API_KEY
       filters:
         - 12
+
+    - name: whisparr
+      type: whisparr
+      host: https://yourdomain.com/whisparr
+      apikey: YOUR_API_KEY
+      filters:
+        - 69
+      #matchRelease: false / true
 ```
 
 If you're trying to reach radarr or sonarr hosted on swizzin from some other location, you need to do it like this with basic auth:

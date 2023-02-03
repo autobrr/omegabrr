@@ -52,3 +52,11 @@ clients:
       filters:
         - 12
       #matchRelease: false # will not use other fields yet, so not needed.
+
+    - name: whisparr
+      type: whisparr
+      host: http://localhost:6969
+      apikey: API_KEY
+      filters:
+        - 69
+      #matchRelease: false / true

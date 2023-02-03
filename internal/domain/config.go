@@ -35,10 +35,11 @@ type ArrConfig struct {
 type ArrType string
 
 var (
-	ArrTypeRadarr  ArrType = "radarr"
-	ArrTypeSonarr  ArrType = "sonarr"
-	ArrTypeReadarr ArrType = "readarr"
-	ArrTypeLidarr  ArrType = "lidarr"
+	ArrTypeRadarr   ArrType = "radarr"
+	ArrTypeSonarr   ArrType = "sonarr"
+	ArrTypeReadarr  ArrType = "readarr"
+	ArrTypeLidarr   ArrType = "lidarr"
+	ArrTypeWhisparr ArrType = "whisparr"
 )
 
 type AutobrrConfig struct {
@@ -201,4 +202,11 @@ clients:
   #   host: http://localhost:8686
   #   apikey: API_KEY
   #   filters:
-  #     - 32 # Change me`
+  #     - 32 # Change me
+
+  # - name: whisparr
+  #   type: whisparr
+  #   host: http://localhost:6969
+  #   apikey: API_KEY
+  #   filters:
+  #     - 69 # Change me`

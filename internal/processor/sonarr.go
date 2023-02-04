@@ -122,9 +122,11 @@ func (s Service) processSonarr(ctx context.Context, cfg *domain.ArrConfig, logge
 
 		titles = append(titles, processTitle(s.Title, cfg.MatchRelease)...)
 
-		//for _, title := range s.AlternateTitles {
-		//	titles = append(titles, processTitle(title.Title)...)
-		//}
+		if !cfg.ExcludeAlternateTitles {
+			for _, title := range s.AlternateTitles {
+				titles = append(titles, processTitle(title.Title, cfg.MatchRelease)...)
+			}
+		}
 	}
 
 	logger.Debug().Msgf("from a total of %d shows we found %d monitored and created %d release titles", len(shows), monitoredTitles, len(titles))

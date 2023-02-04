@@ -189,6 +189,7 @@ clients:
   #    apikey: API_KEY
   #    filters:
   #      - 14 # Change me
+  #    #excludeAlternateTitles: true # defaults to false
 	
   #  - name: readarr
   #    type: readarr

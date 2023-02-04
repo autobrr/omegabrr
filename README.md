@@ -39,6 +39,7 @@ clients:
       filters:
         - 14
       #matchRelease: false / true
+      #excludeAlternateTitles: false/ true # only works for Sonarr and defaults to false
 
     - name: lidarr
       type: lidarr
@@ -117,6 +118,10 @@ If you want to exclude certain tags, you can use the `tagsExclude`.
 By setting `matchRelease: true` in your config, it will use the `Match releases` field in your autobrr filter instead of fields like `Movies / Shows` and `Albums`.
 
 Readarr will only use the `Match releases` field for now, so setting `matchRelease: false` for Readarr will be ignored.
+
+## Exclude alternative titles from Sonarr
+
+You can drop alternate show titles from being added by setting `excludeAlternateTitles: true` for Sonarr in your config.
 
 ## Commands
 

@@ -154,7 +154,7 @@ func (c *Config) writeFile(configPath string) error {
 	return f.Sync()
 }
 
-var configTemplate = `# config.toml
+var configTemplate = `# config.yaml
 ---
 server:
   host: {{ .host }}

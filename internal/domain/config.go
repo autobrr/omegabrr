@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 	"text/template"
+	"log"
 
 	"github.com/autobrr/omegabrr/internal/apitoken"
 
@@ -12,7 +13,6 @@ import (
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/file"
 	"github.com/pkg/errors"
-	"github.com/rs/zerolog/log"
 )
 
 type BasicAuth struct {
@@ -88,7 +88,7 @@ func NewConfig(configPath string) *Config {
 		}
 
 		if err := k.Load(file.Provider(configPath), yaml.Parser()); err != nil {
-			log.Fatal()
+			log.Fatalf("error loading config: %v", err)
 		}
 
 		// unmarshal

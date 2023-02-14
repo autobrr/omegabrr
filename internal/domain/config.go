@@ -191,14 +191,14 @@ clients:
   #    filters:
   #      - 14 # Change me
   #    #excludeAlternateTitles: true # defaults to false
-	
+
   #  - name: readarr
   #    type: readarr
   #    host: http://localhost:8787
   #    apikey: API_KEY
   #    filters:
   #      - 18 # Change me
-		
+
   # - name: lidarr
   #   type: lidarr
   #   host: http://localhost:8686

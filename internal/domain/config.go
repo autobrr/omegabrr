@@ -5,7 +5,6 @@ import (
 	"os"
 	"strings"
 	"text/template"
-	"log"
 
 	"github.com/autobrr/omegabrr/internal/apitoken"
 
@@ -13,6 +12,7 @@ import (
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/file"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 type BasicAuth struct {
@@ -83,17 +83,26 @@ func NewConfig(configPath string) *Config {
 		// create config if it doesn't exist
 		if _, err := os.Stat(configPath); errors.Is(err, os.ErrNotExist) {
 			if writeErr := cfg.writeFile(configPath); writeErr != nil {
-				log.Fatal()
+				log.Fatal().
+					Err(writeErr).
+					Str("service", "config").
+					Msgf("failed writing %q", configPath)
 			}
 		}
 
 		if err := k.Load(file.Provider(configPath), yaml.Parser()); err != nil {
-			log.Fatalf("error loading config: %v", err)
+			log.Fatal().
+				Err(err).
+				Str("service", "config").
+				Msgf("failed parsing %q", configPath)
 		}
 
 		// unmarshal
 		if err := k.Unmarshal("", &cfg); err != nil {
-			log.Fatal()
+			log.Fatal().
+				Err(err).
+				Str("service", "config").
+				Msgf("failed unmarshalling %q", configPath)
 		}
 	}
 

@@ -174,7 +174,7 @@ clients:
   autobrr:
   #  host: http://localhost:7474
   #  apikey: API_KEY
-  #    basicAuth:
+  #  basicAuth:
   #    user: username
   #    pass: password
 
@@ -208,16 +208,16 @@ clients:
   #    filters:
   #      - 18 # Change me
 
-  # - name: lidarr
-  #   type: lidarr
-  #   host: http://localhost:8686
-  #   apikey: API_KEY
-  #   filters:
-  #     - 32 # Change me
+  #  - name: lidarr
+  #    type: lidarr
+  #    host: http://localhost:8686
+  #    apikey: API_KEY
+  #    filters:
+  #      - 32 # Change me
 
-  # - name: whisparr
-  #   type: whisparr
-  #   host: http://localhost:6969
-  #   apikey: API_KEY
-  #   filters:
-  #     - 69 # Change me`
+  #  - name: whisparr
+  #    type: whisparr
+  #    host: http://localhost:6969
+  #    apikey: API_KEY
+  #    filters:
+  #      - 69 # Change me`

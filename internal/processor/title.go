@@ -39,7 +39,7 @@ func processTitle(title string, matchRelease bool) []string {
 	}
 
 	if strings.ContainsAny(title, "!") {
-		strip := strings.ReplaceAll(title, "!", "?")
+		strip := strings.ReplaceAll(title, "!", "")
 		replace := strings.ReplaceAll(strip, " ", "?")
 		t.Add(replace, matchRelease)
 	}

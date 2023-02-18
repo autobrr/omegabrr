@@ -24,11 +24,11 @@ func processTitle(title string, matchRelease bool) []string {
 	//fmt.Println(rls.MustClean(title))
 	//fmt.Println(rls.MustNormalize(title))
 
-	// Replaces whitespace with "?" and adds title and alternative title without ending "?" to a trie.
+	// Replaces whitespace with "?" and adds title and alternative title without ending "?".
 	if strings.HasSuffix(title, "?") {
 		// create version without the question mark
 		altTitle := strings.TrimSuffix(title, "?")
-		// add both versions to trie
+		// add both versions
 		t.Add(strings.ReplaceAll(title, " ", "?"), matchRelease)
 		t.Add(strings.ReplaceAll(altTitle, " ", "?"), matchRelease)
 	} else {
@@ -52,6 +52,8 @@ func processTitle(title string, matchRelease bool) []string {
 		t.Add(replace, matchRelease)
 	}
 
+	// Replaces all exclamation marks "!" in a title with a question mark "?" except for the last ! if the title ends with a "!"
+	// Then it replaces any consecutive "??" with a single "*" and any consecutive "**" with a single "*".
 	if strings.ContainsAny(title, "!") {
 		last := title[len(title)-1:]
 		if last == "!" {

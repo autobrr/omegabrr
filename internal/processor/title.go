@@ -67,6 +67,67 @@ func processTitle(title string, matchRelease bool) []string {
 		replace := strings.ReplaceAll(strip, " ", "?")
 		t.Add(replace, matchRelease)
 	}
+	// Replaces "." characters in a title with "?" except when the title ends with ".", in which case the "." is removed.
+	if strings.ContainsAny(title, ". ") {
+		strip := strings.TrimRight(title, ". ")
+		replace := strings.ReplaceAll(strip, ".", "?")
+		replace = strings.ReplaceAll(replace, " ", "?")
+		t.Add(replace, matchRelease)
+	} //else {
+	//	t.Add(title, matchRelease)
+	//}
+
+	if strings.ContainsAny(title, "!!!- ") {
+		replace := title
+		replace = strings.ReplaceAll(replace, "!!!", "*")
+		replace = strings.ReplaceAll(replace, "! ", "*")
+		replace = strings.ReplaceAll(replace, "!?", "*")
+		replace = strings.ReplaceAll(replace, "-", "?")
+		replace = strings.ReplaceAll(replace, " ", "?")
+		replace = strings.ReplaceAll(replace, "?*", "*")
+		replace = strings.ReplaceAll(replace, "*?", "*")
+		replace = strings.Trim(replace, " ?")
+		t.Add(replace, matchRelease)
+	}
+
+	replace := strings.ReplaceAll(title, "-", "?")
+	replace = strings.ReplaceAll(replace, "!", "*")
+	replace = strings.ReplaceAll(replace, " ", "?")
+	replace = strings.Trim(replace, " ?")
+	replace = strings.ReplaceAll(replace, "?*", "*")
+	replace = strings.ReplaceAll(replace, "*?", "*")
+
+	// Trim all but one * character if they are consecutive
+	if strings.Count(replace, "*") > 1 {
+		replace = strings.Replace(replace, "*", "", strings.Count(replace, "*")-1)
+		t.Add(replace, matchRelease)
+	}
+
+	// Strip special characters from title endings
+	suffixes := []string{"!", ".", "?", ":", ";", "\"", "'", "~", "@", "#", "%", "^", "*", "=", "+", "(", "[", "]", "{", "}", "<", ">", "/", "?", "|", "\\", ",", " \t\r\n\f._"}
+	for _, suffix := range suffixes {
+		title = strings.TrimSuffix(title, suffix)
+	}
+
+	// Replaces title endings with parenthesis pairs with a "*", and any whitespace with "?" and trims the closest "?" on the left of the "*"
+	if re, err := regexp.Compile(`\s\([A-Za-z]{2}\)$`); err == nil {
+		if re.MatchString(title) {
+			replace := re.ReplaceAllString(title, " *")
+			replace = strings.TrimRight(replace, " ")
+			replace = strings.Replace(replace, " *", "*", 1)
+			replace = strings.TrimRight(replace, "?")
+			replace = strings.Replace(replace, "?*", "*", 1)
+			replace = strings.ReplaceAll(replace, " ", "?")
+			t.Add(replace, matchRelease)
+		}
+	}
+
+	// Strip apostrophes
+	if strings.ContainsAny(title, "'") {
+		strip := strings.ReplaceAll(title, "'", "")
+		replace := strings.ReplaceAll(strip, " ", "?")
+		t.Add(replace, matchRelease)
+	}
 
 	return t.Titles()
 }

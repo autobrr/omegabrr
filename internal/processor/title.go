@@ -116,8 +116,9 @@ func processTitle(title string, matchRelease bool) []string {
 	}
 
 	// Strip apostrophes from titles
-	if strings.ContainsAny(title, "'") {
+	if strings.ContainsAny(title, "'’") {
 		strip := strings.ReplaceAll(title, "'", "")
+		strip = strings.ReplaceAll(strip, "’", "")
 		replace := strings.ReplaceAll(strip, " ", "?")
 		t.Add(replace, matchRelease)
 	}

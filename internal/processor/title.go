@@ -32,32 +32,23 @@ func processTitle(title string, matchRelease bool) []string {
 		t.Add(replace, matchRelease)
 	}
 
-	if strings.ContainsAny(title, "-") {
-		strip := strings.ReplaceAll(title, "-", "?")
-		replace := strings.ReplaceAll(strip, " ", "?")
-		t.Add(replace, matchRelease)
-	}
-
-	if strings.ContainsAny(title, "!") {
-		strip := strings.ReplaceAll(title, "!", "")
-		replace := strings.ReplaceAll(strip, " ", "?")
-		t.Add(replace, matchRelease)
-	}
-
-	if strings.ContainsAny(title, ":") {
-		strip := strings.ReplaceAll(title, ":", "")
-		replace := strings.ReplaceAll(strip, " ", "?")
-		t.Add(replace, matchRelease)
-
-		split := strings.Split(title, ":")
-		if len(split) > 1 {
-			first := strings.ReplaceAll(split[0], " ", "?")
-			second := strings.ReplaceAll(strings.Trim(split[1], " "), " ", "?")
-			part := fmt.Sprintf("%v*%v", first, second)
-
-			t.Add(part, matchRelease)
+	if strings.ContainsAny(title, "-!:") {
+		replace := strings.ReplaceAll(title, " ", "?")
+		if strings.ContainsAny(title, "-") {
+			replace = strings.ReplaceAll(replace, "-", "?")
 		}
-
+		if strings.ContainsAny(title, "!") {
+			replace = strings.ReplaceAll(replace, "!", "")
+		}
+		if strings.ContainsAny(title, ":") {
+			replace = strings.ReplaceAll(replace, ":", "?")
+			split := strings.SplitN(title, ":", 2)
+			if len(split) > 1 {
+				part := fmt.Sprintf("%v*%v", strings.ReplaceAll(split[0], " ", "?"), strings.ReplaceAll(strings.Trim(split[1], " "), " ", "?"))
+				t.Add(part, matchRelease)
+			}
+		}
+		t.Add(replace, matchRelease)
 	}
 
 	if strings.ContainsAny(title, "&") {
@@ -67,15 +58,14 @@ func processTitle(title string, matchRelease bool) []string {
 		replace := strings.ReplaceAll(strip, " ", "?")
 		t.Add(replace, matchRelease)
 	}
+
 	// Replaces "." characters in a title with "?" except when the title ends with ".", in which case the "." is removed.
 	if strings.ContainsAny(title, ". ") {
 		strip := strings.TrimRight(title, ". ")
 		replace := strings.ReplaceAll(strip, ".", "?")
 		replace = strings.ReplaceAll(replace, " ", "?")
 		t.Add(replace, matchRelease)
-	} //else {
-	//	t.Add(title, matchRelease)
-	//}
+	}
 
 	if strings.ContainsAny(title, "!!!- ") {
 		replace := title

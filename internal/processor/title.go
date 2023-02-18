@@ -20,9 +20,20 @@ func processTitle(title string, matchRelease bool) []string {
 
 	//titles = append(titles, rls.MustNormalize(title))
 	t.Add(strings.ReplaceAll(title, " ", "?"), matchRelease)
-	//t.Add(title, matchRelease)
+
 	//fmt.Println(rls.MustClean(title))
 	//fmt.Println(rls.MustNormalize(title))
+
+	// Replaces whitespace with "?" and adds title and alternative title without ending "?" to a trie.
+	if strings.HasSuffix(title, "?") {
+		// create version without the question mark
+		altTitle := strings.TrimSuffix(title, "?")
+		// add both versions to trie
+		t.Add(strings.ReplaceAll(title, " ", "?"), matchRelease)
+		t.Add(strings.ReplaceAll(altTitle, " ", "?"), matchRelease)
+	} else {
+		t.Add(strings.ReplaceAll(title, " ", "?"), matchRelease)
+	}
 
 	if strings.Contains(title, ". ") {
 		t.Add(strings.ReplaceAll(title, ". ", "??"), matchRelease)
@@ -32,39 +43,45 @@ func processTitle(title string, matchRelease bool) []string {
 		t.Add(replace, matchRelease)
 	}
 
-	if strings.ContainsAny(title, "-:!") {
-		replace := strings.ReplaceAll(title, " ", "?")
-		if strings.ContainsAny(title, "-") {
-			replace = strings.ReplaceAll(replace, "-", "?")
-		}
-		// Replaces exclamation marks with a single asterisk "*" unless its at the end of title
-		if strings.ContainsAny(title, "!- ") {
-			replace := title
-			replace = strings.TrimRight(replace, "!")
-			re := regexp.MustCompile(`!+(?:.)`)
-			replace = re.ReplaceAllStringFunc(replace, func(match string) string {
-				return "*"
-			})
-			replace = strings.ReplaceAll(replace, "-", "?")
-			replace = strings.ReplaceAll(replace, "?*", "*")
-			replace = strings.ReplaceAll(replace, "*?", "*")
-			replace = strings.ReplaceAll(replace, " ", "?")
-			replace = strings.Trim(replace, " ?")
-			if strings.Contains(replace, "?*") {
-				replace = strings.ReplaceAll(replace, "?*", "*")
-				replace = strings.ReplaceAll(replace, "*?", "*")
-			}
-			t.Add(replace, matchRelease)
-		}
-		if strings.ContainsAny(title, ":") {
-			replace = strings.ReplaceAll(replace, ":", "?")
-			split := strings.SplitN(title, ":", 2)
-			if len(split) > 1 {
-				part := fmt.Sprintf("%v*%v", strings.ReplaceAll(split[0], " ", "?"), strings.ReplaceAll(strings.Trim(split[1], " "), " ", "?"))
-				t.Add(part, matchRelease)
-			}
-		}
+	if strings.ContainsAny(title, "-") {
+		strip := strings.ReplaceAll(title, "-", "?")
+		replace := strings.ReplaceAll(strip, " ", "?")
+		replace = strings.ReplaceAll(replace, "!", "?")
+		replace = strings.ReplaceAll(replace, "!?", "*")
+		replace = strings.ReplaceAll(replace, "??", "*")
 		t.Add(replace, matchRelease)
+	}
+
+	if strings.ContainsAny(title, "!") {
+		last := title[len(title)-1:]
+		if last == "!" {
+			title = strings.TrimRight(title, "!")
+		} else {
+			title = strings.ReplaceAll(title, "!", "?")
+		}
+		replace := strings.ReplaceAll(title, " ", "?")
+		replace = strings.ReplaceAll(replace, "-", "?")
+		replace = strings.ReplaceAll(replace, "?*", "*")
+		replace = strings.ReplaceAll(replace, "*?", "*")
+		replace = strings.ReplaceAll(replace, "??", "*")
+		replace = strings.ReplaceAll(replace, "**", "*")
+		t.Add(replace, matchRelease)
+	}
+
+	if strings.ContainsAny(title, ":") {
+		strip := strings.ReplaceAll(title, ":", "")
+		replace := strings.ReplaceAll(strip, " ", "?")
+		t.Add(replace, matchRelease)
+
+		split := strings.Split(title, ":")
+		if len(split) > 1 {
+			first := strings.ReplaceAll(split[0], " ", "?")
+			second := strings.ReplaceAll(strings.Trim(split[1], " "), " ", "?")
+			part := fmt.Sprintf("%v*%v", first, second)
+
+			t.Add(part, matchRelease)
+		}
+
 	}
 
 	if strings.ContainsAny(title, "&") {
@@ -82,12 +99,6 @@ func processTitle(title string, matchRelease bool) []string {
 		replace = strings.ReplaceAll(replace, " ", "?")
 		t.Add(replace, matchRelease)
 	}
-
-	//	// Strip special characters from title endings
-	//	suffixes := []string{"!", ".", "?", ":", ";", "\"", "'", "~", "@", "#", "%", "^", "*", "=", "+", "(", "[", "]", "{", "}", "<", ">", "/", "?", "|", "\\", ",", " \t\r\n\f._"}
-	//	for _, suffix := range suffixes {
-	//		title = strings.TrimSuffix(title, suffix)
-	//	}
 
 	// Strips titles ending with parentheses like (US) to *US, and removes a consecutive question mark if present
 	if re, err := regexp.Compile(`\s\(([A-Za-z]{2})\)$`); err == nil {

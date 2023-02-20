@@ -38,7 +38,7 @@ Usage:
 
 func init() {
 	pflag.Usage = func() {
-		fmt.Fprintf(os.Stdout, usage)
+		fmt.Fprintf(flag.CommandLine.Output(), usage)
 	}
 }
 
@@ -59,8 +59,8 @@ func main() {
 	case "version":
 		fmt.Fprintf(flag.CommandLine.Output(), "Version: %v\nCommit: %v\n", version, commit)
 	case "generate-token":
-		length := pflag.Int("length", 16, "length of the generated API token")
-		pflag.Parse()
+		length := flag.Int("length", 16, "length of the generated API token")
+		flag.Parse()
 		key, err := apitoken.GenerateToken(*length)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "error generating API token: %v\n", err)
@@ -125,5 +125,8 @@ func main() {
 		}
 	default:
 		pflag.Usage()
+		if cmd != "help" {
+			os.Exit(0)
+		}
 	}
 }

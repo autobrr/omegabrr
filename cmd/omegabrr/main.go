@@ -38,7 +38,7 @@ Usage:
 
 func init() {
 	pflag.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), usage)
+		fmt.Fprintf(os.Stdout, usage)
 	}
 }
 

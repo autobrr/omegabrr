@@ -125,8 +125,5 @@ func main() {
 		}
 	default:
 		pflag.Usage()
-		if cmd != "help" {
-			os.Exit(0)
-		}
 	}
 }

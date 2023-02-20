@@ -59,14 +59,14 @@ func main() {
 	case "version":
 		fmt.Fprintf(flag.CommandLine.Output(), "Version: %v\nCommit: %v\n", version, commit)
 	case "generate-token":
-		length := flag.Int("length", 16, "length of the generated API token")
-		flag.Parse()
+		length := pflag.Int("length", 16, "length of the generated API token")
+		pflag.Parse()
 		key, err := apitoken.GenerateToken(*length)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "error generating API token: %v\n", err)
 			os.Exit(1)
 		}
-		fmt.Fprintf(flag.CommandLine.Output(), "API Token: %v\nCopy and paste into your config file config.yaml\n", key)
+		fmt.Fprintf(os.Stdout, "API Token: %v\nCopy and paste into your config file config.yaml\n", key)
 
 	case "arr":
 		cfg := domain.NewConfig(configPath)

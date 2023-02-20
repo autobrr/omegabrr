@@ -36,7 +36,13 @@ Usage:
 
 func init() {
 	pflag.Usage = func() {
-		fmt.Fprintf(os.Stdout, usage)
+		fmt.Fprint(os.Stdout, usage)
+	}
+}
+
+func init() {
+	pflag.Usage = func() {
+		fmt.Fprint(os.Stdout, usage)
 	}
 }
 
@@ -47,14 +53,14 @@ func main() {
 	pflag.StringVar(&configPath, "config", "", "path to configuration file")
 	pflag.BoolVar(&dryRun, "dry-run", false, "dry-run without inserting filters")
 
+	// Define and parse flags using pflag
+	length := pflag.Int("length", 16, "length of the generated API token")
 	pflag.Parse()
 
 	switch cmd := pflag.Arg(0); cmd {
 	case "version":
 		fmt.Fprintf(os.Stdout, "Version: %v\nCommit: %v\n", version, commit)
 	case "generate-token":
-		length := pflag.Int("length", 16, "length of the generated API token")
-		pflag.Parse()
 		key, err := apitoken.GenerateToken(*length)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "error generating API token: %v\n", err)

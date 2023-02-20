@@ -30,11 +30,11 @@ const usage = `omegabrr
 Turn your monitored shows from your arrs into autobrr filters, automagically!
 
 Usage:
-    omegabrr generate-token    Generate API Token
-    omegabrr arr               Run omegabrr once
-    omegabrr run               Run omegabrr service
-    omegabrr version           Print version info
-    omegabrr help              Show this help message`
+    omegabrr generate-token	Generate API Token	Optionally call with --length <number>
+    omegabrr arr               	Run omegabrr once
+    omegabrr run               	Run omegabrr service
+    omegabrr version           	Print version info
+    omegabrr help              	Show this help message`
 
 func init() {
 	pflag.Usage = func() {

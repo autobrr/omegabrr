@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"os/signal"
@@ -13,7 +14,9 @@ import (
 	"github.com/autobrr/omegabrr/internal/processor"
 	"github.com/autobrr/omegabrr/internal/scheduler"
 
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/rs/zerolog/pkgerrors"
 	"github.com/spf13/pflag"
 )
 
@@ -35,7 +38,7 @@ Usage:
 
 func init() {
 	pflag.Usage = func() {
-		fmt.Fprint(os.Stdout, usage)
+		fmt.Fprint(flag.CommandLine.Output(), usage)
 	}
 }
 
@@ -50,9 +53,13 @@ func main() {
 	length := pflag.Int("length", 16, "length of the generated API token")
 	pflag.Parse()
 
+	zerolog.TimeFieldFormat = time.RFC3339
+	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339})
+
 	switch cmd := pflag.Arg(0); cmd {
 	case "version":
-		fmt.Fprintf(os.Stdout, "Version: %v\nCommit: %v\n", version, commit)
+		fmt.Fprintf(flag.CommandLine.Output(), "Version: %v\nCommit: %v\n", version, commit)
 	case "generate-token":
 		key, err := apitoken.GenerateToken(*length)
 		if err != nil {

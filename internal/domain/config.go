@@ -143,7 +143,10 @@ func (c *Config) writeFile(configPath string) error {
 		return errors.Wrap(err, "could not create config template")
 	}
 
-	token := apitoken.GenerateToken(16)
+	token, err := apitoken.GenerateToken(16)
+	if err != nil {
+		return errors.Wrap(err, "Error generating token: %v")
+	}
 
 	tmplVars := map[string]string{
 		"host":     host,

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"os/signal"
@@ -14,9 +13,8 @@ import (
 	"github.com/autobrr/omegabrr/internal/processor"
 	"github.com/autobrr/omegabrr/internal/scheduler"
 
-	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/rs/zerolog/pkgerrors"
+
 	"github.com/spf13/pflag"
 )
 
@@ -38,36 +36,31 @@ Usage:
 
 func init() {
 	pflag.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), usage)
+		fmt.Fprintf(os.Stdout, usage)
 	}
 }
 
 func main() {
 	var configPath string
 	var dryRun bool
+
 	pflag.StringVar(&configPath, "config", "", "path to configuration file")
 	pflag.BoolVar(&dryRun, "dry-run", false, "dry-run without inserting filters")
 
 	pflag.Parse()
 
-	// setup logger
-	zerolog.TimeFieldFormat = time.RFC3339
-	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339})
-
 	switch cmd := pflag.Arg(0); cmd {
 	case "version":
-		fmt.Fprintf(flag.CommandLine.Output(), "Version: %v\nCommit: %v\n", version, commit)
+		fmt.Fprintf(os.Stdout, "Version: %v\nCommit: %v\n", version, commit)
 	case "generate-token":
-		length := flag.Int("length", 16, "length of the generated API token")
-		flag.Parse()
+		length := pflag.Int("length", 16, "length of the generated API token")
+		pflag.Parse()
 		key, err := apitoken.GenerateToken(*length)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "error generating API token: %v\n", err)
 			os.Exit(1)
 		}
 		fmt.Fprintf(os.Stdout, "API Token: %v\nCopy and paste into your config file config.yaml\n", key)
-
 	case "arr":
 		cfg := domain.NewConfig(configPath)
 

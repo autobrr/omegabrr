@@ -14,7 +14,6 @@ import (
 	"github.com/autobrr/omegabrr/internal/scheduler"
 
 	"github.com/rs/zerolog/log"
-
 	"github.com/spf13/pflag"
 )
 
@@ -33,12 +32,6 @@ Usage:
     omegabrr run               Run omegabrr service
     omegabrr version           Print version info
     omegabrr help              Show this help message`
-
-func init() {
-	pflag.Usage = func() {
-		fmt.Fprint(os.Stdout, usage)
-	}
-}
 
 func init() {
 	pflag.Usage = func() {

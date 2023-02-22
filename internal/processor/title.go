@@ -7,7 +7,7 @@ import (
 )
 
 func processTitle(title string, matchRelease bool) []string {
-	// replace - : _
+	// Checking if the title is empty.
 	if strings.TrimSpace(title) == "" {
 		return nil
 	}

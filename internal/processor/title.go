@@ -8,7 +8,7 @@ import (
 
 func processTitle(title string, matchRelease bool) []string {
 	// replace - : _
-	if title == "" || title == " " {
+	if strings.TrimSpace(title) == "" {
 		return nil
 	}
 
@@ -18,42 +18,55 @@ func processTitle(title string, matchRelease bool) []string {
 
 	t := NewTitleSlice()
 
-	//titles = append(titles, rls.MustNormalize(title))
-	t.Add(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(title, " ", "?"), ",", ""), "-", "?"), matchRelease)
+	// Replace all occurrences of " ", ",", and "-" with "?"
+	replaceAll := strings.NewReplacer(" ", "?", ",", "?", "-", "?")
+	t.Add(replaceAll.Replace(title), matchRelease)
 
+	// If title contains ". ", replace all occurrences with "??"
 	if strings.Contains(title, ". ") {
 		t.Add(strings.ReplaceAll(title, ". ", "??"), matchRelease)
 
+		// Replace all occurrences of " " with "?"
 		strip := strings.ReplaceAll(title, ". ", " ")
 		replace := strings.ReplaceAll(strip, " ", "?")
 		t.Add(replace, matchRelease)
 	}
 
-	if re, err := regexp.Compile(`\s\(([A-Za-z]{2})\)$`); err == nil {
-		regex := regexp.MustCompile(`[?]{2,}`)
-		if re.MatchString(title) {
-			replace := re.ReplaceAllString(title, "*$1")
-			replace = strings.ReplaceAll(replace, " ", "?")
-			replace = regex.ReplaceAllString(replace, "*")
-			t.Add(replace, matchRelease)
-		}
+	if regexp.MustCompile(`[[:punct:]]`).MatchString(title) {
+		// Regex patterns for matching "???" and all non-alphanumeric characters
+		regexQuestionmark := regexp.MustCompile(`[?]{2,}`)
+		regexReplace := regexp.MustCompile(`[^[:alnum:]]|\(.*?\)`)
+
+		// Remove trailing ".", "!", and " " characters, and replace & with "and"
+		title = strings.TrimRight(title, ".! ")
+		title = strings.ReplaceAll(title, "'", "")
+		title = strings.ReplaceAll(title, "’", "")
+		title = strings.ReplaceAll(title, ",", "")
+		title = strings.ReplaceAll(title, "&", "and")
+
+		// Replace all non-alphanumeric characters with "?", and all occurrences of "???" with "*"
+		replace := regexReplace.ReplaceAllString(title, "?")
+		replace = regexQuestionmark.ReplaceAllString(replace, "*")
+		t.Add(strings.TrimRight(replace, "?*"), matchRelease)
 	}
 
-	if strings.ContainsAny(title, "!?-,:.&'") {
-		regex := regexp.MustCompile(`[?]{2,}`)
-		title = strings.TrimRight(title, "!")
-		title = strings.TrimRight(title, ".")
-		title = strings.ReplaceAll(title, "!", "?")
-		title = strings.ReplaceAll(title, ".", "?")
-		title = strings.ReplaceAll(title, "'", "")
-		title = strings.ReplaceAll(title, "-", "?")
-		title = strings.ReplaceAll(title, ":", "?")
-		title = strings.ReplaceAll(title, ",", "")
-		title = strings.ReplaceAll(title, "?*", "*")
-		title = strings.ReplaceAll(title, "&", "and")
-		title = strings.ReplaceAll(title, " ", "?")
+	// If title ends with eg. (US), remove it completely. Trim any leftover whitespace at the end.
+	parenRegexp := regexp.MustCompile(`\((.*?)\)`)
+	matches := parenRegexp.FindAllStringSubmatch(title, -1)
+	if len(matches) == 1 {
+		parenContent := matches[0][0]
+		title = strings.ReplaceAll(title, parenContent, "")
+
+		// Trim any trailing whitespace from the modified title
+		title = strings.TrimSpace(title)
+
+		// Remove a trailing "?" if it exists
+		if title[len(title)-1:] == "?" {
+			title = strings.TrimRight(title, "?")
+		}
+
+		// Replace all spaces with "?" and add the modified title to the slice
 		replace := strings.ReplaceAll(title, " ", "?")
-		replace = regex.ReplaceAllString(replace, "*")
 		t.Add(replace, matchRelease)
 	}
 

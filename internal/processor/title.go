@@ -47,7 +47,7 @@ func processTitle(title string, matchRelease bool) []string {
 		// Replace all non-alphanumeric characters with "?", and all occurrences of "???" with "*"
 		replace := regexReplace.ReplaceAllString(title, "?")
 		replace = regexQuestionmark.ReplaceAllString(replace, "*")
-		t.Add(strings.TrimRight(replace, "?*"), matchRelease)
+		t.Add(strings.TrimRight(replace, "?* "), matchRelease)
 	}
 
 	// If title ends with eg. (US), remove it completely. Trim any leftover whitespace at the end.

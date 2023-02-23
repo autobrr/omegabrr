@@ -30,27 +30,29 @@ const usage = `omegabrr
 Turn your monitored shows from your arrs into autobrr filters, automagically!
 
 Usage:
-    omegabrr generate-token    Generate API Token
-    omegabrr arr               Run omegabrr once
-    omegabrr run               Run omegabrr service
-    omegabrr version           Print version info
-    omegabrr help              Show this help message`
+    omegabrr generate-token	Generate API Token	Optionally call with --length <number>
+    omegabrr arr               	Run omegabrr once
+    omegabrr run               	Run omegabrr service
+    omegabrr version           	Print version info
+    omegabrr help              	Show this help message`
 
 func init() {
 	pflag.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), usage)
+		fmt.Fprint(flag.CommandLine.Output(), usage)
 	}
 }
 
 func main() {
 	var configPath string
 	var dryRun bool
+
 	pflag.StringVar(&configPath, "config", "", "path to configuration file")
 	pflag.BoolVar(&dryRun, "dry-run", false, "dry-run without inserting filters")
 
+	// Define and parse flags using pflag
+	length := pflag.Int("length", 16, "length of the generated API token")
 	pflag.Parse()
 
-	// setup logger
 	zerolog.TimeFieldFormat = time.RFC3339
 	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339})
@@ -59,9 +61,12 @@ func main() {
 	case "version":
 		fmt.Fprintf(flag.CommandLine.Output(), "Version: %v\nCommit: %v\n", version, commit)
 	case "generate-token":
-		key := apitoken.GenerateToken(16)
-		fmt.Fprintf(flag.CommandLine.Output(), "API Token: %v\nCopy and paste into your config file config.yaml\n", key)
-
+		key, err := apitoken.GenerateToken(*length)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error generating API token: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Fprintf(os.Stdout, "API Token: %v\nCopy and paste into your config file config.yaml\n", key)
 	case "arr":
 		cfg := domain.NewConfig(configPath)
 

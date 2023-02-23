@@ -147,6 +147,7 @@ server:
 ```
 Call with `omegabrr generate-token`
 If you are using docker `docker exec omegabrr omegabrr generate-token`
+Optionally call with `--length <number>`for a custom length.
 
 ### arr
 

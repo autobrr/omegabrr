@@ -2,144 +2,160 @@ package processor
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestProcessTitle(t *testing.T) {
-	title := "The Quick Brown Fox (2022)" // Removes year from title
-	expected := []string{"The?Quick?Brown?Fox"}
-	result := processTitle(title, false)
-	if !stringSlicesContainSameElements(result, expected) {
-		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
+func Test_processTitle(t *testing.T) {
+	type args struct {
+		title        string
+		matchRelease bool
 	}
-
-	title = "The Matrix     -        Reloaded (2929)" // Handle hyphens with whitespace on each side
-	expected = []string{"The?Matrix*Reloaded"}
-	result = processTitle(title, false)
-	if !stringSlicesContainSameElements(result, expected) {
-		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
+	tests := []struct {
+		name string
+		args args
+		want []string
+	}{
+		{
+			name: "test_01",
+			args: args{
+				title:        "The Quick Brown Fox (2022)",
+				matchRelease: false,
+			},
+			want: []string{"The?Quick?Brown?Fox"},
+		},
+		{
+			name: "test_02",
+			args: args{
+				title:        "The Matrix     -        Reloaded (2929)",
+				matchRelease: false,
+			},
+			want: []string{"The?Matrix*Reloaded"},
+		},
+		{
+			name: "test_03",
+			args: args{
+				title:        "The Matrix -(Test)- Reloaded (2929)",
+				matchRelease: false,
+			},
+			want: []string{"The?Matrix*Test*Reloaded"},
+		},
+		{
+			name: "test_04",
+			args: args{
+				title:        "The Marvelous Mrs. Maisel",
+				matchRelease: false,
+			},
+			want: []string{"The?Marvelous?Mrs*Maisel"},
+		},
+		{
+			name: "test_05",
+			args: args{
+				title:        "Arrr!! The Title (2020)",
+				matchRelease: false,
+			},
+			want: []string{"Arrr*The?Title"},
+		},
+		{
+			name: "test_06",
+			args: args{
+				title:        "Whose Line Is It Anyway? (US)",
+				matchRelease: false,
+			},
+			want: []string{"Whose?Line?Is?It?Anyway", "Whose?Line?Is?It?Anyway*US", "Whose?Line?Is?It?Anyway?"},
+		},
+		{
+			name: "test_07",
+			args: args{
+				title:        "MasterChef (US)",
+				matchRelease: false,
+			},
+			want: []string{"MasterChef*US", "MasterChef"},
+		},
+		{
+			name: "test_08",
+			args: args{
+				title:        "Brooklyn Nine-Nine",
+				matchRelease: false,
+			},
+			want: []string{"Brooklyn?Nine?Nine"},
+		},
+		{
+			name: "test_09",
+			args: args{
+				title:        "S.W.A.T.",
+				matchRelease: false,
+			},
+			want: []string{"S?W?A?T?", "S?W?A?T"},
+		},
+		{
+			name: "test_10",
+			args: args{
+				title:        "The Handmaid's Tale",
+				matchRelease: false,
+			},
+			want: []string{"The?Handmaid?s?Tale", "The?Handmaids?Tale"},
+		},
+		{
+			name: "test_11",
+			args: args{
+				title:        "The Handmaid's Tale (US)",
+				matchRelease: false,
+			},
+			want: []string{"The?Handmaid?s?Tale*US", "The?Handmaids?Tale*US", "The?Handmaid?s?Tale", "The?Handmaids?Tale"},
+		},
+		{
+			name: "test_12",
+			args: args{
+				title:        "Monsters, Inc.",
+				matchRelease: false,
+			},
+			want: []string{"Monsters*Inc?", "Monsters*Inc"},
+		},
+		{
+			name: "test_13",
+			args: args{
+				title:        "Hello Tomorrow!",
+				matchRelease: false,
+			},
+			want: []string{"Hello?Tomorrow?", "Hello?Tomorrow"},
+		},
+		{
+			name: "test_14",
+			args: args{
+				title:        "Be Cool, Scooby-Doo!",
+				matchRelease: false,
+			},
+			want: []string{"Be?Cool*Scooby?Doo?", "Be?Cool*Scooby?Doo"},
+		},
+		{
+			name: "test_15",
+			args: args{
+				title:        "Scooby-Doo! Mystery Incorporated",
+				matchRelease: false,
+			},
+			want: []string{"Scooby?Doo*Mystery?Incorporated"},
+		},
+		{
+			name: "test_16",
+			args: args{
+				title:        "Master.Chef (US)",
+				matchRelease: false,
+			},
+			want: []string{"Master?Chef*US", "Master?Chef"},
+		},
+		{
+			name: "test_17",
+			args: args{
+				title:        "Whose Line Is It Anyway? (US)",
+				matchRelease: false,
+			},
+			want: []string{"Whose?Line?Is?It?Anyway*US", "Whose?Line?Is?It?Anyway?", "Whose?Line?Is?It?Anyway"},
+		},
 	}
-
-	title = "The Matrix -(Test)- Reloaded (2929)" // Handle hyphens and parentheses with whitespace on each side
-	expected = []string{"The?Matrix*Test*Reloaded"}
-	result = processTitle(title, false)
-	if !stringSlicesContainSameElements(result, expected) {
-		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.ElementsMatch(t, tt.want, processTitle(tt.args.title, tt.args.matchRelease), tt.name)
+		})
 	}
-
-	title = "The Marvelous Mrs. Maisel" // Handle titles with ". "
-	expected = []string{"The?Marvelous?Mrs*Maisel"}
-	result = processTitle(title, false)
-	if !stringSlicesContainSameElements(result, expected) {
-		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
-	}
-
-	title = "Arrr!! The Title (2020)" // replace 2 or more special characters with a *
-	expected = []string{"Arrr*The?Title"}
-	result = processTitle(title, false)
-	if !stringSlicesContainSameElements(result, expected) {
-		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
-	}
-
-	title = "Whose Line Is It Anyway? (US)" // Handle parentheses and a question mark in the title
-	expected = []string{"Whose?Line?Is?It?Anyway", "Whose?Line?Is?It?Anyway*US", "Whose?Line?Is?It?Anyway?"}
-	result = processTitle(title, false)
-	if !stringSlicesContainSameElements(result, expected) {
-		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
-	}
-
-	title = "MasterChef (US)" // Handle parentheses without a question mark
-	expected = []string{"MasterChef*US", "MasterChef"}
-	result = processTitle(title, false)
-	if !stringSlicesContainSameElements(result, expected) {
-		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
-	}
-
-	title = "Brooklyn Nine-Nine" // Handle hyphens
-	expected = []string{"Brooklyn?Nine?Nine"}
-	result = processTitle(title, false)
-	if !stringSlicesContainSameElements(result, expected) {
-		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
-	}
-
-	title = "S.W.A.T." // Titles ending with a dot
-	expected = []string{"S?W?A?T?", "S?W?A?T"}
-	result = processTitle(title, false)
-	if !stringSlicesContainSameElements(result, expected) {
-		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
-	}
-
-	title = "The Handmaid's Tale" // Titles with apostrophe
-	expected = []string{"The?Handmaid?s?Tale", "The?Handmaids?Tale"}
-	result = processTitle(title, false)
-	if !stringSlicesContainSameElements(result, expected) {
-		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
-	}
-
-	title = "The Handmaid's Tale (US)" // Titles with apostrophe and region code
-	expected = []string{"The?Handmaid?s?Tale*US", "The?Handmaids?Tale*US", "The?Handmaid?s?Tale", "The?Handmaids?Tale"}
-	result = processTitle(title, false)
-	if !stringSlicesContainSameElements(result, expected) {
-		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
-	}
-
-	title = "Monsters, Inc." // Handle commas and special character ending
-	expected = []string{"Monsters*Inc?", "Monsters*Inc"}
-	result = processTitle(title, false)
-	if !stringSlicesContainSameElements(result, expected) {
-		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
-	}
-
-	title = "Hello Tomorrow!" // Handle commas and special character ending
-	expected = []string{"Hello?Tomorrow", "Hello?Tomorrow?"}
-	result = processTitle(title, false)
-	if !stringSlicesContainSameElements(result, expected) {
-		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
-	}
-
-	title = "Be Cool, Scooby-Doo!" // Handle multiple special characters
-	expected = []string{"Be?Cool*Scooby?Doo?", "Be?Cool*Scooby?Doo"}
-	result = processTitle(title, false)
-	if !stringSlicesContainSameElements(result, expected) {
-		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
-	}
-
-	title = "Scooby-Doo! Mystery Incorporated" // Handle multiple special characters
-	expected = []string{"Scooby?Doo*Mystery?Incorporated"}
-	result = processTitle(title, false)
-	if !stringSlicesContainSameElements(result, expected) {
-		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
-	}
-
-	title = "Master.Chef (US)" // with matchRelease set to true
-	expected = []string{"*Master?Chef*US*", "*Master?Chef*"}
-	result = processTitle(title, true)
-	if !stringSlicesContainSameElements(result, expected) {
-		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
-	}
-
-	title = "Whose Line Is It Anyway? (US)" // Handle parentheses and a question mark in the title with matchRelease enabled
-	expected = []string{"*Whose?Line?Is?It?Anyway*", "*Whose?Line?Is?It?Anyway*US*", "*Whose?Line?Is?It?Anyway?*"}
-	result = processTitle(title, true)
-	if !stringSlicesContainSameElements(result, expected) {
-		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
-	}
-}
-
-// It returns true if the two slices have the same elements, regardless of order
-func stringSlicesContainSameElements(a, b []string) bool {
-	if len(a) != len(b) {
-		return false
-	}
-
-	m := make(map[string]int)
-	for _, x := range a {
-		m[x]++
-	}
-	for _, x := range b {
-		if m[x] == 0 {
-			return false
-		}
-		m[x]--
-	}
-	return true
 }

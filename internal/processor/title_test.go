@@ -68,8 +68,15 @@ func TestProcessTitle(t *testing.T) {
 		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
 	}
 
+	title = "Be Cool, Scooby-Doo!" // Handle commas
+	expected = []string{"Be?Cool?Scooby?Doo", "Be?Cool?Scooby?Doo!"}
+	result = processTitle(title, false)
+	if !stringSlicesContainSameElements(result, expected) {
+		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
+	}
+
 	title = "Scooby-Doo! Mystery Incorporated" // Handle multiple special characters
-	expected = []string{"Scooby?Doo??Mystery?Incorporated", "Scooby?Doo!?Mystery?Incorporated"}
+	expected = []string{"Scooby?Doo!?Mystery?Incorporated", "Scooby?Doo??Mystery?Incorporated"}
 	result = processTitle(title, false)
 	if !stringSlicesContainSameElements(result, expected) {
 		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)

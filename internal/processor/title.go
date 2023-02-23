@@ -37,7 +37,7 @@ func processTitle(title string, matchRelease bool) []string {
 		title = strings.ReplaceAll(title, parenContent, "")
 
 		// Trim any trailing whitespace and "?" from the end of the modified title
-		title = strings.TrimRight(title, " ?")
+		title = strings.TrimRight(title, " ")
 
 		// Replacing all spaces and dots with question marks.
 		replace := strings.ReplaceAll(title, " ", "?")

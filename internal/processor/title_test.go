@@ -33,8 +33,15 @@ func TestProcessTitle(t *testing.T) {
 		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
 	}
 
-	title = "Whose Line Is It Anyway? (US)" // Handle parentheses and a question mark
-	expected = []string{"Whose?Line?Is?It?Anyway", "Whose?Line?Is?It?Anyway??US"}
+	title = "Whose Line Is It Anyway? (US)" // Handle parentheses and a question mark in the title
+	expected = []string{"Whose?Line?Is?It?Anyway?", "Whose?Line?Is?It?Anyway??US", "Whose?Line?Is?It?Anyway"}
+	result = processTitle(title, false)
+	if !stringSlicesContainSameElements(result, expected) {
+		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
+	}
+
+	title = "MasterChef (US)" // Handle parentheses without a question mark
+	expected = []string{"MasterChef?US", "MasterChef"}
 	result = processTitle(title, false)
 	if !stringSlicesContainSameElements(result, expected) {
 		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)

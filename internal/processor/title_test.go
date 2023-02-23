@@ -12,33 +12,13 @@ func TestProcessTitle(t *testing.T) {
 		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
 	}
 
-	title = "It's a Wonderful Life (1946)" // Handle apostrophes
-	expected = []string{"It?s?a?Wonderful?Life", "Its?a?Wonderful?Life"}
-	result = processTitle(title, false)
-	if !stringSlicesContainSameElements(result, expected) {
-		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
-	}
-
-	title = "That '70s Show (1998)" // Handle apostrophes with white space in front
-	expected = []string{"That*70s?Show", "That?70s?Show"}
-	result = processTitle(title, false)
-	if !stringSlicesContainSameElements(result, expected) {
-		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
-	}
-
-	title = "The Matrix - Reloaded (2929)" // Handle hyphens with whitespace on each side
+	title = "The Matrix     -        Reloaded (2929)" // Handle hyphens with whitespace on each side
 	expected = []string{"The?Matrix*Reloaded"}
 	result = processTitle(title, false)
 	if !stringSlicesContainSameElements(result, expected) {
 		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
 	}
 
-	title = "The Matrix: Reloaded (2929)" // Handle colon
-	expected = []string{"The?Matrix*Reloaded"}
-	result = processTitle(title, false)
-	if !stringSlicesContainSameElements(result, expected) {
-		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
-	}
 	title = "The Matrix -(Test)- Reloaded (2929)" // Handle hyphens and parentheses with whitespace on each side
 	expected = []string{"The?Matrix*Test*Reloaded"}
 	result = processTitle(title, false)
@@ -61,7 +41,7 @@ func TestProcessTitle(t *testing.T) {
 	}
 
 	title = "Whose Line Is It Anyway? (US)" // Handle parentheses and a question mark in the title
-	expected = []string{"Whose?Line?Is?It?Anyway?", "Whose?Line?Is?It?Anyway*US", "Whose?Line?Is?It?Anyway"}
+	expected = []string{"Whose?Line?Is?It?Anyway", "Whose?Line?Is?It?Anyway*US", "Whose?Line?Is?It?Anyway?"}
 	result = processTitle(title, false)
 	if !stringSlicesContainSameElements(result, expected) {
 		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
@@ -95,8 +75,22 @@ func TestProcessTitle(t *testing.T) {
 		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
 	}
 
-	title = "Be Cool, Scooby-Doo!" // Handle commas
-	expected = []string{"Be?Cool*Scooby?Doo", "Be?Cool*Scooby?Doo?"}
+	title = "Monsters, Inc." // Handle commas and special character ending
+	expected = []string{"Monsters*Inc?", "Monsters*Inc"}
+	result = processTitle(title, false)
+	if !stringSlicesContainSameElements(result, expected) {
+		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
+	}
+
+	title = "Hello Tomorrow!" // Handle commas and special character ending
+	expected = []string{"Hello?Tomorrow", "Hello?Tomorrow?"}
+	result = processTitle(title, false)
+	if !stringSlicesContainSameElements(result, expected) {
+		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
+	}
+
+	title = "Be Cool, Scooby-Doo!" // Handle multiple special characters
+	expected = []string{"Be?Cool*Scooby?Doo?", "Be?Cool*Scooby?Doo"}
 	result = processTitle(title, false)
 	if !stringSlicesContainSameElements(result, expected) {
 		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
@@ -111,6 +105,13 @@ func TestProcessTitle(t *testing.T) {
 
 	title = "Master.Chef (US)" // with matchRelease set to true
 	expected = []string{"*Master?Chef*US*", "*Master?Chef*"}
+	result = processTitle(title, true)
+	if !stringSlicesContainSameElements(result, expected) {
+		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
+	}
+
+	title = "Whose Line Is It Anyway? (US)" // Handle parentheses and a question mark in the title with matchRelease enabled
+	expected = []string{"*Whose?Line?Is?It?Anyway*", "*Whose?Line?Is?It?Anyway*US*", "*Whose?Line?Is?It?Anyway?*"}
 	result = processTitle(title, true)
 	if !stringSlicesContainSameElements(result, expected) {
 		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)

@@ -18,65 +18,38 @@ func processTitle(title string, matchRelease bool) []string {
 
 	t := NewTitleSlice()
 
-	// Replace all occurrences of " ", ",", and "-" with "?"
-	replaceAll := strings.NewReplacer(" ", "?", ",", "", "-", "?", ".", "?", "(", "", ")", "")
-	t.Add(replaceAll.Replace(title), matchRelease)
+	// Regex patterns
+	replaceRegexp := regexp.MustCompile(`[^[:alnum:]]`)
+	replaceNotApostropheRegexp := regexp.MustCompile(`[^[:alnum:]']`)
+	questionmarkRegexp := regexp.MustCompile(`[?]{2,}`)
+	regionCodeRegexp := regexp.MustCompile(`\(.+\)$`)
+	parenthesesEndRegexp := regexp.MustCompile(`\)$`)
 
-	// If title contains ". ", replace all occurrences with "??"
-	if strings.Contains(title, ". ") {
-		replace := strings.ReplaceAll(title, ". ", "?")
-		replace = strings.ReplaceAll(replace, " ", "?")
-		t.Add(replace, matchRelease)
-	}
+	// title with all non-alphanumeric characters replaced by "?"
+	apostropheTitle := parenthesesEndRegexp.ReplaceAllString(title, "")
+	apostropheTitle = replaceRegexp.ReplaceAllString(apostropheTitle, "?")
+	apostropheTitle = questionmarkRegexp.ReplaceAllString(apostropheTitle, "*")
 
-	// Handling parentheses
-	parenRegexp := regexp.MustCompile(`\((.*?)\)`)
-	matches := parenRegexp.FindAllStringSubmatch(title, -1)
-	if len(matches) == 1 {
-		parenContent := matches[0][0]
-		if strings.HasSuffix(title, parenContent) {
-			// If eg. (US) is at the end of the title, remove it completely.
-			title = strings.TrimSuffix(title, parenContent)
-		} else {
-			// If eg. (US) is in the middle of the title, replace ( and ) with *
-			title = strings.ReplaceAll(title, "(", "*")
-			title = strings.ReplaceAll(title, ")", "*")
-			title = strings.ReplaceAll(title, "*?", "*")
-			title = strings.ReplaceAll(title, "?*", "*")
-		}
+	t.Add(apostropheTitle, matchRelease)
+	t.Add(strings.TrimRight(apostropheTitle, "?* "), matchRelease)
 
-		// Trim any trailing whitespace from the end of the modified title
-		// Replacing all spaces and dots with question marks.
-		title = strings.TrimRight(title, " ")
-		replace := strings.ReplaceAll(title, " ", "?")
-		replace = strings.ReplaceAll(replace, ".", "?")
-		replace = strings.ReplaceAll(replace, "-", "?")
-		replace = strings.ReplaceAll(replace, "*??", "*")
-		replace = strings.ReplaceAll(replace, "??*", "*")
-		t.Add(replace, matchRelease)
-	}
+	// title with apostrophes removed and all non-alphanumeric characters replaced by "?"
+	noApostropheTitle := parenthesesEndRegexp.ReplaceAllString(title, "")
+	noApostropheTitle = replaceNotApostropheRegexp.ReplaceAllString(noApostropheTitle, "?")
+	noApostropheTitle = strings.ReplaceAll(noApostropheTitle, "'", "")
+	noApostropheTitle = questionmarkRegexp.ReplaceAllString(noApostropheTitle, "*")
 
-	if regexp.MustCompile(`[[:punct:]]`).MatchString(title) {
-		// Check if the title contains parentheses
-		if strings.Contains(title, "(") || strings.Contains(title, ")") {
-			return nil // do not process this title
-		}
-		// Regex patterns for matching "???" and all non-alphanumeric characters
-		regexQuestionmark := regexp.MustCompile(`[?]{3,}`)
-		regexReplace := regexp.MustCompile(`[^[:alnum:]]|\(.*?\)`)
+	t.Add(noApostropheTitle, matchRelease)
+	t.Add(strings.TrimRight(noApostropheTitle, "?* "), matchRelease)
 
-		// Remove trailing ".", "!", and " " characters, and replace & with "and"
-		title = strings.TrimRight(title, ".! ")
-		title = strings.ReplaceAll(title, "'", "")
-		title = strings.ReplaceAll(title, "’", "")
-		title = strings.ReplaceAll(title, ",", "")
-		title = strings.ReplaceAll(title, "&", "and")
+	// title with regions in parentheses removed and all non-alphanumeric characters replaced by "?"
+	removedRegionCode := regionCodeRegexp.ReplaceAllString(title, "")
+	removedRegionCode = strings.TrimRight(removedRegionCode, " ")
+	removedRegionCode = replaceRegexp.ReplaceAllString(removedRegionCode, "?")
+	removedRegionCode = questionmarkRegexp.ReplaceAllString(removedRegionCode, "*")
 
-		// Replace all non-alphanumeric characters with "?", and all occurrences of "???" with "*"
-		replace := regexReplace.ReplaceAllString(title, "?")
-		replace = regexQuestionmark.ReplaceAllString(replace, "*")
-		t.Add(strings.TrimRight(replace, "?* "), matchRelease)
-	}
+	t.Add(removedRegionCode, matchRelease)
+	t.Add(strings.TrimRight(removedRegionCode, "?* "), matchRelease)
 
 	return t.Titles()
 }

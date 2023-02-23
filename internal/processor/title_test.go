@@ -19,6 +19,13 @@ func TestProcessTitle(t *testing.T) {
 		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
 	}
 
+	title = "The Matrix -(Test)- Reloaded (2929)" // Handle hyphens and parentheses with whitespace on each side
+	expected = []string{"The?Matrix??Test??Reloaded", "The?Matrix*Test*Reloaded"}
+	result = processTitle(title, false)
+	if !stringSlicesContainSameElements(result, expected) {
+		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
+	}
+
 	title = "The Marvelous Mrs. Maisel" // Handle titles with ". "
 	expected = []string{"The?Marvelous?Mrs??Maisel", "The?Marvelous?Mrs?Maisel"}
 	result = processTitle(title, false)

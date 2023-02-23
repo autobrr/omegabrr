@@ -29,19 +29,30 @@ func processTitle(title string, matchRelease bool) []string {
 		t.Add(replace, matchRelease)
 	}
 
-	// If title ends with eg. (US), remove it completely. Trim any leftover whitespace at the end.
+	// Handling parentheses
 	parenRegexp := regexp.MustCompile(`\((.*?)\)`)
 	matches := parenRegexp.FindAllStringSubmatch(title, -1)
 	if len(matches) == 1 {
 		parenContent := matches[0][0]
-		title = strings.ReplaceAll(title, parenContent, "")
+		if strings.HasSuffix(title, parenContent) {
+			// If eg. (US) is at the end of the title, remove it completely.
+			title = strings.TrimSuffix(title, parenContent)
+		} else {
+			// If eg. (US) is in the middle of the title, replace ( and ) with *
+			title = strings.ReplaceAll(title, "(", "*")
+			title = strings.ReplaceAll(title, ")", "*")
+			title = strings.ReplaceAll(title, "*?", "*")
+			title = strings.ReplaceAll(title, "?*", "*")
+		}
 
-		// Trim any trailing whitespace and "?" from the end of the modified title
-		title = strings.TrimRight(title, " ")
-
+		// Trim any trailing whitespace from the end of the modified title
 		// Replacing all spaces and dots with question marks.
+		title = strings.TrimRight(title, " ")
 		replace := strings.ReplaceAll(title, " ", "?")
 		replace = strings.ReplaceAll(replace, ".", "?")
+		replace = strings.ReplaceAll(replace, "-", "?")
+		replace = strings.ReplaceAll(replace, "*??", "*")
+		replace = strings.ReplaceAll(replace, "??*", "*")
 		t.Add(replace, matchRelease)
 	}
 

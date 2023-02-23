@@ -19,7 +19,7 @@ func processTitle(title string, matchRelease bool) []string {
 	t := NewTitleSlice()
 
 	// Replace all occurrences of " ", ",", and "-" with "?"
-	replaceAll := strings.NewReplacer(" ", "?", ",", "?", ".", "?", "(", "", ")", "")
+	replaceAll := strings.NewReplacer(" ", "?", ",", "?", "-", "?", ".", "?", "(", "", ")", "")
 	t.Add(replaceAll.Replace(title), matchRelease)
 
 	// If title contains ". ", replace all occurrences with "??"
@@ -51,7 +51,7 @@ func processTitle(title string, matchRelease bool) []string {
 			return nil // do not process this title
 		}
 		// Regex patterns for matching "???" and all non-alphanumeric characters
-		regexQuestionmark := regexp.MustCompile(`[?]{2,}`)
+		regexQuestionmark := regexp.MustCompile(`[?]{3,}`)
 		regexReplace := regexp.MustCompile(`[^[:alnum:]]|\(.*?\)`)
 
 		// Remove trailing ".", "!", and " " characters, and replace & with "and"

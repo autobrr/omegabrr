@@ -43,13 +43,23 @@ func processTitle(title string, matchRelease bool) []string {
 	t.Add(strings.TrimRight(noApostropheTitle, "?* "), matchRelease)
 
 	// title with regions in parentheses removed and all non-alphanumeric characters replaced by "?"
-	removedRegionCode := regionCodeRegexp.ReplaceAllString(title, "")
-	removedRegionCode = strings.TrimRight(removedRegionCode, " ")
-	removedRegionCode = replaceRegexp.ReplaceAllString(removedRegionCode, "?")
-	removedRegionCode = questionmarkRegexp.ReplaceAllString(removedRegionCode, "*")
+	removedRegionCodeApostrophe := regionCodeRegexp.ReplaceAllString(title, "")
+	removedRegionCodeApostrophe = strings.TrimRight(removedRegionCodeApostrophe, " ")
+	removedRegionCodeApostrophe = replaceRegexp.ReplaceAllString(removedRegionCodeApostrophe, "?")
+	removedRegionCodeApostrophe = questionmarkRegexp.ReplaceAllString(removedRegionCodeApostrophe, "*")
 
-	t.Add(removedRegionCode, matchRelease)
-	t.Add(strings.TrimRight(removedRegionCode, "?* "), matchRelease)
+	t.Add(removedRegionCodeApostrophe, matchRelease)
+	t.Add(strings.TrimRight(removedRegionCodeApostrophe, "?* "), matchRelease)
+
+	// title with regions in parentheses removed and all non-alphanumeric characters replaced by "?"
+	removedRegionCodeNoApostrophe := regionCodeRegexp.ReplaceAllString(title, "")
+	removedRegionCodeNoApostrophe = strings.TrimRight(removedRegionCodeNoApostrophe, " ")
+	removedRegionCodeNoApostrophe = replaceNotApostropheRegexp.ReplaceAllString(removedRegionCodeNoApostrophe, "?")
+	removedRegionCodeNoApostrophe = strings.ReplaceAll(removedRegionCodeNoApostrophe, "'", "")
+	removedRegionCodeNoApostrophe = questionmarkRegexp.ReplaceAllString(removedRegionCodeNoApostrophe, "*")
+
+	t.Add(removedRegionCodeNoApostrophe, matchRelease)
+	t.Add(strings.TrimRight(removedRegionCodeNoApostrophe, "?* "), matchRelease)
 
 	return t.Titles()
 }

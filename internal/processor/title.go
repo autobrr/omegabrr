@@ -19,7 +19,7 @@ func processTitle(title string, matchRelease bool) []string {
 	t := NewTitleSlice()
 
 	// Replace all occurrences of " ", ",", and "-" with "?"
-	replaceAll := strings.NewReplacer(" ", "?", ",", "?", "-", "?", ".", "?", "(", "", ")", "")
+	replaceAll := strings.NewReplacer(" ", "?", ",", "?", ".", "?", "(", "", ")", "")
 	t.Add(replaceAll.Replace(title), matchRelease)
 
 	// If title contains ". ", replace all occurrences with "??"
@@ -29,7 +29,27 @@ func processTitle(title string, matchRelease bool) []string {
 		t.Add(replace, matchRelease)
 	}
 
+	// If title ends with eg. (US), remove it completely. Trim any leftover whitespace at the end.
+	parenRegexp := regexp.MustCompile(`\((.*?)\)`)
+	matches := parenRegexp.FindAllStringSubmatch(title, -1)
+	if len(matches) == 1 {
+		parenContent := matches[0][0]
+		title = strings.ReplaceAll(title, parenContent, "")
+
+		// Trim any trailing whitespace and "?" from the end of the modified title
+		title = strings.TrimRight(title, " ?")
+
+		// Replacing all spaces and dots with question marks.
+		replace := strings.ReplaceAll(title, " ", "?")
+		replace = strings.ReplaceAll(replace, ".", "?")
+		t.Add(replace, matchRelease)
+	}
+
 	if regexp.MustCompile(`[[:punct:]]`).MatchString(title) {
+		// Check if the title contains parentheses
+		if strings.Contains(title, "(") || strings.Contains(title, ")") {
+			return nil // do not process this title
+		}
 		// Regex patterns for matching "???" and all non-alphanumeric characters
 		regexQuestionmark := regexp.MustCompile(`[?]{2,}`)
 		regexReplace := regexp.MustCompile(`[^[:alnum:]]|\(.*?\)`)
@@ -45,26 +65,6 @@ func processTitle(title string, matchRelease bool) []string {
 		replace := regexReplace.ReplaceAllString(title, "?")
 		replace = regexQuestionmark.ReplaceAllString(replace, "*")
 		t.Add(strings.TrimRight(replace, "?* "), matchRelease)
-	}
-
-	// If title ends with eg. (US), remove it completely. Trim any leftover whitespace at the end.
-	parenRegexp := regexp.MustCompile(`\((.*?)\)`)
-	matches := parenRegexp.FindAllStringSubmatch(title, -1)
-	if len(matches) == 1 {
-		parenContent := matches[0][0]
-		title = strings.ReplaceAll(title, parenContent, "")
-
-		// Trim any trailing whitespace from the modified title
-		title = strings.TrimSpace(title)
-
-		// Remove a trailing "?" if it exists
-		if title[len(title)-1:] == "?" {
-			title = strings.TrimRight(title, "?")
-		}
-
-		// Replace all spaces with "?" and add the modified title to the slice
-		replace := strings.ReplaceAll(title, " ", "?")
-		t.Add(replace, matchRelease)
 	}
 
 	return t.Titles()

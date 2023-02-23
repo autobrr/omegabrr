@@ -19,16 +19,13 @@ func processTitle(title string, matchRelease bool) []string {
 	t := NewTitleSlice()
 
 	// Replace all occurrences of " ", ",", and "-" with "?"
-	replaceAll := strings.NewReplacer(" ", "?", ",", "?", "-", "?")
+	replaceAll := strings.NewReplacer(" ", "?", ",", "?", "-", "?", ".", "?", "(", "", ")", "")
 	t.Add(replaceAll.Replace(title), matchRelease)
 
 	// If title contains ". ", replace all occurrences with "??"
 	if strings.Contains(title, ". ") {
-		t.Add(strings.ReplaceAll(title, ". ", "??"), matchRelease)
-
-		// Replace all occurrences of " " with "?"
-		strip := strings.ReplaceAll(title, ". ", " ")
-		replace := strings.ReplaceAll(strip, " ", "?")
+		replace := strings.ReplaceAll(title, ". ", "?")
+		replace = strings.ReplaceAll(replace, " ", "?")
 		t.Add(replace, matchRelease)
 	}
 

@@ -7,8 +7,8 @@ import (
 )
 
 func processTitle(title string, matchRelease bool) []string {
-	// replace - : _
-	if title == "" || title == " " {
+	// Checking if the title is empty.
+	if strings.TrimSpace(title) == "" {
 		return nil
 	}
 
@@ -18,55 +18,48 @@ func processTitle(title string, matchRelease bool) []string {
 
 	t := NewTitleSlice()
 
-	//titles = append(titles, rls.MustNormalize(title))
-	t.Add(strings.ReplaceAll(title, " ", "?"), matchRelease)
+	// Regex patterns
+	replaceRegexp := regexp.MustCompile(`[^[:alnum:]]`)
+	replaceNotApostropheRegexp := regexp.MustCompile(`[^[:alnum:]']`)
+	questionmarkRegexp := regexp.MustCompile(`[?]{2,}`)
+	regionCodeRegexp := regexp.MustCompile(`\(.+\)$`)
+	parenthesesEndRegexp := regexp.MustCompile(`\)$`)
 
-	//fmt.Println(rls.MustClean(title))
-	//fmt.Println(rls.MustNormalize(title))
+	// title with all non-alphanumeric characters replaced by "?"
+	apostropheTitle := parenthesesEndRegexp.ReplaceAllString(title, "")
+	apostropheTitle = replaceRegexp.ReplaceAllString(apostropheTitle, "?")
+	apostropheTitle = questionmarkRegexp.ReplaceAllString(apostropheTitle, "*")
 
-	if strings.Contains(title, ". ") {
-		t.Add(strings.ReplaceAll(title, ". ", "??"), matchRelease)
+	t.Add(apostropheTitle, matchRelease)
+	t.Add(strings.TrimRight(apostropheTitle, "?* "), matchRelease)
 
-		strip := strings.ReplaceAll(title, ". ", " ")
-		replace := strings.ReplaceAll(strip, " ", "?")
-		t.Add(replace, matchRelease)
-	}
+	// title with apostrophes removed and all non-alphanumeric characters replaced by "?"
+	noApostropheTitle := parenthesesEndRegexp.ReplaceAllString(title, "")
+	noApostropheTitle = replaceNotApostropheRegexp.ReplaceAllString(noApostropheTitle, "?")
+	noApostropheTitle = strings.ReplaceAll(noApostropheTitle, "'", "")
+	noApostropheTitle = questionmarkRegexp.ReplaceAllString(noApostropheTitle, "*")
 
-	if strings.ContainsAny(title, "-") {
-		strip := strings.ReplaceAll(title, "-", "?")
-		replace := strings.ReplaceAll(strip, " ", "?")
-		t.Add(replace, matchRelease)
-	}
+	t.Add(noApostropheTitle, matchRelease)
+	t.Add(strings.TrimRight(noApostropheTitle, "?* "), matchRelease)
 
-	if strings.ContainsAny(title, "!") {
-		strip := strings.ReplaceAll(title, "!", "?")
-		replace := strings.ReplaceAll(strip, " ", "?")
-		t.Add(replace, matchRelease)
-	}
+	// title with regions in parentheses removed and all non-alphanumeric characters replaced by "?"
+	removedRegionCodeApostrophe := regionCodeRegexp.ReplaceAllString(title, "")
+	removedRegionCodeApostrophe = strings.TrimRight(removedRegionCodeApostrophe, " ")
+	removedRegionCodeApostrophe = replaceRegexp.ReplaceAllString(removedRegionCodeApostrophe, "?")
+	removedRegionCodeApostrophe = questionmarkRegexp.ReplaceAllString(removedRegionCodeApostrophe, "*")
 
-	if strings.ContainsAny(title, ":") {
-		strip := strings.ReplaceAll(title, ":", "")
-		replace := strings.ReplaceAll(strip, " ", "?")
-		t.Add(replace, matchRelease)
+	t.Add(removedRegionCodeApostrophe, matchRelease)
+	t.Add(strings.TrimRight(removedRegionCodeApostrophe, "?* "), matchRelease)
 
-		split := strings.Split(title, ":")
-		if len(split) > 1 {
-			first := strings.ReplaceAll(split[0], " ", "?")
-			second := strings.ReplaceAll(strings.Trim(split[1], " "), " ", "?")
-			part := fmt.Sprintf("%v*%v", first, second)
+	// title with regions in parentheses removed and all non-alphanumeric characters replaced by "?"
+	removedRegionCodeNoApostrophe := regionCodeRegexp.ReplaceAllString(title, "")
+	removedRegionCodeNoApostrophe = strings.TrimRight(removedRegionCodeNoApostrophe, " ")
+	removedRegionCodeNoApostrophe = replaceNotApostropheRegexp.ReplaceAllString(removedRegionCodeNoApostrophe, "?")
+	removedRegionCodeNoApostrophe = strings.ReplaceAll(removedRegionCodeNoApostrophe, "'", "")
+	removedRegionCodeNoApostrophe = questionmarkRegexp.ReplaceAllString(removedRegionCodeNoApostrophe, "*")
 
-			t.Add(part, matchRelease)
-		}
-
-	}
-
-	if strings.ContainsAny(title, "&") {
-		t.Add(strings.ReplaceAll(title, " ", "?"), matchRelease)
-
-		strip := strings.ReplaceAll(title, "&", "and")
-		replace := strings.ReplaceAll(strip, " ", "?")
-		t.Add(replace, matchRelease)
-	}
+	t.Add(removedRegionCodeNoApostrophe, matchRelease)
+	t.Add(strings.TrimRight(removedRegionCodeNoApostrophe, "?* "), matchRelease)
 
 	return t.Titles()
 }

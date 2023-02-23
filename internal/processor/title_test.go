@@ -75,6 +75,13 @@ func TestProcessTitle(t *testing.T) {
 		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
 	}
 
+	title = "The Handmaid's Tale (US)" // Titles with apostrophe and region code
+	expected = []string{"The?Handmaid?s?Tale*US", "The?Handmaids?Tale*US", "The?Handmaid?s?Tale", "The?Handmaids?Tale"}
+	result = processTitle(title, false)
+	if !stringSlicesContainSameElements(result, expected) {
+		t.Errorf("processTitle(%q, %t) = %v, expected %v", title, true, result, expected)
+	}
+
 	title = "Monsters, Inc." // Handle commas and special character ending
 	expected = []string{"Monsters*Inc?", "Monsters*Inc"}
 	result = processTitle(title, false)

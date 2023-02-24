@@ -152,6 +152,38 @@ func Test_processTitle(t *testing.T) {
 			},
 			want: []string{"Whose?Line?Is?It?Anyway*US", "Whose?Line?Is?It?Anyway?", "Whose?Line?Is?It?Anyway"},
 		},
+		{
+			name: "test_18",
+			args: args{
+				title:        "90 Day Fiancé: Pillow Talk",
+				matchRelease: false,
+			},
+			want: []string{"90?Day?Fianc*Pillow?Talk"},
+		},
+		{
+			name: "test_19",
+			args: args{
+				title:        "進撃の巨人",
+				matchRelease: false,
+			},
+			want: []string{"進撃の巨人"},
+		},
+		{
+			name: "test_20",
+			args: args{
+				title:        "呪術廻戦 0: 東京都立呪術高等専門学校",
+				matchRelease: false,
+			},
+			want: []string{"呪術廻戦?0*東京都立呪術高等専門学校"},
+		},
+		{
+			name: "test_21",
+			args: args{
+				title:        "-!",
+				matchRelease: false,
+			},
+			want: []string{"-!"},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

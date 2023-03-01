@@ -100,9 +100,6 @@ func (s Service) processSonarr(ctx context.Context, cfg *domain.ArrConfig, logge
 		}
 
 		if len(cfg.TagsInclude) > 0 {
-			if len(s.Tags) == 0 {
-				continue
-			}
 			if !containsTag(tags, s.Tags, cfg.TagsInclude) {
 				continue
 			}

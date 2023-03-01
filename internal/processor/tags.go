@@ -17,6 +17,9 @@ func containsTag(tags []*starr.Tag, titleTags []int, checkTags []string) bool {
 		}
 	}
 
+	// log the tagLabels and checkTags
+	//log.Printf("tagLabels: %v, checkTags: %v", tagLabels, checkTags)
+
 	// check included tags and set ret to true if we have a match
 	for _, includeTag := range checkTags {
 		for _, label := range tagLabels {

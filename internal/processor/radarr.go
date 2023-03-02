@@ -117,7 +117,7 @@ func (s Service) processRadarr(ctx context.Context, cfg *domain.ArrConfig, logge
 		// increment monitored titles
 		monitoredTitles++
 
-		// Taking the english title and the original title and appending them to the titles array.
+		// Taking the international title and the original title and appending them to the titles array.
 		titlesMap := make(map[string]bool) // Initialize a map to keep track of unique titles.
 		t := m.Title
 		ot := m.OriginalTitle

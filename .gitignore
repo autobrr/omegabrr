@@ -2,6 +2,7 @@
 *.dist
 dist
 .dev
+.DS_Store
 
 # Binaries for programs and plugins
 *.exe

@@ -117,23 +117,18 @@ func (s Service) processRadarr(ctx context.Context, cfg *domain.ArrConfig, logge
 		// increment monitored titles
 		monitoredTitles++
 
-		//titles = append(titles, rls.MustNormalize(m.Title))
-		//titles = append(titles, rls.MustNormalize(m.OriginalTitle))
-		//titles = append(titles, rls.MustClean(m.Title))
+		// Taking the international title and the original title and appending them to the titles array.
+		titlesMap := make(map[string]bool) // Initialize a map to keep track of unique titles.
+		t := m.Title
+		ot := m.OriginalTitle
 
-		t := strings.ToLower(m.Title)
-		ot := strings.ToLower(m.OriginalTitle)
-
-		if t == ot {
-			titles = append(titles, processTitle(m.Title, cfg.MatchRelease)...)
-			continue
+		for _, title := range []string{t, ot} {
+			if title != "" && !titlesMap[title] {
+				titlesMap[title] = true
+				titles = append(titles, processTitle(title, cfg.MatchRelease)...)
+			}
 		}
 
-		titles = append(titles, processTitle(m.OriginalTitle, cfg.MatchRelease)...)
-
-		//for _, title := range m.AlternateTitles {
-		//	titles = append(titles, processTitle(title.Title)...)
-		//}
 	}
 
 	logger.Debug().Msgf("from a total of %d movies we found %d monitored and created %d release titles", len(movies), monitoredTitles, len(titles))

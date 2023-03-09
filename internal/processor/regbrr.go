@@ -34,6 +34,7 @@ func (s Service) regbrr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 		}
 
 		var data []struct {
+			Title string `json:"title"`
 			Movie struct {
 				Title string `json:"title"`
 			} `json:"movie"`
@@ -48,6 +49,7 @@ func (s Service) regbrr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 		}
 
 		for _, item := range data {
+			titles = append(titles, item.Title)
 			if item.Movie.Title != "" {
 				titles = append(titles, item.Movie.Title)
 			}

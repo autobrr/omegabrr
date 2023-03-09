@@ -70,6 +70,11 @@ func (s Service) Process(dryRun bool) error {
 					return s.lidarr(ctx, arrClient, dryRun, a)
 				})
 
+			case domain.ArrTypeRegbrr:
+				g.Go(func() error {
+					return s.regbrr(ctx, arrClient, dryRun, a)
+				})
+
 			}
 		}
 	}

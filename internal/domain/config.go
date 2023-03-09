@@ -20,14 +20,6 @@ type BasicAuth struct {
 	Pass string `koanf:"pass"`
 }
 
-type RegbrrConfig struct {
-	Name         string  `koanf:"name"`
-	Type         ArrType `koanf:"type"`
-	Host         string  `koanf:"host"`
-	Filters      []int   `koanf:"filters"`
-	MatchRelease bool    `koanf:"matchRelease"`
-}
-
 type ArrConfig struct {
 	Name                   string     `koanf:"name"`
 	Type                   ArrType    `koanf:"type"`

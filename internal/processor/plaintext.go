@@ -16,6 +16,12 @@ import (
 func (s Service) plaintext(ctx context.Context, cfg *domain.ListConfig, dryRun bool, brr *autobrr.Client) error {
 	l := log.With().Str("type", "plaintext").Str("client", cfg.Name).Logger()
 
+	if cfg.URL == "" {
+		errMsg := fmt.Sprintf("no URL provided for plaintext list: %s", cfg.Name)
+		l.Error().Msg(errMsg)
+		return fmt.Errorf(errMsg)
+	}
+
 	var titles []string
 
 	green := color.New(color.FgGreen).SprintFunc()

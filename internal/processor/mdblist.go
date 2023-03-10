@@ -16,6 +16,12 @@ import (
 func (s Service) mdblist(ctx context.Context, cfg *domain.ListConfig, dryRun bool, brr *autobrr.Client) error {
 	l := log.With().Str("type", "mdblist").Str("client", cfg.Name).Logger()
 
+	if cfg.URL == "" {
+		errMsg := "no URL provided for Mdblist"
+		l.Error().Msg(errMsg)
+		return fmt.Errorf(errMsg)
+	}
+
 	var titles []string
 
 	if !strings.HasPrefix(cfg.URL, "https://mdblist.com/") || !strings.HasSuffix(cfg.URL, "/json") {

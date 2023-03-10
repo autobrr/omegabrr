@@ -3,6 +3,7 @@ module github.com/autobrr/omegabrr
 go 1.19
 
 require (
+	github.com/fatih/color v1.9.0
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-chi/render v1.0.2
 	github.com/knadh/koanf v1.5.0

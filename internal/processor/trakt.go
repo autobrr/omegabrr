@@ -4,33 +4,34 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"strings"
 
 	"github.com/autobrr/omegabrr/internal/domain"
 	"github.com/autobrr/omegabrr/pkg/autobrr"
+	"github.com/fatih/color"
 	"github.com/rs/zerolog/log"
 )
 
-func (s Service) regbrr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool, brr *autobrr.Client) error {
-	l := log.With().Str("type", "regbrr").Str("client", cfg.Name).Logger()
+func (s Service) trakt(ctx context.Context, cfg *domain.ListConfig, dryRun bool, brr *autobrr.Client) error {
+	l := log.With().Str("type", "trakt").Str("client", cfg.Name).Logger()
 
 	var titles []string
 
-	if strings.HasSuffix(cfg.Host, ".json") {
-		l.Debug().Msgf("fetching titles from JSON URL: %s", cfg.Host)
+	if strings.HasSuffix(cfg.URL, ".json") {
+		green := color.New(color.FgGreen).SprintFunc()
+		l.Debug().Msgf("fetching titles from %s", green(cfg.URL))
 
-		resp, err := http.Get(cfg.Host)
+		resp, err := http.Get(cfg.URL)
 		if err != nil {
-			l.Error().Err(err).Msgf("failed to fetch titles from URL: %s", cfg.Host)
+			l.Error().Err(err).Msgf("failed to fetch titles from URL: %s", cfg.URL)
 			return err
 		}
 		defer resp.Body.Close()
 
 		if resp.StatusCode != http.StatusOK {
-			l.Error().Msgf("failed to fetch titles from URL: %s", cfg.Host)
-			return fmt.Errorf("failed to fetch titles from URL: %s", cfg.Host)
+			l.Error().Msgf("failed to fetch titles from URL: %s", cfg.URL)
+			return fmt.Errorf("failed to fetch titles from URL: %s", cfg.URL)
 		}
 
 		var data []struct {
@@ -44,7 +45,7 @@ func (s Service) regbrr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 		}
 
 		if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
-			l.Error().Err(err).Msgf("failed to decode JSON data from URL: %s", cfg.Host)
+			l.Error().Err(err).Msgf("failed to decode JSON data from URL: %s", cfg.URL)
 			return err
 		}
 
@@ -58,38 +59,7 @@ func (s Service) regbrr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 			}
 		}
 
-	} else {
-		l.Debug().Msgf("fetching titles from URL: %s", cfg.Host)
-
-		resp, err := http.Get(cfg.Host)
-		if err != nil {
-			l.Error().Err(err).Msgf("failed to fetch titles from URL: %s", cfg.Host)
-			return err
-		}
-		defer resp.Body.Close()
-
-		if resp.StatusCode != http.StatusOK {
-			l.Error().Msgf("failed to fetch titles from URL: %s", cfg.Host)
-			return fmt.Errorf("failed to fetch titles from URL: %s", cfg.Host)
-		}
-
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			l.Error().Err(err).Msgf("failed to read response body from URL: %s", cfg.Host)
-			return err
-		}
-
-		titleLines := strings.Split(string(body), "\n")
-		for _, titleLine := range titleLines {
-			title := strings.TrimSpace(titleLine)
-			if title == "" {
-				continue
-			}
-			titles = append(titles, title)
-		}
 	}
-
-	//l.Debug().Msgf("gathered titles: %s", strings.ReplaceAll(strings.Join(titles, ", "), ", ", ","))
 
 	for _, filterID := range cfg.Filters {
 		l.Debug().Msgf("updating filter: %v", filterID)
@@ -104,6 +74,13 @@ func (s Service) regbrr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 		l.Trace().Msgf("%s", joinedTitles)
 
 		if len(joinedTitles) == 0 {
+			if strings.Contains(cfg.URL, "mdblist.com") {
+				l.Error().Msgf("Found %s in a Trakt filter", cfg.URL)
+				l.Error().Msgf("Please make sure you have set up the URL as \"type: mdblist\" in the config")
+			} else {
+				l.Error().Msgf("Found no titles in %s", cfg.URL)
+				l.Error().Msgf("Are you sure this is a trakt.tv JSON?")
+			}
 			return nil
 		}
 

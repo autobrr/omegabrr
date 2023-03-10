@@ -70,11 +70,29 @@ func (s Service) Process(dryRun bool) error {
 					return s.lidarr(ctx, arrClient, dryRun, a)
 				})
 
-			case domain.ArrTypeRegbrr:
+			}
+		}
+	}
+
+	if s.cfg.Clients.Lists != nil {
+		for _, listsClient := range s.cfg.Clients.Lists {
+			listsClient := listsClient
+
+			switch listsClient.Type {
+			case domain.ListTypeTrakt:
 				g.Go(func() error {
-					return s.regbrr(ctx, arrClient, dryRun, a)
+					return s.trakt(ctx, listsClient, dryRun, a)
 				})
 
+			case domain.ListTypeMdblist:
+				g.Go(func() error {
+					return s.mdblist(ctx, listsClient, dryRun, a)
+				})
+
+			case domain.ListTypePlaintext:
+				g.Go(func() error {
+					return s.plaintext(ctx, listsClient, dryRun, a)
+				})
 			}
 		}
 	}

@@ -20,6 +20,23 @@ type BasicAuth struct {
 	Pass string `koanf:"pass"`
 }
 
+type ListConfig struct {
+	Name         string     `koanf:"name"`
+	Type         ListType   `koanf:"type"`
+	URL          string     `koanf:"url"`
+	BasicAuth    *BasicAuth `koanf:"basicAuth"`
+	Filters      []int      `koanf:"filters"`
+	MatchRelease bool       `koanf:"matchRelease"`
+}
+
+type ListType string
+
+var (
+	ListTypeTrakt     ListType = "trakt"
+	ListTypeMdblist   ListType = "mdblist"
+	ListTypePlaintext ListType = "plaintext"
+)
+
 type ArrConfig struct {
 	Name                   string     `koanf:"name"`
 	Type                   ArrType    `koanf:"type"`
@@ -41,7 +58,6 @@ var (
 	ArrTypeReadarr  ArrType = "readarr"
 	ArrTypeLidarr   ArrType = "lidarr"
 	ArrTypeWhisparr ArrType = "whisparr"
-	ArrTypeRegbrr   ArrType = "regbrr"
 )
 
 type AutobrrConfig struct {
@@ -60,6 +76,7 @@ type Config struct {
 	Clients  struct {
 		Autobrr *AutobrrConfig `koanf:"autobrr"`
 		Arr     []*ArrConfig   `koanf:"arr"`
+		Lists   []*ListConfig  `koanf:"lists"`
 	} `koanf:"clients"`
 }
 
@@ -71,6 +88,7 @@ func (c *Config) defaults() {
 
 	c.Clients.Autobrr = nil
 	c.Clients.Arr = nil
+	c.Clients.Lists = nil
 }
 
 var k = koanf.New(".")
@@ -224,4 +242,41 @@ clients:
   #    host: http://localhost:6969
   #    apikey: API_KEY
   #    filters:
-  #      - 69 # Change me`
+  #      - 69 # Change me
+  
+  lists:
+  #  - name: upcoming-bluray
+  #    type: trakt
+  #    url: https://sudoer.dev/bluray.json
+  #    filters:
+  #      - 17 # Change me
+
+  #  - name: upcoming-movies
+  #    type: trakt
+  #    url: https://sudoer.dev/movies.json
+  #    filters:
+  #      - 17 # Change me
+
+  #  - name: popular-shows
+  #    type: trakt
+  #    url: https://sudoer.dev/tv.json
+  #    filters:
+  #      - 17 # Change me
+
+  #  - name: trakt-anticipated-shows
+  #    type: trakt
+  #    url: https://sudoer.dev/ant.json
+  #    filters:
+  #      - 17 # Change me
+
+  #  - name: latest-tv-shows
+  #    type: mdblist
+  #    url: https://mdblist.com/lists/garycrawfordgc/latest-tv-shows/json
+  #    filters:
+  #    - 18 # Change me
+
+  #  - name: custom-titles-line-by-line
+  #    type: plaintext
+  #    url: # only pages with contentType "text/plain"
+  #    filters:
+  #    - 19 # Change me`

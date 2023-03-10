@@ -76,6 +76,15 @@ func main() {
 			os.Exit(1)
 		}
 
+	case "lists":
+		cfg := domain.NewConfig(configPath)
+
+		p := processor.NewService(cfg)
+		if err := p.Process(dryRun); err != nil {
+			log.Error().Err(err).Msgf("error during processing")
+			os.Exit(1)
+		}
+
 	case "run":
 		cfg := domain.NewConfig(configPath)
 

@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
+	netHTTP "net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -23,6 +25,9 @@ import (
 var (
 	version = "dev"
 	commit  = ""
+
+	owner = "autobrr"
+	repo  = "omegabrr"
 )
 
 const usage = `omegabrr
@@ -60,6 +65,19 @@ func main() {
 	switch cmd := pflag.Arg(0); cmd {
 	case "version":
 		fmt.Fprintf(flag.CommandLine.Output(), "Version: %v\nCommit: %v\n", version, commit)
+
+		// get the latest release tag from brr-api
+		resp, err := netHTTP.Get(fmt.Sprintf("https://api.autobrr.com/repos/%s/%s/releases/latest", owner, repo))
+		if err == nil && resp.StatusCode == netHTTP.StatusOK {
+			defer resp.Body.Close()
+			var rel struct {
+				TagName string `json:"tag_name"`
+			}
+			if err := json.NewDecoder(resp.Body).Decode(&rel); err == nil {
+				fmt.Fprintf(flag.CommandLine.Output(), "Latest release: %v\n", rel.TagName)
+			}
+		}
+
 	case "generate-token":
 		key, err := apitoken.GenerateToken(*length)
 		if err != nil {

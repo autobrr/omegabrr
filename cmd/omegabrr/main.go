@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	netHTTP "net/http"
@@ -67,16 +68,25 @@ func main() {
 		fmt.Printf("Version: %v\nCommit: %v\n", version, commit)
 
 		// get the latest release tag from brr-api
-		resp, err := netHTTP.Get(fmt.Sprintf("https://api.autobrr.com/repos/%s/%s/releases/latest", owner, repo))
+		client := &netHTTP.Client{
+			Timeout: 10 * time.Second,
+		}
+
+		resp, err := client.Get(fmt.Sprintf("https://api.autobrr.com/repos/%s/%s/releases/latest", owner, repo))
 		if err != nil {
-			fmt.Printf("Failed to fetch latest release from api: %v\n", err)
-			return
+			if errors.Is(err, netHTTP.ErrHandlerTimeout) {
+				fmt.Println("Server timed out while fetching latest release from api")
+			} else {
+				fmt.Printf("Failed to fetch latest release from api: %v\n", err)
+			}
+			os.Exit(1)
 		}
 		defer resp.Body.Close()
 
-		if resp.StatusCode == netHTTP.StatusNotFound {
+		// brr-api returns 500 instead of 404 here
+		if resp.StatusCode == netHTTP.StatusNotFound || resp.StatusCode == netHTTP.StatusInternalServerError {
 			fmt.Printf("No release found for %s/%s\n", owner, repo)
-			return
+			os.Exit(1)
 		}
 
 		var rel struct {
@@ -84,9 +94,10 @@ func main() {
 		}
 		if err := json.NewDecoder(resp.Body).Decode(&rel); err != nil {
 			fmt.Printf("Failed to decode response from api: %v\n", err)
-			return
+			os.Exit(1)
 		}
 		fmt.Printf("Latest release: %v\n", rel.TagName)
+
 	case "generate-token":
 		key, err := apitoken.GenerateToken(*length)
 		if err != nil {

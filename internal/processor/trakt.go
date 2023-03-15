@@ -16,6 +16,11 @@ import (
 func (s Service) trakt(ctx context.Context, cfg *domain.ListConfig, dryRun bool, brr *autobrr.Client) error {
 	l := log.With().Str("type", "trakt").Str("client", cfg.Name).Logger()
 
+	// Validate the input URL
+	if !strings.HasPrefix(cfg.URL, "https://api.autobrr.com/trakt") {
+		return fmt.Errorf("invalid URL provided for Trakt list, URL must start with https://api.autobrr.com/trakt. For supported lists, please refer to the README")
+	}
+
 	if cfg.URL == "" {
 		errMsg := "no URL provided for Trakt list"
 		l.Error().Msg(errMsg)

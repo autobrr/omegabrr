@@ -81,18 +81,31 @@ func (s Service) Process(dryRun bool) error {
 			switch listsClient.Type {
 			case domain.ListTypeTrakt:
 				g.Go(func() error {
-					return s.trakt(ctx, listsClient, dryRun, a)
+					if err := s.trakt(ctx, listsClient, dryRun, a); err != nil {
+						log.Error().Err(err).Str("type", "trakt").Str("client", listsClient.Name).Msg("error while processing Trakt list, continuing with other lists")
+						return nil
+					}
+					return nil
 				})
 
 			case domain.ListTypeMdblist:
 				g.Go(func() error {
-					return s.mdblist(ctx, listsClient, dryRun, a)
+					if err := s.mdblist(ctx, listsClient, dryRun, a); err != nil {
+						log.Error().Err(err).Str("type", "mdblist").Str("client", listsClient.Name).Msg("error while processing Mdblist, continuing with other lists")
+						return nil
+					}
+					return nil
 				})
 
 			case domain.ListTypePlaintext:
 				g.Go(func() error {
-					return s.plaintext(ctx, listsClient, dryRun, a)
+					if err := s.plaintext(ctx, listsClient, dryRun, a); err != nil {
+						log.Error().Err(err).Str("type", "plaintext").Str("client", listsClient.Name).Msg("error while processing Plaintext list, continuing with other lists")
+						return nil
+					}
+					return nil
 				})
+
 			}
 		}
 	}

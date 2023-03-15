@@ -2,6 +2,7 @@ package processor
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -47,7 +48,7 @@ func (s Service) radarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 		if !dryRun {
 			if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
 				l.Error().Err(err).Msgf("something went wrong updating movie filter: %v", filterID)
-				continue
+				return fmt.Errorf("error updating movie filter: %v, %w", filterID, err)
 			}
 		}
 

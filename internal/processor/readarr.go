@@ -2,6 +2,7 @@ package processor
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -41,9 +42,11 @@ func (s Service) readarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool
 		if !dryRun {
 			f := autobrr.UpdateFilter{MatchReleases: joinedTitles}
 
-			if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
-				l.Error().Err(err).Msgf("something went wrong updating ebook filter: %v", filterID)
-				continue
+			if !dryRun {
+				if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
+					l.Error().Err(err).Msgf("something went wrong updating ebook filter: %v", filterID)
+					return fmt.Errorf("error updating ebook filter: %v, %w", filterID, err)
+				}
 			}
 		}
 

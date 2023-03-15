@@ -103,7 +103,7 @@ func (s Service) trakt(ctx context.Context, cfg *domain.ListConfig, dryRun bool,
 		if !dryRun {
 			if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
 				l.Error().Err(err).Msgf("something went wrong updating filter: %v", filterID)
-				continue
+				return fmt.Errorf("error updating filter: %v, %w", filterID, err)
 			}
 		}
 

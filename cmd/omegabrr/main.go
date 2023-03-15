@@ -31,7 +31,8 @@ Turn your monitored shows from your arrs into autobrr filters, automagically!
 
 Usage:
     omegabrr generate-token	Generate API Token	Optionally call with --length <number>
-    omegabrr arr               	Run omegabrr once
+    omegabrr arr               	Run omegabrr arr once
+    omegabrr lists              Run omegabrr lists once
     omegabrr run               	Run omegabrr service
     omegabrr version           	Print version info
     omegabrr help              	Show this help message`

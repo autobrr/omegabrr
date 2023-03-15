@@ -17,7 +17,7 @@ func (s Service) trakt(ctx context.Context, cfg *domain.ListConfig, dryRun bool,
 	l := log.With().Str("type", "trakt").Str("client", cfg.Name).Logger()
 
 	// Validate the input URL
-	if !strings.HasPrefix(cfg.URL, "https://api.autobrr.com/trakt") {
+	if !strings.HasPrefix(cfg.URL, "https://sudoer.dev") {
 		return fmt.Errorf("invalid URL provided for Trakt list, URL must start with https://api.autobrr.com/trakt. For supported lists, please refer to the README")
 	}
 

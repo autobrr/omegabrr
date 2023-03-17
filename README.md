@@ -184,11 +184,11 @@ Download the [latest binary](https://github.com/autobrr/omegabrr/releases/latest
 
 Example: Download binary
 
-    wget https://github.com/autobrr/omegabrr/releases/download/$VERSION/omegabrr_$VERISON_linux_x86_64.tar.gz
+    wget https://github.com/autobrr/omegabrr/releases/download/$VERSION/omegabrr_$VERSION_linux_x86_64.tar.gz
 
 Extract
 
-    tar -xvf omegabrr_$VERISON_linux_x86_64.tar.gz ~/
+    tar -xvf omegabrr_$VERSION_linux_x86_64.tar.gz ~/
 
 Move to somewhere in `$PATH`. Needs to be edited in the systemd service file if using other location.
 

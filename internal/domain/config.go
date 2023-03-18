@@ -32,9 +32,10 @@ type ListConfig struct {
 type ListType string
 
 var (
-	ListTypeTrakt     ListType = "trakt"
-	ListTypeMdblist   ListType = "mdblist"
-	ListTypePlaintext ListType = "plaintext"
+	ListTypeTrakt      ListType = "trakt"
+	ListTypeMdblist    ListType = "mdblist"
+	ListTypeMetacritic ListType = "metacritic"
+	ListTypePlaintext  ListType = "plaintext"
 )
 
 type ArrConfig struct {

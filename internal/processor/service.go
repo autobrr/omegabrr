@@ -138,6 +138,17 @@ func (s Service) Process(dryRun bool) error {
 					return nil
 				})
 
+			case domain.ListTypeMetacritic:
+				g.Go(func() error {
+					if err := s.metacritic(ctx, listsClient, dryRun, a); err != nil {
+						log.Error().Err(err).Str("type", "metacritic").Str("client", listsClient.Name).Msg("error while processing Metacritic, continuing with other lists")
+						mu.Lock()
+						processingErrors = append(processingErrors, fmt.Sprintf("Metacritic - %s: %v", listsClient.Name, err))
+						mu.Unlock()
+					}
+					return nil
+				})
+
 			case domain.ListTypePlaintext:
 				g.Go(func() error {
 					if err := s.plaintext(ctx, listsClient, dryRun, a); err != nil {

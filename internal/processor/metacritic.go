@@ -86,10 +86,7 @@ func (s Service) metacritic(ctx context.Context, cfg *domain.ListConfig, dryRun 
 		l.Trace().Msgf("%s", joinedTitles)
 
 		if len(joinedTitles) == 0 {
-			if strings.Contains(cfg.URL, "mdblist.com") {
-				l.Error().Msgf("Found no titles in %s", cfg.URL)
-				l.Error().Msgf("Are you sure this is a metacritic.tv JSON?")
-			}
+			l.Debug().Msgf("no titles found for filter: %v", filterID)
 			return nil
 		}
 

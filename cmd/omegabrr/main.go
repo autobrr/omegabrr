@@ -35,7 +35,8 @@ Usage:
     omegabrr lists              Run omegabrr lists once
     omegabrr run               	Run omegabrr service
     omegabrr version           	Print version info
-    omegabrr help              	Show this help message`
+    omegabrr help              	Show this help message
+` + "\n"
 
 func init() {
 	pflag.Usage = func() {

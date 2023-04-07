@@ -26,8 +26,8 @@ func NewService(cfg *domain.Config) *Service {
 
 func (s Service) Process(dryRun bool) error {
 	if s.cfg.Clients.Autobrr == nil {
-		log.Fatal().Msg("must supply autobrr configuration!")
-		return errors.New("must supply autobrr configuration")
+		log.Fatal().Msg("must supply omegabrr configuration!")
+		return errors.New("must supply omegabrr configuration")
 	}
 
 	a := autobrr.NewClient(s.cfg.Clients.Autobrr.Host, s.cfg.Clients.Autobrr.Apikey)
@@ -183,8 +183,8 @@ func (s Service) Process(dryRun bool) error {
 
 func (s Service) GetFilters(ctx context.Context) ([]autobrr.Filter, error) {
 	if s.cfg.Clients.Autobrr == nil {
-		log.Fatal().Msg("must supply autobrr configuration!")
-		return nil, errors.New("must supply autobrr configuration")
+		log.Fatal().Msg("must supply omegabrr configuration!")
+		return nil, errors.New("must supply omegabrr configuration")
 	}
 
 	a := autobrr.NewClient(s.cfg.Clients.Autobrr.Host, s.cfg.Clients.Autobrr.Apikey)

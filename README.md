@@ -24,7 +24,7 @@ clients:
       host: https://yourdomain.com/radarr
       apikey: YOUR_API_KEY
       filters:
-        - 15
+        - 15 # Change me
       #matchRelease: false / true
 
     - name: sonarr
@@ -37,7 +37,7 @@ clients:
         user: username
         pass: password
       filters:
-        - 14
+        - 14 # Change me
       #matchRelease: false / true
       #excludeAlternateTitles: false/ true # only works for Sonarr and defaults to false
 
@@ -46,7 +46,7 @@ clients:
       host: https://yourdomain.com/lidarr
       apikey: YOUR_API_KEY
       filters:
-        - 13
+        - 13 # Change me
       #matchRelease: false / true
 
     - name: readarr
@@ -54,15 +54,62 @@ clients:
       host: https://yourdomain.com/readarr
       apikey: YOUR_API_KEY
       filters:
-        - 12
+        - 12 # Change me
 
     - name: whisparr
       type: whisparr
       host: https://yourdomain.com/whisparr
       apikey: YOUR_API_KEY
       filters:
-        - 69
+        - 69 # Change me
       #matchRelease: false / true
+
+  lists:
+    - name: Latest TV Shows
+      type: mdblist
+      url: https://mdblist.com/lists/garycrawfordgc/latest-tv-shows/json
+      filters:
+        - 1 # Change me
+    - name: Anticipated TV
+      type: trakt
+      url: https://api.autobrr.com/lists/trakt/anticipated-tv
+      filters:
+        - 22 # Change me
+
+    - name: Upcoming Movies
+      type: trakt
+      url: https://api.autobrr.com/lists/trakt/upcoming-movies
+      filters:
+        - 21 # Change me
+
+    - name: Upcoming Bluray
+      type: trakt
+      url: https://api.autobrr.com/lists/trakt/upcoming-bluray
+      filters:
+        - 24 # Change me
+
+    - name: Popular TV
+      type: trakt
+      url: https://api.autobrr.com/lists/trakt/popular-tv
+      filters:
+        - 25 # Change me
+    
+    - name: StevenLu
+      type: trakt
+      url: https://api.autobrr.com/lists/stevenlu
+      filters:
+        - 23 # Change me
+
+    - name: New Albums
+      type: metacritic
+      url: https://api.autobrr.com/lists/metacritic/new-albums
+      filters:
+        - 9 # Change me
+    - name: Upcoming Albums
+      type: metacritic
+      url: https://api.autobrr.com/lists/metacritic/upcoming-albums
+      filters:
+        - 20 # Change me
 ```
 
 If you're trying to reach radarr or sonarr hosted on swizzin from some other location, you need to do it like this with basic auth:
@@ -77,7 +124,7 @@ If you're trying to reach radarr or sonarr hosted on swizzin from some other loc
         user: username
         pass: password
       filters:
-        - 15
+        - 15 # Change me
 ```
 
 Same goes for autobrr if it's behind basic auth.
@@ -103,7 +150,7 @@ If you want to match only certain tags you can use the `tagsInclude`.
   host: http://localhost:8989
   apikey: API_KEY
   filters:
-    - 14
+    - 14 # Change me
   tagsInclude:
     - mytag
 ```
@@ -116,7 +163,7 @@ If you want to exclude certain tags, you can use the `tagsExclude`.
   host: http://localhost:8989
   apikey: API_KEY
   filters:
-    - 14
+    - 14 # Change me
   tagsExclude:
     - myothertag
 ```
@@ -152,6 +199,12 @@ Optionally call with `--length <number>`for a custom length.
 ### arr
 
 Call with `omegabrr arr --config config.yaml`
+
+Supports to run with `--dry-run` to only fetch shows and skip filter update.
+
+### lists
+
+Call with `omegabrr lists --config config.yaml`
 
 Supports to run with `--dry-run` to only fetch shows and skip filter update.
 

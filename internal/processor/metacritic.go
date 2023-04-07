@@ -16,11 +16,6 @@ import (
 func (s Service) metacritic(ctx context.Context, cfg *domain.ListConfig, dryRun bool, brr *autobrr.Client) error {
 	l := log.With().Str("type", "metacritic").Str("client", cfg.Name).Logger()
 
-	// Validate the input URL
-	//if !strings.HasPrefix(cfg.URL, "https://sudoer.dev") {
-	//	return fmt.Errorf("invalid URL provided for Metacritic list, URL must start with https://api.autobrr.com/metacritic. For supported lists, please refer to the README")
-	//}
-
 	if cfg.URL == "" {
 		errMsg := "no URL provided for Metacritic list"
 		l.Error().Msg(errMsg)

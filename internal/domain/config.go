@@ -202,82 +202,94 @@ clients:
   #    pass: password
 
   arr:
-  #  - name: radarr
-  #    type: radarr
-  #    host: http://localhost:7878
-  #    apikey: API_KEY
-  #    filters:
-  #      - 15 # Change me
+    #- name: radarr
+    #  type: radarr
+    #  host: http://localhost:7878
+    #  apikey: API_KEY
+    #  filters:
+    #    - 15 # Change me
 
-  #  - name: radarr4k
-  #    type: radarr
-  #    host: http://localhost:7878
-  #    apikey: API_KEY
-  #    filters:
-  #      - 16 # Change me
+    #- name: radarr4k
+    #  type: radarr
+    #  host: http://localhost:7878
+    #  apikey: API_KEY
+    #  filters:
+    #    - 16 # Change me
 
-  #  - name: sonarr
-  #    type: sonarr
-  #    host: http://localhost:8989
-  #    apikey: API_KEY
-  #    filters:
-  #      - 14 # Change me
-  #    #excludeAlternateTitles: true # defaults to false
+    #- name: sonarr
+    #  type: sonarr
+    #  host: http://localhost:8989
+    #  apikey: API_KEY
+    #  filters:
+    #    - 14 # Change me
+    #  #excludeAlternateTitles: true # defaults to false
 
-  #  - name: readarr
-  #    type: readarr
-  #    host: http://localhost:8787
-  #    apikey: API_KEY
-  #    filters:
-  #      - 18 # Change me
+    #- name: readarr
+    #  type: readarr
+    #  host: http://localhost:8787
+    #  apikey: API_KEY
+    #  filters:
+    #    - 18 # Change me
 
-  #  - name: lidarr
-  #    type: lidarr
-  #    host: http://localhost:8686
-  #    apikey: API_KEY
-  #    filters:
-  #      - 32 # Change me
+    #- name: lidarr
+    #  type: lidarr
+    #  host: http://localhost:8686
+    #  apikey: API_KEY
+    #  filters:
+    #    - 32 # Change me
 
-  #  - name: whisparr
-  #    type: whisparr
-  #    host: http://localhost:6969
-  #    apikey: API_KEY
-  #    filters:
-  #      - 69 # Change me
-  
+    #- name: whisparr
+    #  type: whisparr
+    #  host: http://localhost:6969
+    #  apikey: API_KEY
+    #  filters:
+    #    - 69 # Change me
+
   lists:
-  #  - name: upcoming-bluray
-  #    type: trakt
-  #    url: https://sudoer.dev/bluray.json
-  #    filters:
-  #      - 17 # Change me
+    #- name: Latest TV Shows
+    #  type: mdblist
+    #  url: https://mdblist.com/lists/garycrawfordgc/latest-tv-shows/json
+    #  filters:
+    #    - 1 # Change me
 
-  #  - name: upcoming-movies
-  #    type: trakt
-  #    url: https://sudoer.dev/movies.json
-  #    filters:
-  #      - 17 # Change me
+    #- name: Anticipated TV
+    #  type: trakt
+    #  url: https://api.autobrr.com/lists/trakt/anticipated-tv
+    #  filters:
+    #    - 22 # Change me
 
-  #  - name: popular-shows
-  #    type: trakt
-  #    url: https://sudoer.dev/tv.json
-  #    filters:
-  #      - 17 # Change me
+    #- name: Upcoming Movies
+    #  type: trakt
+    #  url: https://api.autobrr.com/lists/trakt/upcoming-movies
+    #  filters:
+    #    - 21 # Change me
 
-  #  - name: trakt-anticipated-shows
-  #    type: trakt
-  #    url: https://sudoer.dev/ant.json
-  #    filters:
-  #      - 17 # Change me
+    #- name: Upcoming Bluray
+    #  type: trakt
+    #  url: https://api.autobrr.com/lists/trakt/upcoming-bluray
+    #  filters:
+    #    - 24 # Change me
 
-  #  - name: latest-tv-shows
-  #    type: mdblist
-  #    url: https://mdblist.com/lists/garycrawfordgc/latest-tv-shows/json
-  #    filters:
-  #    - 18 # Change me
+    #- name: Popular TV
+    #  type: trakt
+    #  url: https://api.autobrr.com/lists/trakt/popular-tv
+    #  filters:
+    #    - 25 # Change me
 
-  #  - name: custom-titles-line-by-line
-  #    type: plaintext
-  #    url: # only pages with contentType "text/plain"
-  #    filters:
-  #    - 19 # Change me`
+    #- name: StevenLu
+    #  type: trakt
+    #  url: https://api.autobrr.com/lists/stevenlu
+    #  filters:
+    #    - 23 # Change me
+
+    #- name: New Albums
+    #  type: metacritic
+    #  url: https://api.autobrr.com/lists/metacritic/new-albums
+    #  filters:
+    #    - 9 # Change me
+
+    #- name: Upcoming Albums
+    #  type: metacritic
+    #  url: https://api.autobrr.com/lists/metacritic/upcoming-albums
+    #  filters:
+    #    - 20 # Change me`

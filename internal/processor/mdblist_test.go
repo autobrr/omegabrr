@@ -11,19 +11,6 @@ import (
 	"github.com/autobrr/omegabrr/pkg/autobrr"
 )
 
-// Tests that an error is returned when an invalid URL is passed to the `mdblist` function
-func TestMdblist_InvalidURL(t *testing.T) {
-
-	s := Service{}
-
-	cfg := &domain.ListConfig{Name: "test list", URL: "http://example.com"}
-
-	err := s.mdblist(context.Background(), cfg, false, nil)
-	if err == nil {
-		t.Error("expected error, got nil")
-	}
-}
-
 // Unit test for the `mdblist` function with mocked dependencies.
 func TestMDBList(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

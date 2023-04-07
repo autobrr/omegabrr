@@ -73,6 +73,7 @@ func (s Service) plaintext(ctx context.Context, cfg *domain.ListConfig, dryRun b
 		l.Trace().Msgf("%s", joinedTitles)
 
 		if len(joinedTitles) == 0 {
+			l.Debug().Msgf("no titles found for filter: %v", filterID)
 			return nil
 		}
 

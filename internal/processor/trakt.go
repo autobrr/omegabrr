@@ -16,11 +16,6 @@ import (
 func (s Service) trakt(ctx context.Context, cfg *domain.ListConfig, dryRun bool, brr *autobrr.Client) error {
 	l := log.With().Str("type", "trakt").Str("client", cfg.Name).Logger()
 
-	// Validate the input URL
-	if !strings.HasPrefix(cfg.URL, "https://sudoer.dev") {
-		return fmt.Errorf("invalid URL provided for Trakt list, URL must start with https://api.autobrr.com/trakt. For supported lists, please refer to the README")
-	}
-
 	if cfg.URL == "" {
 		errMsg := "no URL provided for Trakt list"
 		l.Error().Msg(errMsg)
@@ -88,13 +83,7 @@ func (s Service) trakt(ctx context.Context, cfg *domain.ListConfig, dryRun bool,
 		l.Trace().Msgf("%s", joinedTitles)
 
 		if len(joinedTitles) == 0 {
-			if strings.Contains(cfg.URL, "mdblist.com") {
-				l.Error().Msgf("Found %s in a Trakt filter", cfg.URL)
-				l.Error().Msgf("Please make sure you have set up the URL as \"type: mdblist\" in the config")
-			} else {
-				l.Error().Msgf("Found no titles in %s", cfg.URL)
-				l.Error().Msgf("Are you sure this is a trakt.tv JSON?")
-			}
+			l.Debug().Msgf("no titles found for filter: %v", filterID)
 			return nil
 		}
 

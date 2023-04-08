@@ -26,9 +26,6 @@ import (
 var (
 	version = "dev"
 	commit  = ""
-
-	owner = "autobrr"
-	repo  = "omegabrr"
 )
 
 const usage = `omegabrr
@@ -72,7 +69,7 @@ func main() {
 			Timeout: 10 * time.Second,
 		}
 
-		resp, err := client.Get(fmt.Sprintf("https://api.autobrr.com/repos/%s/%s/releases/latest", owner, repo))
+		resp, err := client.Get("https://api.autobrr.com/repos/autobrr/omegabrr/releases/latest")
 		if err != nil {
 			if errors.Is(err, netHTTP.ErrHandlerTimeout) {
 				fmt.Println("Server timed out while fetching latest release from api")
@@ -85,7 +82,7 @@ func main() {
 
 		// brr-api returns 500 instead of 404 here
 		if resp.StatusCode == netHTTP.StatusNotFound || resp.StatusCode == netHTTP.StatusInternalServerError {
-			fmt.Printf("No release found for %s/%s\n", owner, repo)
+			fmt.Print("No release found")
 			os.Exit(1)
 		}
 

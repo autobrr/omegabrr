@@ -21,12 +21,13 @@ type BasicAuth struct {
 }
 
 type ListConfig struct {
-	Name         string     `koanf:"name"`
-	Type         ListType   `koanf:"type"`
-	URL          string     `koanf:"url"`
-	BasicAuth    *BasicAuth `koanf:"basicAuth"`
-	Filters      []int      `koanf:"filters"`
-	MatchRelease bool       `koanf:"matchRelease"`
+	Name         string            `koanf:"name"`
+	Type         ListType          `koanf:"type"`
+	URL          string            `koanf:"url"`
+	BasicAuth    *BasicAuth        `koanf:"basicAuth"`
+	Filters      []int             `koanf:"filters"`
+	MatchRelease bool              `koanf:"matchRelease"`
+	Headers      map[string]string `koanf:"headers"`
 }
 
 type ListType string

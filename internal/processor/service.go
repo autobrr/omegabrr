@@ -3,6 +3,7 @@ package processor
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"sync"
 	"time"
 
@@ -16,11 +17,16 @@ import (
 
 type Service struct {
 	cfg *domain.Config
+
+	httpClient *http.Client
 }
 
 func NewService(cfg *domain.Config) *Service {
 	return &Service{
 		cfg: cfg,
+		httpClient: &http.Client{
+			Timeout: 30 * time.Second,
+		},
 	}
 }
 

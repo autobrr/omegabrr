@@ -64,52 +64,54 @@ clients:
         - 69 # Change me
       #matchRelease: false / true
 
-  lists:
-    - name: Latest TV Shows
-      type: mdblist
-      url: https://mdblist.com/lists/garycrawfordgc/latest-tv-shows/json
-      filters:
-        - 1 # Change me
-    - name: Anticipated TV
-      type: trakt
-      url: https://api.autobrr.com/lists/trakt/anticipated-tv
-      filters:
-        - 22 # Change me
+lists:
+  - name: Latest TV Shows
+    type: mdblist
+    url: https://mdblist.com/lists/garycrawfordgc/latest-tv-shows/json
+    filters:
+      - 1 # Change me
 
-    - name: Upcoming Movies
-      type: trakt
-      url: https://api.autobrr.com/lists/trakt/upcoming-movies
-      filters:
-        - 21 # Change me
+  - name: Anticipated TV
+    type: trakt
+    url: https://api.autobrr.com/lists/trakt/anticipated-tv
+    filters:
+      - 22 # Change me
 
-    - name: Upcoming Bluray
-      type: trakt
-      url: https://api.autobrr.com/lists/trakt/upcoming-bluray
-      filters:
-        - 24 # Change me
+  - name: Upcoming Movies
+    type: trakt
+    url: https://api.autobrr.com/lists/trakt/upcoming-movies
+    filters:
+      - 21 # Change me
 
-    - name: Popular TV
-      type: trakt
-      url: https://api.autobrr.com/lists/trakt/popular-tv
-      filters:
-        - 25 # Change me
-    
-    - name: StevenLu
-      type: trakt
-      url: https://api.autobrr.com/lists/stevenlu
-      filters:
-        - 23 # Change me
+  - name: Upcoming Bluray
+    type: trakt
+    url: https://api.autobrr.com/lists/trakt/upcoming-bluray
+    filters:
+      - 24 # Change me
 
-    - name: New Albums
-      type: metacritic
-      url: https://api.autobrr.com/lists/metacritic/new-albums
-      filters:
-        - 9 # Change me
-    - name: Upcoming Albums
-      type: metacritic
-      url: https://api.autobrr.com/lists/metacritic/upcoming-albums
-      filters:
-        - 20 # Change me
+  - name: Popular TV
+    type: trakt
+    url: https://api.autobrr.com/lists/trakt/popular-tv
+    filters:
+      - 25 # Change me
+  
+  - name: StevenLu
+    type: trakt
+    url: https://api.autobrr.com/lists/stevenlu
+    filters:
+      - 23 # Change me
+
+  - name: New Albums
+    type: metacritic
+    url: https://api.autobrr.com/lists/metacritic/new-albums
+    filters:
+      - 9 # Change me
+
+  - name: Upcoming Albums
+    type: metacritic
+    url: https://api.autobrr.com/lists/metacritic/upcoming-albums
+    filters:
+      - 20 # Change me
 ```
 
 If you're trying to reach radarr or sonarr hosted on swizzin from some other location, you need to do it like this with basic auth:
@@ -166,6 +168,25 @@ If you want to exclude certain tags, you can use the `tagsExclude`.
     - 14 # Change me
   tagsExclude:
     - myothertag
+```
+
+### Lists
+
+Formerly known as regbrr and maintained by community members is now integrated into omegabrr! We now maintain the lists of media. 
+
+**Trakt**
+
+If you are using the Trakt api directly you need to have an **API key** which you can set via the headers object along with any other header needed for the request.
+
+```yaml
+lists:
+  - name: Some custom Trakt endpoint
+    type: trakt
+    url: https://api.trakt.tv/calendars/all
+    headers:
+      trakt-api-key: your_key_goes_here
+    filters:
+      - 22 # Change me
 ```
 
 ## Optionally use Match Releases field in your autobrr filter

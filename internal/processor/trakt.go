@@ -9,6 +9,7 @@ import (
 
 	"github.com/autobrr/omegabrr/internal/domain"
 	"github.com/autobrr/omegabrr/pkg/autobrr"
+
 	"github.com/fatih/color"
 	"github.com/rs/zerolog/log"
 )
@@ -27,7 +28,19 @@ func (s Service) trakt(ctx context.Context, cfg *domain.ListConfig, dryRun bool,
 	green := color.New(color.FgGreen).SprintFunc()
 	l.Debug().Msgf("fetching titles from %s", green(cfg.URL))
 
-	resp, err := http.Get(cfg.URL)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, cfg.URL, nil)
+	if err != nil {
+		l.Error().Err(err).Msg("could not make new request")
+		return err
+	}
+
+	req.Header.Set("trakt-api-version", "2")
+	//req.Header.Set("trakt-api-key", t.apiKey)
+	for k, v := range cfg.Headers {
+		req.Header.Set(k, v)
+	}
+
+	resp, err := s.httpClient.Do(req)
 	if err != nil {
 		l.Error().Err(err).Msgf("failed to fetch titles from URL: %s", cfg.URL)
 		return err

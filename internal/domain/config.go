@@ -20,6 +20,25 @@ type BasicAuth struct {
 	Pass string `koanf:"pass"`
 }
 
+type ListConfig struct {
+	Name         string            `koanf:"name"`
+	Type         ListType          `koanf:"type"`
+	URL          string            `koanf:"url"`
+	BasicAuth    *BasicAuth        `koanf:"basicAuth"`
+	Filters      []int             `koanf:"filters"`
+	MatchRelease bool              `koanf:"matchRelease"`
+	Headers      map[string]string `koanf:"headers"`
+}
+
+type ListType string
+
+var (
+	ListTypeTrakt      ListType = "trakt"
+	ListTypeMdblist    ListType = "mdblist"
+	ListTypeMetacritic ListType = "metacritic"
+	ListTypePlaintext  ListType = "plaintext"
+)
+
 type ArrConfig struct {
 	Name                   string     `koanf:"name"`
 	Type                   ArrType    `koanf:"type"`
@@ -60,6 +79,7 @@ type Config struct {
 		Autobrr *AutobrrConfig `koanf:"autobrr"`
 		Arr     []*ArrConfig   `koanf:"arr"`
 	} `koanf:"clients"`
+	Lists []*ListConfig `koanf:"lists"`
 }
 
 func (c *Config) defaults() {
@@ -70,6 +90,7 @@ func (c *Config) defaults() {
 
 	c.Clients.Autobrr = nil
 	c.Clients.Arr = nil
+	c.Lists = nil
 }
 
 var k = koanf.New(".")
@@ -182,45 +203,95 @@ clients:
   #    pass: password
 
   arr:
-  #  - name: radarr
-  #    type: radarr
-  #    host: http://localhost:7878
-  #    apikey: API_KEY
-  #    filters:
-  #      - 15 # Change me
+    #- name: radarr
+    #  type: radarr
+    #  host: http://localhost:7878
+    #  apikey: API_KEY
+    #  filters:
+    #    - 15 # Change me
 
-  #  - name: radarr4k
-  #    type: radarr
-  #    host: http://localhost:7878
-  #    apikey: API_KEY
-  #    filters:
-  #      - 16 # Change me
+    #- name: radarr4k
+    #  type: radarr
+    #  host: http://localhost:7878
+    #  apikey: API_KEY
+    #  filters:
+    #    - 16 # Change me
 
-  #  - name: sonarr
-  #    type: sonarr
-  #    host: http://localhost:8989
-  #    apikey: API_KEY
-  #    filters:
-  #      - 14 # Change me
-  #    #excludeAlternateTitles: true # defaults to false
+    #- name: sonarr
+    #  type: sonarr
+    #  host: http://localhost:8989
+    #  apikey: API_KEY
+    #  filters:
+    #    - 14 # Change me
+    #  #excludeAlternateTitles: true # defaults to false
 
-  #  - name: readarr
-  #    type: readarr
-  #    host: http://localhost:8787
-  #    apikey: API_KEY
-  #    filters:
-  #      - 18 # Change me
+    #- name: readarr
+    #  type: readarr
+    #  host: http://localhost:8787
+    #  apikey: API_KEY
+    #  filters:
+    #    - 18 # Change me
 
-  #  - name: lidarr
-  #    type: lidarr
-  #    host: http://localhost:8686
-  #    apikey: API_KEY
-  #    filters:
-  #      - 32 # Change me
+    #- name: lidarr
+    #  type: lidarr
+    #  host: http://localhost:8686
+    #  apikey: API_KEY
+    #  filters:
+    #    - 32 # Change me
 
-  #  - name: whisparr
-  #    type: whisparr
-  #    host: http://localhost:6969
-  #    apikey: API_KEY
-  #    filters:
-  #      - 69 # Change me`
+    #- name: whisparr
+    #  type: whisparr
+    #  host: http://localhost:6969
+    #  apikey: API_KEY
+    #  filters:
+    #    - 69 # Change me
+
+lists:
+  #- name: Latest TV Shows
+  #  type: mdblist
+  #  url: https://mdblist.com/lists/garycrawfordgc/latest-tv-shows/json
+  #  filters:
+  #    - 1 # Change me
+
+  #- name: Anticipated TV
+  #  type: trakt
+  #  url: https://api.autobrr.com/lists/trakt/anticipated-tv
+  #  filters:
+  #    - 22 # Change me
+
+  #- name: Upcoming Movies
+  #  type: trakt
+  #  url: https://api.autobrr.com/lists/trakt/upcoming-movies
+  #  filters:
+  #    - 21 # Change me
+
+  #- name: Upcoming Bluray
+  #  type: trakt
+  #  url: https://api.autobrr.com/lists/trakt/upcoming-bluray
+  #  filters:
+  #    - 24 # Change me
+
+  #- name: Popular TV
+  #  type: trakt
+  #  url: https://api.autobrr.com/lists/trakt/popular-tv
+  #  filters:
+  #    - 25 # Change me
+
+  #- name: StevenLu
+  #  type: trakt
+  #  url: https://api.autobrr.com/lists/stevenlu
+  #  filters:
+  #    - 23 # Change me
+
+  #- name: New Albums
+  #  type: metacritic
+  #  url: https://api.autobrr.com/lists/metacritic/new-albums
+  #  filters:
+  #    - 9 # Change me
+
+  #- name: Upcoming Albums
+  #  type: metacritic
+  #  url: https://api.autobrr.com/lists/metacritic/upcoming-albums
+  #  filters:
+  #    - 20 # Change me
+`

@@ -31,10 +31,12 @@ Turn your monitored shows from your arrs into autobrr filters, automagically!
 
 Usage:
     omegabrr generate-token	Generate API Token	Optionally call with --length <number>
-    omegabrr arr               	Run omegabrr once
+    omegabrr arr               	Run omegabrr arr once
+    omegabrr lists              Run omegabrr lists once
     omegabrr run               	Run omegabrr service
     omegabrr version           	Print version info
-    omegabrr help              	Show this help message`
+    omegabrr help              	Show this help message
+` + "\n"
 
 func init() {
 	pflag.Usage = func() {
@@ -68,6 +70,15 @@ func main() {
 		}
 		fmt.Fprintf(os.Stdout, "API Token: %v\nCopy and paste into your config file config.yaml\n", key)
 	case "arr":
+		cfg := domain.NewConfig(configPath)
+
+		p := processor.NewService(cfg)
+		if err := p.Process(dryRun); err != nil {
+			log.Error().Err(err).Msgf("error during processing")
+			os.Exit(1)
+		}
+
+	case "lists":
 		cfg := domain.NewConfig(configPath)
 
 		p := processor.NewService(cfg)

@@ -15,6 +15,7 @@ import (
 func TestTraktList(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Return sample JSON response for testing
+		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintln(w, `[{"title": "Movie 1", "movie": {"title": "Movie 1 Title"}}, {"title": "Movie 2", "show": {"title": "Show 1 Title"}}]`)
 	}))
 	defer ts.Close()

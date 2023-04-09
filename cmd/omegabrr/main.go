@@ -1,8 +1,11 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
+	netHTTP "net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -61,7 +64,39 @@ func main() {
 
 	switch cmd := pflag.Arg(0); cmd {
 	case "version":
-		fmt.Fprintf(flag.CommandLine.Output(), "Version: %v\nCommit: %v\n", version, commit)
+		fmt.Printf("Version: %v\nCommit: %v\n", version, commit)
+
+		// get the latest release tag from brr-api
+		client := &netHTTP.Client{
+			Timeout: 10 * time.Second,
+		}
+
+		resp, err := client.Get("https://api.autobrr.com/repos/autobrr/omegabrr/releases/latest")
+		if err != nil {
+			if errors.Is(err, netHTTP.ErrHandlerTimeout) {
+				fmt.Println("Server timed out while fetching latest release from api")
+			} else {
+				fmt.Printf("Failed to fetch latest release from api: %v\n", err)
+			}
+			os.Exit(1)
+		}
+		defer resp.Body.Close()
+
+		// brr-api returns 500 instead of 404 here
+		if resp.StatusCode == netHTTP.StatusNotFound || resp.StatusCode == netHTTP.StatusInternalServerError {
+			fmt.Print("No release found")
+			os.Exit(1)
+		}
+
+		var rel struct {
+			TagName string `json:"tag_name"`
+		}
+		if err := json.NewDecoder(resp.Body).Decode(&rel); err != nil {
+			fmt.Printf("Failed to decode response from api: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("Latest release: %v\n", rel.TagName)
+
 	case "generate-token":
 		key, err := apitoken.GenerateToken(*length)
 		if err != nil {

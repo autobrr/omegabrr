@@ -21,12 +21,13 @@ func TestMDBList(t *testing.T) {
 
 	cfg := &domain.ListConfig{
 		Name: "test",
-		URL:  "https://mdblist.com/lists/linaspurinis/top-watched-movies-of-the-week/json",
+		//URL:  "https://mdblist.com/lists/linaspurinis/top-watched-movies-of-the-week/json",
+		URL: ts.URL,
 	}
 
 	brr := &autobrr.Client{}
 
-	service := Service{}
+	service := NewService(nil)
 
 	err := service.mdblist(context.Background(), cfg, false, brr)
 	if err != nil {

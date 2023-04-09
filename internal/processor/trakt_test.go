@@ -21,12 +21,13 @@ func TestTraktList(t *testing.T) {
 
 	cfg := &domain.ListConfig{
 		Name: "test",
-		URL:  "https://api.autobrr.com/lists/trakt/anticipated-tv",
+		//URL:  "https://api.autobrr.com/lists/trakt/anticipated-tv",
+		URL: ts.URL,
 	}
 
 	brr := &autobrr.Client{}
 
-	service := Service{}
+	service := NewService(nil)
 
 	err := service.trakt(context.Background(), cfg, false, brr)
 	if err != nil {

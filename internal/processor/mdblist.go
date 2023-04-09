@@ -23,10 +23,6 @@ func (s Service) mdblist(ctx context.Context, cfg *domain.ListConfig, dryRun boo
 
 	var titles []string
 
-	if !strings.HasPrefix(cfg.URL, "https://mdblist.com/") || !strings.HasSuffix(cfg.URL, "/json") {
-		return fmt.Errorf("invalid URL: %s, URL should start with https://mdblist.com and end with /json", cfg.URL)
-	}
-
 	green := color.New(color.FgGreen).SprintFunc()
 	l.Debug().Msgf("fetching titles from %s", green(cfg.URL))
 

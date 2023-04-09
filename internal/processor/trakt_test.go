@@ -21,7 +21,7 @@ func TestTraktList(t *testing.T) {
 
 	cfg := &domain.ListConfig{
 		Name: "test",
-		URL:  "https://sudoer.dev/ant.json",
+		URL:  "https://api.autobrr.com/lists/trakt/anticipated-tv",
 	}
 
 	brr := &autobrr.Client{}

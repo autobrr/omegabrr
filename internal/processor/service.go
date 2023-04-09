@@ -111,8 +111,8 @@ func (s Service) Process(dryRun bool) error {
 		}
 	}
 
-	if s.cfg.Clients.Lists != nil {
-		for _, listsClient := range s.cfg.Clients.Lists {
+	if s.cfg.Lists != nil {
+		for _, listsClient := range s.cfg.Lists {
 			listsClient := listsClient
 
 			switch listsClient.Type {

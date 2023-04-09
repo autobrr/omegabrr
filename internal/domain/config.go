@@ -77,8 +77,8 @@ type Config struct {
 	Clients  struct {
 		Autobrr *AutobrrConfig `koanf:"autobrr"`
 		Arr     []*ArrConfig   `koanf:"arr"`
-		Lists   []*ListConfig  `koanf:"lists"`
 	} `koanf:"clients"`
+	Lists []*ListConfig `koanf:"lists"`
 }
 
 func (c *Config) defaults() {
@@ -89,7 +89,7 @@ func (c *Config) defaults() {
 
 	c.Clients.Autobrr = nil
 	c.Clients.Arr = nil
-	c.Clients.Lists = nil
+	c.Lists = nil
 }
 
 var k = koanf.New(".")
@@ -245,51 +245,52 @@ clients:
     #  filters:
     #    - 69 # Change me
 
-  lists:
-    #- name: Latest TV Shows
-    #  type: mdblist
-    #  url: https://mdblist.com/lists/garycrawfordgc/latest-tv-shows/json
-    #  filters:
-    #    - 1 # Change me
+lists:
+  #- name: Latest TV Shows
+  #  type: mdblist
+  #  url: https://mdblist.com/lists/garycrawfordgc/latest-tv-shows/json
+  #  filters:
+  #    - 1 # Change me
 
-    #- name: Anticipated TV
-    #  type: trakt
-    #  url: https://api.autobrr.com/lists/trakt/anticipated-tv
-    #  filters:
-    #    - 22 # Change me
+  #- name: Anticipated TV
+  #  type: trakt
+  #  url: https://api.autobrr.com/lists/trakt/anticipated-tv
+  #  filters:
+  #    - 22 # Change me
 
-    #- name: Upcoming Movies
-    #  type: trakt
-    #  url: https://api.autobrr.com/lists/trakt/upcoming-movies
-    #  filters:
-    #    - 21 # Change me
+  #- name: Upcoming Movies
+  #  type: trakt
+  #  url: https://api.autobrr.com/lists/trakt/upcoming-movies
+  #  filters:
+  #    - 21 # Change me
 
-    #- name: Upcoming Bluray
-    #  type: trakt
-    #  url: https://api.autobrr.com/lists/trakt/upcoming-bluray
-    #  filters:
-    #    - 24 # Change me
+  #- name: Upcoming Bluray
+  #  type: trakt
+  #  url: https://api.autobrr.com/lists/trakt/upcoming-bluray
+  #  filters:
+  #    - 24 # Change me
 
-    #- name: Popular TV
-    #  type: trakt
-    #  url: https://api.autobrr.com/lists/trakt/popular-tv
-    #  filters:
-    #    - 25 # Change me
+  #- name: Popular TV
+  #  type: trakt
+  #  url: https://api.autobrr.com/lists/trakt/popular-tv
+  #  filters:
+  #    - 25 # Change me
 
-    #- name: StevenLu
-    #  type: trakt
-    #  url: https://api.autobrr.com/lists/stevenlu
-    #  filters:
-    #    - 23 # Change me
+  #- name: StevenLu
+  #  type: trakt
+  #  url: https://api.autobrr.com/lists/stevenlu
+  #  filters:
+  #    - 23 # Change me
 
-    #- name: New Albums
-    #  type: metacritic
-    #  url: https://api.autobrr.com/lists/metacritic/new-albums
-    #  filters:
-    #    - 9 # Change me
+  #- name: New Albums
+  #  type: metacritic
+  #  url: https://api.autobrr.com/lists/metacritic/new-albums
+  #  filters:
+  #    - 9 # Change me
 
-    #- name: Upcoming Albums
-    #  type: metacritic
-    #  url: https://api.autobrr.com/lists/metacritic/upcoming-albums
-    #  filters:
-    #    - 20 # Change me`
+  #- name: Upcoming Albums
+  #  type: metacritic
+  #  url: https://api.autobrr.com/lists/metacritic/upcoming-albums
+  #  filters:
+  #    - 20 # Change me
+`

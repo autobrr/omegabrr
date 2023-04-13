@@ -88,7 +88,13 @@ func (s Service) plaintext(ctx context.Context, cfg *domain.ListConfig, dryRun b
 			return nil
 		}
 
-		f := autobrr.UpdateFilter{Shows: strings.Join(filterTitles, ",")}
+		f := autobrr.UpdateFilter{Shows: joinedTitles}
+
+		if cfg.Album {
+			f = autobrr.UpdateFilter{Albums: joinedTitles}
+		} else if cfg.MatchRelease {
+			f = autobrr.UpdateFilter{MatchReleases: joinedTitles}
+		}
 
 		if !dryRun {
 			if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {

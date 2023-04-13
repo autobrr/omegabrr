@@ -27,6 +27,7 @@ type ListConfig struct {
 	BasicAuth    *BasicAuth        `koanf:"basicAuth"`
 	Filters      []int             `koanf:"filters"`
 	MatchRelease bool              `koanf:"matchRelease"`
+	Album        bool              `koanf:"album"`
 	Headers      map[string]string `koanf:"headers"`
 }
 

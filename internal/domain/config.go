@@ -125,6 +125,26 @@ func NewConfig(configPath string) *Config {
 				Str("service", "config").
 				Msgf("failed unmarshalling %q", configPath)
 		}
+
+		// validate "Filters" and "URL" field for each List
+		for _, list := range cfg.Lists {
+			if len(list.Filters) < 1 || list.URL == "" {
+				log.Error().
+					Str("service", "config").
+					Msgf("Filters or URL not set correctly for list: %s", list.Name)
+				os.Exit(1)
+			}
+		}
+
+		// validate "Filters" and "Host" field for each Arr
+		for _, arr := range cfg.Clients.Arr {
+			if len(arr.Filters) < 1 || arr.Host == "" {
+				log.Fatal().
+					Str("service", "config").
+					Msgf("Filters or host not set correctly for Arr: %s", arr.Name)
+			}
+		}
+
 	}
 
 	return cfg

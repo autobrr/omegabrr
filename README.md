@@ -199,6 +199,19 @@ Readarr will only use the `Match releases` field for now, so setting `matchRelea
 
 You can drop alternate show titles from being added by setting `excludeAlternateTitles: true` for Sonarr in your config.
 
+## Plaintext lists specific options
+
+Plaintext lists can be anything, therefore you can optionally set `matchRelease: true` or `album: true` to use these fields in your autobrr filter. If not set, it will use the `Movies / Shows` field.
+
+```yaml
+lists:
+  - name: Personal list
+    type: plaintext
+    url: https://gist.githubusercontent.com/autobrr/somegist/raw
+    filters:
+      - 27 # change me
+```
+
 ## Commands
 
 Available commands.

@@ -142,6 +142,7 @@ func NewConfig(configPath string) *Config {
 				log.Fatal().
 					Str("service", "config").
 					Msgf("Filters or host not set correctly for Arr: %s", arr.Name)
+				os.Exit(1)
 			}
 		}
 

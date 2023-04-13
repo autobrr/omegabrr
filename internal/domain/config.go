@@ -95,6 +95,15 @@ func (c *Config) defaults() {
 
 var k = koanf.New(".")
 
+func validateConfig(condition bool, field, entityType, entityName string) {
+	if condition {
+		log.Fatal().
+			Str("service", "config").
+			Msgf("%s not set for %s: %s", field, entityType, entityName)
+		os.Exit(1)
+	}
+}
+
 func NewConfig(configPath string) *Config {
 	cfg := &Config{}
 
@@ -127,56 +136,16 @@ func NewConfig(configPath string) *Config {
 		}
 
 		for _, list := range cfg.Lists {
-			if len(list.Filters) < 1 {
-				log.Fatal().
-					Str("service", "config").
-					Msgf("Filters not set for list: %s", list.Name)
-				os.Exit(1)
-			}
-
-			if list.URL == "" {
-				log.Fatal().
-					Str("service", "config").
-					Msgf("URL not set for list: %s", list.Name)
-				os.Exit(1)
-			}
-
-			if list.Type == "" {
-				log.Fatal().
-					Str("service", "config").
-					Msgf("Type not set for list: %s", list.Name)
-				os.Exit(1)
-			}
+			validateConfig(len(list.Filters) < 1, "Filters", "list", list.Name)
+			validateConfig(list.URL == "", "URL", "list", list.Name)
+			validateConfig(list.Type == "", "Type", "list", list.Name)
 		}
 
 		for _, arr := range cfg.Clients.Arr {
-			if len(arr.Filters) < 1 {
-				log.Fatal().
-					Str("service", "config").
-					Msgf("Filters not set for arr: %s", arr.Name)
-				os.Exit(1)
-			}
-
-			if arr.Host == "" {
-				log.Fatal().
-					Str("service", "config").
-					Msgf("Host not set for arr: %s", arr.Name)
-				os.Exit(1)
-			}
-
-			if arr.Apikey == "" {
-				log.Fatal().
-					Str("service", "config").
-					Msgf("API not set for arr: %s", arr.Name)
-				os.Exit(1)
-			}
-
-			if arr.Type == "" {
-				log.Fatal().
-					Str("service", "config").
-					Msgf("Type not set correctly for arr: %s", arr.Name)
-				os.Exit(1)
-			}
+			validateConfig(len(arr.Filters) < 1, "Filters", "arr", arr.Name)
+			validateConfig(arr.Host == "", "Host", "arr", arr.Name)
+			validateConfig(arr.Apikey == "", "API", "arr", arr.Name)
+			validateConfig(arr.Type == "", "Type", "arr", arr.Name)
 		}
 
 	}

@@ -126,22 +126,55 @@ func NewConfig(configPath string) *Config {
 				Msgf("failed unmarshalling %q", configPath)
 		}
 
-		// validate "Filters" and "URL" field for each List
 		for _, list := range cfg.Lists {
-			if len(list.Filters) < 1 || list.URL == "" {
-				log.Error().
+			if len(list.Filters) < 1 {
+				log.Fatal().
 					Str("service", "config").
-					Msgf("Filters or URL not set correctly for list: %s", list.Name)
+					Msgf("Filters not set for list: %s", list.Name)
+				os.Exit(1)
+			}
+
+			if list.URL == "" {
+				log.Fatal().
+					Str("service", "config").
+					Msgf("URL not set for list: %s", list.Name)
+				os.Exit(1)
+			}
+
+			if list.Type == "" {
+				log.Fatal().
+					Str("service", "config").
+					Msgf("Type not set for list: %s", list.Name)
 				os.Exit(1)
 			}
 		}
 
-		// validate "Filters" and "Host" field for each Arr
 		for _, arr := range cfg.Clients.Arr {
-			if len(arr.Filters) < 1 || arr.Host == "" {
+			if len(arr.Filters) < 1 {
 				log.Fatal().
 					Str("service", "config").
-					Msgf("Filters or host not set correctly for Arr: %s", arr.Name)
+					Msgf("Filters not set for arr: %s", arr.Name)
+				os.Exit(1)
+			}
+
+			if arr.Host == "" {
+				log.Fatal().
+					Str("service", "config").
+					Msgf("Host not set for arr: %s", arr.Name)
+				os.Exit(1)
+			}
+
+			if arr.Apikey == "" {
+				log.Fatal().
+					Str("service", "config").
+					Msgf("API not set for arr: %s", arr.Name)
+				os.Exit(1)
+			}
+
+			if arr.Type == "" {
+				log.Fatal().
+					Str("service", "config").
+					Msgf("Type not set correctly for arr: %s", arr.Name)
 				os.Exit(1)
 			}
 		}

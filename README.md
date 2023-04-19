@@ -289,7 +289,7 @@ After=syslog.target network-online.target
 Type=simple
 User=%i
 Group=%i
-ExecStart=/usr/bin/omegabrr --config=/home/%i/.config/omegabrr/config.yaml
+ExecStart=/usr/bin/omegabrr run --config=/home/%i/.config/omegabrr/config.yaml
 
 [Install]
 WantedBy=multi-user.target

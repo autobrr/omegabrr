@@ -1,6 +1,6 @@
 # OMEGABRR
 
-Gathers shows from the arrs and puts into filter in autobrr.
+Omegabrr transforms monitored shows, movies, books and music from arrs into autobrr filters. It also supports adding titles from custom lists to autobrr filters.
 
 ## Config
 

@@ -62,7 +62,7 @@ func Test_processTitle(t *testing.T) {
 				title:        "Whose Line Is It Anyway? (US)",
 				matchRelease: false,
 			},
-			want: []string{"Whose?Line?Is?It?Anyway", "Whose?Line?Is?It?Anyway*US", "Whose?Line?Is?It?Anyway?"},
+			want: []string{"Whose?Line?Is?It?Anyway", "Whose?Line?Is?It?Anyway*US", "Whose?Line?Is?It?Anyway?", "Whose?Line?Is?It?Anyway*US?"},
 		},
 		{
 			name: "test_07",
@@ -70,7 +70,7 @@ func Test_processTitle(t *testing.T) {
 				title:        "MasterChef (US)",
 				matchRelease: false,
 			},
-			want: []string{"MasterChef*US", "MasterChef"},
+			want: []string{"MasterChef*US", "MasterChef", "MasterChef*US?"},
 		},
 		{
 			name: "test_08",
@@ -102,7 +102,7 @@ func Test_processTitle(t *testing.T) {
 				title:        "The Handmaid's Tale (US)",
 				matchRelease: false,
 			},
-			want: []string{"The?Handmaid?s?Tale*US", "The?Handmaids?Tale*US", "The?Handmaid?s?Tale", "The?Handmaids?Tale"},
+			want: []string{"The?Handmaid?s?Tale*US", "The?Handmaids?Tale*US", "The?Handmaid?s?Tale", "The?Handmaids?Tale", "The?Handmaid?s?Tale*US?", "The?Handmaids?Tale*US?"},
 		},
 		{
 			name: "test_12",
@@ -142,7 +142,7 @@ func Test_processTitle(t *testing.T) {
 				title:        "Master.Chef (US)",
 				matchRelease: false,
 			},
-			want: []string{"Master?Chef*US", "Master?Chef"},
+			want: []string{"Master?Chef*US", "Master?Chef", "Master?Chef*US?"},
 		},
 		{
 			name: "test_17",
@@ -150,7 +150,7 @@ func Test_processTitle(t *testing.T) {
 				title:        "Whose Line Is It Anyway? (US)",
 				matchRelease: false,
 			},
-			want: []string{"Whose?Line?Is?It?Anyway*US", "Whose?Line?Is?It?Anyway?", "Whose?Line?Is?It?Anyway"},
+			want: []string{"Whose?Line?Is?It?Anyway*US", "Whose?Line?Is?It?Anyway?", "Whose?Line?Is?It?Anyway", "Whose?Line?Is?It?Anyway*US?"},
 		},
 		{
 			name: "test_18",

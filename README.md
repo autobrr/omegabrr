@@ -254,7 +254,7 @@ If you have custom networks then make sure to add those, so it can communicate w
 
 On Linux-based systems it is recommended to run omegabrr as a systemd service.
 
-Download the [latest binary](https://github.com/autobrr/omegabrr/releases/latest) for your system and place it in `/usr/bin`. 
+Download the [latest binary](https://github.com/autobrr/omegabrr/releases/latest) for your system and place it in `/usr/local/bin`. 
 
 Example: Download binary
 
@@ -266,7 +266,7 @@ Extract
 
 Move to somewhere in `$PATH`. Needs to be edited in the systemd service file if using other location.
 
-    sudo mv ~/omegabrr /usr/bin/
+    sudo mv ~/omegabrr /usr/local/bin/
 
 After that create the config directory for your user:
 
@@ -289,7 +289,7 @@ After=syslog.target network-online.target
 Type=simple
 User=%i
 Group=%i
-ExecStart=/usr/bin/omegabrr --config=/home/%i/.config/omegabrr/config.yaml
+ExecStart=/usr/local/bin/omegabrr run --config=/home/%i/.config/omegabrr/config.yaml
 
 [Install]
 WantedBy=multi-user.target
@@ -297,11 +297,11 @@ WantedBy=multi-user.target
 
 Start the service. Enable will make it startup on reboot.
 
-    sudo systemctl enable -q --now omegabrr@USERNAME
+    sudo systemctl enable -q --now omegabrr@$USERNAME
 
 Make sure it's running and **active**
 
-    sudo systemctl status omegabrr@USERNAME.service
+    sudo systemctl status omegabrr@$USERNAME.service
 
 By default, the config is set to listen on only `127.0.0.1`. It's highly advised to put it behind a reverse-proxy like nginx or traefik etc.
 
@@ -309,4 +309,4 @@ If you are not running a reverse proxy change host in the `config.toml` to `0.0.
 
 On first run it will create a default config, `~/.config/omegabrr/config.yaml` that you will need to edit.
 
-After the config is edited you need to restart the service `systemctl restart omegabrr@USERNAME.service`.
+After the config is edited you need to restart the service `systemctl restart omegabrr@$USERNAME.service`.

@@ -95,6 +95,15 @@ func (c *Config) defaults() {
 
 var k = koanf.New(".")
 
+func validateConfig(condition bool, field, entityType, entityName string) {
+	if condition {
+		log.Fatal().
+			Str("service", "config").
+			Msgf("%s not set for %s: %s", field, entityType, entityName)
+		os.Exit(1)
+	}
+}
+
 func NewConfig(configPath string) *Config {
 	cfg := &Config{}
 
@@ -125,6 +134,20 @@ func NewConfig(configPath string) *Config {
 				Str("service", "config").
 				Msgf("failed unmarshalling %q", configPath)
 		}
+
+		for _, list := range cfg.Lists {
+			validateConfig(len(list.Filters) < 1, "Filters", "list", list.Name)
+			validateConfig(list.URL == "", "URL", "list", list.Name)
+			validateConfig(list.Type == "", "Type", "list", list.Name)
+		}
+
+		for _, arr := range cfg.Clients.Arr {
+			validateConfig(len(arr.Filters) < 1, "Filters", "arr", arr.Name)
+			validateConfig(arr.Host == "", "Host", "arr", arr.Name)
+			validateConfig(arr.Apikey == "", "API", "arr", arr.Name)
+			validateConfig(arr.Type == "", "Type", "arr", arr.Name)
+		}
+
 	}
 
 	return cfg

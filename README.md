@@ -1,6 +1,6 @@
 # OMEGABRR
 
-Gathers shows from the arrs and puts into filter in autobrr.
+Omegabrr transforms items monitored by arrs or lists into autobrr filters. Useful for automating your filters for monitored media or racing criteria.
 
 ## Config
 

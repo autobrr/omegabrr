@@ -184,6 +184,14 @@ func Test_processTitle(t *testing.T) {
 			},
 			want: []string{"-!"},
 		},
+		{
+			name: "test_22",
+			args: args{
+				title:        "A\u00a0Quiet\u00a0Place:\u00a0Day One",
+				matchRelease: false,
+			},
+			want: []string{"A?Quiet?Place*Day?One"},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

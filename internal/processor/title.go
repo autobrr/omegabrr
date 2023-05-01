@@ -19,7 +19,7 @@ func processTitle(title string, matchRelease bool) []string {
 	t := NewTitleSlice()
 
 	// Regex patterns
-	replaceRegexp := regexp.MustCompile(`[[:punct:][:space:]à-üÀ-Ü]`)
+	replaceRegexp := regexp.MustCompile(`[[:punct:]\s\x{00a0}\x{2000}-\x{200f}\x{2028}-\x{202f}\x{205f}-\x{206f}à-üÀ-Ü]`)
 	questionmarkRegexp := regexp.MustCompile(`[?]{2,}`)
 	regionCodeRegexp := regexp.MustCompile(`\(.+\)$`)
 	parenthesesEndRegexp := regexp.MustCompile(`\)$`)

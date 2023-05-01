@@ -28,7 +28,7 @@ func processTitle(title string, matchRelease bool) []string {
 		t.Add(title, matchRelease)
 	} else {
 		// title with all non-alphanumeric characters replaced by "?"
-		apostropheTitle := parenthesesEndRegexp.ReplaceAllString(title, "")
+		apostropheTitle := parenthesesEndRegexp.ReplaceAllString(title, "?")
 		apostropheTitle = replaceRegexp.ReplaceAllString(apostropheTitle, "?")
 		apostropheTitle = questionmarkRegexp.ReplaceAllString(apostropheTitle, "*")
 
@@ -36,7 +36,7 @@ func processTitle(title string, matchRelease bool) []string {
 		t.Add(strings.TrimRight(apostropheTitle, "?* "), matchRelease)
 
 		// title with apostrophes removed and all non-alphanumeric characters replaced by "?"
-		noApostropheTitle := parenthesesEndRegexp.ReplaceAllString(title, "")
+		noApostropheTitle := parenthesesEndRegexp.ReplaceAllString(title, "?")
 		noApostropheTitle = strings.ReplaceAll(noApostropheTitle, "'", "")
 		noApostropheTitle = replaceRegexp.ReplaceAllString(noApostropheTitle, "?")
 		noApostropheTitle = questionmarkRegexp.ReplaceAllString(noApostropheTitle, "*")

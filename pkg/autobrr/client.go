@@ -146,5 +146,6 @@ type Filter struct {
 type UpdateFilter struct {
 	Shows         string `json:"shows"`
 	Albums        string `json:"albums"`
+	Artists       string `json:"artists"`
 	MatchReleases string `json:"match_releases,omitempty"`
 }

@@ -22,8 +22,6 @@ func (s Service) metacritic(ctx context.Context, cfg *domain.ListConfig, dryRun 
 		return fmt.Errorf(errMsg)
 	}
 
-	var titles []string
-
 	green := color.New(color.FgGreen).SprintFunc()
 	l.Debug().Msgf("fetching titles from %s", green(cfg.URL))
 
@@ -74,8 +72,22 @@ func (s Service) metacritic(ctx context.Context, cfg *domain.ListConfig, dryRun 
 		return err
 	}
 
+	var titles []string
+	var artists []string
+
 	for _, album := range data.Albums {
 		titles = append(titles, album.Title)
+		artists = append(artists, album.Artist)
+	}
+
+	// Deduplicate artists
+	uniqueArtists := []string{}
+	seenArtists := map[string]struct{}{}
+	for _, artist := range artists {
+		if _, ok := seenArtists[artist]; !ok {
+			uniqueArtists = append(uniqueArtists, artist)
+			seenArtists[artist] = struct{}{}
+		}
 	}
 
 	for _, filterID := range cfg.Filters {
@@ -86,6 +98,12 @@ func (s Service) metacritic(ctx context.Context, cfg *domain.ListConfig, dryRun 
 			filterTitles = append(filterTitles, processTitle(title, cfg.MatchRelease)...)
 		}
 
+		filterArtists := []string{}
+		for _, artist := range uniqueArtists {
+			filterArtists = append(filterArtists, processTitle(artist, cfg.MatchRelease)...)
+		}
+
+		joinedArtists := strings.Join(filterArtists, ",")
 		joinedTitles := strings.Join(filterTitles, ",")
 
 		l.Trace().Msgf("%s", joinedTitles)
@@ -95,11 +113,7 @@ func (s Service) metacritic(ctx context.Context, cfg *domain.ListConfig, dryRun 
 			return nil
 		}
 
-		f := autobrr.UpdateFilter{Albums: joinedTitles}
-
-		if cfg.MatchRelease {
-			f = autobrr.UpdateFilter{MatchReleases: joinedTitles}
-		}
+		f := autobrr.UpdateFilter{Albums: joinedTitles, Artists: joinedArtists}
 
 		if !dryRun {
 			if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {

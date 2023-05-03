@@ -25,10 +25,28 @@ func newWebhookHandler(cfg *domain.Config, processorSvc *processor.Service) *web
 func (h webhookHandler) Routes(r chi.Router) {
 	r.Get("/trigger", h.run)
 	r.Post("/trigger", h.run)
+	r.Get("/trigger/arr", h.arr)
+	r.Get("/trigger/lists", h.lists)
+	r.Post("/trigger/arr", h.arr)
+	r.Post("/trigger/lists", h.lists)
 }
 
 func (h webhookHandler) run(w http.ResponseWriter, r *http.Request) {
-	if err := h.processorService.Process(false); err != nil {
+	if err := h.processorService.Process("both", false); err != nil {
+		render.NoContent(w, r)
+	}
+	render.Status(r, http.StatusOK)
+}
+
+func (h webhookHandler) arr(w http.ResponseWriter, r *http.Request) {
+	if err := h.processorService.Process("arr", false); err != nil {
+		render.NoContent(w, r)
+	}
+	render.Status(r, http.StatusOK)
+}
+
+func (h webhookHandler) lists(w http.ResponseWriter, r *http.Request) {
+	if err := h.processorService.Process("lists", false); err != nil {
 		render.NoContent(w, r)
 	}
 	render.Status(r, http.StatusOK)

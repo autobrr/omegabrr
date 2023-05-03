@@ -29,24 +29,7 @@ func NewService(cfg *domain.Config) *Service {
 	}
 }
 
-func (s Service) Process(dryRun bool) error {
-	if s.cfg.Clients.Autobrr == nil {
-		log.Fatal().Msg("must supply omegabrr configuration!")
-		return errors.New("must supply omegabrr configuration")
-	}
-
-	a := autobrr.NewClient(s.cfg.Clients.Autobrr.Host, s.cfg.Clients.Autobrr.Apikey)
-	if s.cfg.Clients.Autobrr.BasicAuth != nil {
-		a.SetBasicAuth(s.cfg.Clients.Autobrr.BasicAuth.User, s.cfg.Clients.Autobrr.BasicAuth.Pass)
-	}
-
-	log.Debug().Msgf("starting filter processing...")
-
-	start := time.Now()
-
-	g, ctx := errgroup.WithContext(context.Background())
-
-	// Create a slice to store errors
+func (s Service) ProcessArrs(ctx context.Context, dryRun bool, a *autobrr.Client) []string {
 	var processingErrors []string
 
 	if s.cfg.Clients.Arr != nil {
@@ -87,6 +70,12 @@ func (s Service) Process(dryRun bool) error {
 		}
 	}
 
+	return processingErrors
+}
+
+func (s Service) ProcessLists(ctx context.Context, dryRun bool, a *autobrr.Client) []string {
+	var processingErrors []string
+
 	if s.cfg.Lists != nil {
 		for _, listsClient := range s.cfg.Lists {
 			listsClient := listsClient
@@ -117,6 +106,41 @@ func (s Service) Process(dryRun bool) error {
 				}
 			}
 		}
+	}
+
+	return processingErrors
+}
+
+func (s Service) Process(processType string, dryRun bool) error {
+	if s.cfg.Clients.Autobrr == nil {
+		log.Fatal().Msg("must supply omegabrr configuration!")
+		return errors.New("must supply omegabrr configuration")
+	}
+
+	a := autobrr.NewClient(s.cfg.Clients.Autobrr.Host, s.cfg.Clients.Autobrr.Apikey)
+	if s.cfg.Clients.Autobrr.BasicAuth != nil {
+		a.SetBasicAuth(s.cfg.Clients.Autobrr.BasicAuth.User, s.cfg.Clients.Autobrr.BasicAuth.Pass)
+	}
+
+	log.Debug().Msgf("starting filter processing...")
+
+	start := time.Now()
+
+	g, ctx := errgroup.WithContext(context.Background())
+
+	var processingErrors []string
+
+	switch processType {
+	case "arr":
+		processingErrors = append(processingErrors, s.ProcessArrs(ctx, dryRun, a)...)
+	case "lists":
+		processingErrors = append(processingErrors, s.ProcessLists(ctx, dryRun, a)...)
+	case "both":
+		processingErrors = append(processingErrors, s.ProcessArrs(ctx, dryRun, a)...)
+		processingErrors = append(processingErrors, s.ProcessLists(ctx, dryRun, a)...)
+	default:
+		log.Error().Msgf("Invalid process type: %s", processType)
+		return errors.New("invalid process type")
 	}
 
 	if err := g.Wait(); err != nil {

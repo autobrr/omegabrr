@@ -13,7 +13,7 @@ type RunProcessorJob struct {
 }
 
 func (j *RunProcessorJob) Run() {
-	if err := j.ProcessorService.Process(false); err != nil {
+	if err := j.ProcessorService.Process("both", false); err != nil {
 		j.Log.Error().Err(err).Msgf("something went wrong running processor")
 	}
 }

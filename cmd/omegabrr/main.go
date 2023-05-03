@@ -108,7 +108,7 @@ func main() {
 		cfg := domain.NewConfig(configPath)
 
 		p := processor.NewService(cfg)
-		if err := p.Process(dryRun); err != nil {
+		if err := p.Process("arr", dryRun); err != nil {
 			log.Error().Err(err).Msgf("error during processing")
 			os.Exit(1)
 		}
@@ -117,7 +117,7 @@ func main() {
 		cfg := domain.NewConfig(configPath)
 
 		p := processor.NewService(cfg)
-		if err := p.Process(dryRun); err != nil {
+		if err := p.Process("lists", dryRun); err != nil {
 			log.Error().Err(err).Msgf("error during processing")
 			os.Exit(1)
 		}
@@ -149,7 +149,7 @@ func main() {
 
 			time.Sleep(15 * time.Second)
 
-			if err := p.Process(false); err != nil {
+			if err := p.Process("both", false); err != nil {
 				log.Error().Err(err).Msgf("error during initial processing")
 			}
 		}()

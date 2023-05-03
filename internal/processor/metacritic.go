@@ -117,7 +117,7 @@ func (s Service) metacritic(ctx context.Context, cfg *domain.ListConfig, dryRun 
 
 		if !dryRun {
 			if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
-				errMsg := fmt.Sprintf("error updating filter: %v, %v (check filterID)", filterID, err)
+				errMsg := fmt.Sprintf("error updating filter: %v, %v", filterID, err)
 				l.Error().Msg(errMsg)
 				return fmt.Errorf("%s", errMsg)
 			}

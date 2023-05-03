@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"strings"
+
 	"github.com/autobrr/omegabrr/internal/domain"
 	"github.com/autobrr/omegabrr/pkg/autobrr"
 	"github.com/fatih/color"
 	"github.com/rs/zerolog/log"
-	"net/http"
-	"strings"
 )
 
 func (s Service) mdblist(ctx context.Context, cfg *domain.ListConfig, dryRun bool, brr *autobrr.Client) error {
@@ -82,8 +83,9 @@ func (s Service) mdblist(ctx context.Context, cfg *domain.ListConfig, dryRun boo
 
 		if !dryRun {
 			if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
-				l.Error().Err(err).Msgf("something went wrong updating filter: %v", filterID)
-				return fmt.Errorf("error updating filter: %v, %w", filterID, err)
+				errMsg := fmt.Sprintf("error updating filter: %v, %v (check filterID)", filterID, err)
+				l.Error().Msg(errMsg)
+				return fmt.Errorf("%s", errMsg)
 			}
 		}
 

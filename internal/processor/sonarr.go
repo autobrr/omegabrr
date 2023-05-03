@@ -47,8 +47,9 @@ func (s Service) sonarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 
 		if !dryRun {
 			if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
-				l.Error().Err(err).Msgf("something went wrong updating tv filter: %v", filterID)
-				return fmt.Errorf("error updating tv filter: %v, %w", filterID, err)
+				errMsg := fmt.Sprintf("error updating filter: %v, %v (check filterID)", filterID, err)
+				l.Error().Msg(errMsg)
+				return fmt.Errorf("%s", errMsg)
 			}
 		}
 

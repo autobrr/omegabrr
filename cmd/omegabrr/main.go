@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -108,8 +109,15 @@ func main() {
 		cfg := domain.NewConfig(configPath)
 
 		p := processor.NewService(cfg)
-		if err := p.Process("arr", dryRun); err != nil {
-			log.Error().Err(err).Msgf("error during processing")
+		ctx := context.Background()
+		errors := p.ProcessArrs(ctx, dryRun)
+		log.Info().Msg("Run complete.")
+		if len(errors) > 0 {
+			log.Warn().Msgf("Run complete, with errors.")
+			log.Warn().Msg("Errors encountered during processing:")
+			for _, err := range errors {
+				log.Warn().Msg(err)
+			}
 			os.Exit(1)
 		}
 
@@ -117,8 +125,15 @@ func main() {
 		cfg := domain.NewConfig(configPath)
 
 		p := processor.NewService(cfg)
-		if err := p.Process("lists", dryRun); err != nil {
-			log.Error().Err(err).Msgf("error during processing")
+		ctx := context.Background()
+		errors := p.ProcessLists(ctx, dryRun)
+		log.Info().Msg("Run complete.")
+		if len(errors) > 0 {
+			log.Warn().Msgf("Run complete, with errors.")
+			log.Warn().Msg("Errors encountered during processing:")
+			for _, err := range errors {
+				log.Warn().Msg(err)
+			}
 			os.Exit(1)
 		}
 
@@ -149,9 +164,32 @@ func main() {
 
 			time.Sleep(15 * time.Second)
 
-			if err := p.Process("both", false); err != nil {
-				log.Error().Err(err).Msgf("error during initial processing")
+			ctx := context.Background()
+
+			// Store processing errors for ProcessArrs and ProcessLists
+			var processingErrors []string
+
+			arrsErrors := p.ProcessArrs(ctx, false)
+			if len(arrsErrors) > 0 {
+				processingErrors = append(processingErrors, arrsErrors...)
 			}
+
+			listsErrors := p.ProcessLists(ctx, false)
+			if len(listsErrors) > 0 {
+				processingErrors = append(processingErrors, listsErrors...)
+			}
+
+			// Print the summary of potential errors
+			log.Info().Msgf("Run complete.")
+
+			if len(processingErrors) > 0 {
+				log.Warn().Msgf("Run complete, with errors.")
+				log.Warn().Msg("Errors encountered during processing:")
+				for _, errMsg := range processingErrors {
+					log.Warn().Msg(errMsg)
+				}
+			}
+
 		}()
 
 		for sig := range sigCh {

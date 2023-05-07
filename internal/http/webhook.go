@@ -32,21 +32,28 @@ func (h webhookHandler) Routes(r chi.Router) {
 }
 
 func (h webhookHandler) run(w http.ResponseWriter, r *http.Request) {
-	if err := h.processorService.Process("both", false); err != nil {
+	ctx := r.Context()
+	errArrs := h.processorService.ProcessArrs(ctx, false)
+	errLists := h.processorService.ProcessLists(ctx, false)
+
+	if errArrs != nil || errLists != nil {
 		render.NoContent(w, r)
+	} else {
+		render.Status(r, http.StatusOK)
 	}
-	render.Status(r, http.StatusOK)
 }
 
 func (h webhookHandler) arr(w http.ResponseWriter, r *http.Request) {
-	if err := h.processorService.Process("arr", false); err != nil {
+	ctx := r.Context()
+	if err := h.processorService.ProcessArrs(ctx, false); err != nil {
 		render.NoContent(w, r)
 	}
 	render.Status(r, http.StatusOK)
 }
 
 func (h webhookHandler) lists(w http.ResponseWriter, r *http.Request) {
-	if err := h.processorService.Process("lists", false); err != nil {
+	ctx := r.Context()
+	if err := h.processorService.ProcessLists(ctx, false); err != nil {
 		render.NoContent(w, r)
 	}
 	render.Status(r, http.StatusOK)

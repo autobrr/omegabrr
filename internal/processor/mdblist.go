@@ -10,6 +10,7 @@ import (
 	"github.com/autobrr/omegabrr/internal/domain"
 	"github.com/autobrr/omegabrr/pkg/autobrr"
 	"github.com/fatih/color"
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
 
@@ -83,9 +84,8 @@ func (s Service) mdblist(ctx context.Context, cfg *domain.ListConfig, dryRun boo
 
 		if !dryRun {
 			if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
-				errMsg := fmt.Sprintf("error updating filter: %v, %v", filterID, err)
-				l.Error().Msg(errMsg)
-				return fmt.Errorf("%s", errMsg)
+				l.Error().Err(err).Msgf("error updating filter: %v", filterID)
+				return errors.Wrapf(err, "error updating filter: %v", filterID)
 			}
 		}
 

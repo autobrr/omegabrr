@@ -11,26 +11,44 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
-	"golang.org/x/sync/errgroup"
 )
 
 type Service struct {
-	cfg *domain.Config
-
-	httpClient *http.Client
+	cfg           *domain.Config
+	httpClient    *http.Client
+	autobrrClient *autobrr.Client
 }
 
 func NewService(cfg *domain.Config) *Service {
-	return &Service{
+	s := &Service{
 		cfg: cfg,
 		httpClient: &http.Client{
 			Timeout: 30 * time.Second,
 		},
 	}
+
+	s.autobrrClient = s.newAutobrrClient()
+	return s
 }
 
-func (s Service) ProcessArrs(ctx context.Context, dryRun bool, a *autobrr.Client) []string {
+func (s Service) newAutobrrClient() *autobrr.Client {
+	if s.cfg.Clients.Autobrr == nil {
+		log.Fatal().Msg("must supply omegabrr configuration!")
+		return nil
+	}
+
+	a := autobrr.NewClient(s.cfg.Clients.Autobrr.Host, s.cfg.Clients.Autobrr.Apikey)
+	if s.cfg.Clients.Autobrr.BasicAuth != nil {
+		a.SetBasicAuth(s.cfg.Clients.Autobrr.BasicAuth.User, s.cfg.Clients.Autobrr.BasicAuth.Pass)
+	}
+
+	return a
+}
+
+func (s Service) ProcessArrs(ctx context.Context, dryRun bool) []string {
 	var processingErrors []string
+
+	a := s.autobrrClient
 
 	if s.cfg.Clients.Arr != nil {
 		for _, arrClient := range s.cfg.Clients.Arr {
@@ -71,10 +89,13 @@ func (s Service) ProcessArrs(ctx context.Context, dryRun bool, a *autobrr.Client
 	}
 
 	return processingErrors
+
 }
 
-func (s Service) ProcessLists(ctx context.Context, dryRun bool, a *autobrr.Client) []string {
+func (s Service) ProcessLists(ctx context.Context, dryRun bool) []string {
 	var processingErrors []string
+
+	a := s.autobrrClient
 
 	if s.cfg.Lists != nil {
 		for _, listsClient := range s.cfg.Lists {
@@ -109,56 +130,7 @@ func (s Service) ProcessLists(ctx context.Context, dryRun bool, a *autobrr.Clien
 	}
 
 	return processingErrors
-}
 
-func (s Service) Process(processType string, dryRun bool) error {
-	if s.cfg.Clients.Autobrr == nil {
-		log.Fatal().Msg("must supply omegabrr configuration!")
-		return errors.New("must supply omegabrr configuration")
-	}
-
-	a := autobrr.NewClient(s.cfg.Clients.Autobrr.Host, s.cfg.Clients.Autobrr.Apikey)
-	if s.cfg.Clients.Autobrr.BasicAuth != nil {
-		a.SetBasicAuth(s.cfg.Clients.Autobrr.BasicAuth.User, s.cfg.Clients.Autobrr.BasicAuth.Pass)
-	}
-
-	log.Debug().Msgf("starting filter processing...")
-
-	start := time.Now()
-
-	g, ctx := errgroup.WithContext(context.Background())
-
-	var processingErrors []string
-
-	switch processType {
-	case "arr":
-		processingErrors = append(processingErrors, s.ProcessArrs(ctx, dryRun, a)...)
-	case "lists":
-		processingErrors = append(processingErrors, s.ProcessLists(ctx, dryRun, a)...)
-	case "both":
-		processingErrors = append(processingErrors, s.ProcessArrs(ctx, dryRun, a)...)
-		processingErrors = append(processingErrors, s.ProcessLists(ctx, dryRun, a)...)
-	default:
-		log.Error().Msgf("Invalid process type: %s", processType)
-		return errors.New("invalid process type")
-	}
-
-	if err := g.Wait(); err != nil {
-		log.Error().Err(err).Msgf("Something went wrong trying to update filters! Total time: %v", time.Since(start))
-		return err
-	}
-
-	log.Info().Msgf("Successfully updated filters! Total time: %v", time.Since(start))
-
-	// Print the errors if there are any
-	if len(processingErrors) > 0 {
-		log.Warn().Msg("Errors encountered during processing:")
-		for _, errMsg := range processingErrors {
-			log.Warn().Msg(errMsg)
-		}
-	}
-
-	return nil
 }
 
 func (s Service) GetFilters(ctx context.Context) ([]autobrr.Filter, error) {

@@ -2,12 +2,12 @@ package processor
 
 import (
 	"context"
-	"fmt"
 	"strings"
 	"time"
 
 	"github.com/autobrr/omegabrr/internal/domain"
 	"github.com/autobrr/omegabrr/pkg/autobrr"
+	"github.com/pkg/errors"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -44,8 +44,8 @@ func (s Service) readarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool
 
 			if !dryRun {
 				if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
-					l.Error().Err(err).Msgf("something went wrong updating ebook filter: %v", filterID)
-					return fmt.Errorf("error updating ebook filter: %v, %w", filterID, err)
+					l.Error().Err(err).Msgf("error updating filter: %v", filterID)
+					return errors.Wrapf(err, "error updating filter: %v", filterID)
 				}
 			}
 		}

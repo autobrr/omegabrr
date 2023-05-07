@@ -114,7 +114,7 @@ func main() {
 		if len(errors) == 0 {
 			log.Info().Msg("Run complete.")
 		} else {
-			log.Warn().Msgf("Run complete, with errors.")
+			log.Warn().Msg("Run complete, with errors.")
 			log.Warn().Msg("Errors encountered during processing:")
 			for _, err := range errors {
 				log.Warn().Msg(err)
@@ -131,7 +131,7 @@ func main() {
 		if len(errors) == 0 {
 			log.Info().Msg("Run complete.")
 		} else {
-			log.Warn().Msgf("Run complete, with errors.")
+			log.Warn().Msg("Run complete, with errors.")
 			log.Warn().Msg("Errors encountered during processing:")
 			for _, err := range errors {
 				log.Warn().Msg(err)
@@ -183,9 +183,9 @@ func main() {
 
 			// Print the summary of potential errors
 			if len(processingErrors) == 0 {
-				log.Info().Msgf("Run complete.")
+				log.Info().Msg("Run complete.")
 			} else {
-				log.Warn().Msgf("Run complete, with errors.")
+				log.Warn().Msg("Run complete, with errors.")
 				log.Warn().Msg("Errors encountered during processing:")
 				for _, errMsg := range processingErrors {
 					log.Warn().Msg(errMsg)

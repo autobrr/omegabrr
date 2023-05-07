@@ -12,7 +12,6 @@ require (
 	github.com/rs/zerolog v1.29.0
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.8.0
-	golang.org/x/sync v0.1.0
 	golift.io/starr v0.14.0
 )
 

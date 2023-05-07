@@ -59,6 +59,10 @@ func main() {
 	length := pflag.Int("length", 16, "length of the generated API token")
 	pflag.Parse()
 
+	if configPath == "" {
+		configPath = os.Getenv("OMEGABRR_CONFIG")
+	}
+
 	zerolog.TimeFieldFormat = time.RFC3339
 	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339})

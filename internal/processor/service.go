@@ -136,17 +136,12 @@ func (s Service) ProcessLists(ctx context.Context, dryRun bool) []string {
 }
 
 func (s Service) GetFilters(ctx context.Context) ([]autobrr.Filter, error) {
-	if s.cfg.Clients.Autobrr == nil {
+	if s.autobrrClient == nil {
 		log.Fatal().Msg("must supply omegabrr configuration!")
 		return nil, errors.New("must supply omegabrr configuration")
 	}
 
-	a := autobrr.NewClient(s.cfg.Clients.Autobrr.Host, s.cfg.Clients.Autobrr.Apikey)
-	if s.cfg.Clients.Autobrr.BasicAuth != nil {
-		a.SetBasicAuth(s.cfg.Clients.Autobrr.BasicAuth.User, s.cfg.Clients.Autobrr.BasicAuth.Pass)
-	}
-
-	filters, err := a.GetFilters(ctx)
+	filters, err := s.autobrrClient.GetFilters(ctx)
 	if err != nil {
 		return nil, err
 	}

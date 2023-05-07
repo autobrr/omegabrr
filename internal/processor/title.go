@@ -13,8 +13,8 @@ func processTitle(title string, matchRelease bool) []string {
 	}
 
 	// cleans year like (2020) from arr title
-	var re = regexp.MustCompile(`(?m)\s(\(\d+\))`)
-	title = re.ReplaceAllString(title, "")
+	//var re = regexp.MustCompile(`(?m)\s(\(\d+\))`)
+	//title = re.ReplaceAllString(title, "")
 
 	t := NewTitleSlice()
 

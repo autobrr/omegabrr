@@ -111,8 +111,9 @@ func main() {
 		p := processor.NewService(cfg)
 		ctx := context.Background()
 		errors := p.ProcessArrs(ctx, dryRun)
-		log.Info().Msg("Run complete.")
-		if len(errors) > 0 {
+		if len(errors) == 0 {
+			log.Info().Msg("Run complete.")
+		} else {
 			log.Warn().Msgf("Run complete, with errors.")
 			log.Warn().Msg("Errors encountered during processing:")
 			for _, err := range errors {
@@ -127,8 +128,9 @@ func main() {
 		p := processor.NewService(cfg)
 		ctx := context.Background()
 		errors := p.ProcessLists(ctx, dryRun)
-		log.Info().Msg("Run complete.")
-		if len(errors) > 0 {
+		if len(errors) == 0 {
+			log.Info().Msg("Run complete.")
+		} else {
 			log.Warn().Msgf("Run complete, with errors.")
 			log.Warn().Msg("Errors encountered during processing:")
 			for _, err := range errors {
@@ -180,9 +182,9 @@ func main() {
 			}
 
 			// Print the summary of potential errors
-			log.Info().Msgf("Run complete.")
-
-			if len(processingErrors) > 0 {
+			if len(processingErrors) == 0 {
+				log.Info().Msgf("Run complete.")
+			} else {
 				log.Warn().Msgf("Run complete, with errors.")
 				log.Warn().Msg("Errors encountered during processing:")
 				for _, errMsg := range processingErrors {

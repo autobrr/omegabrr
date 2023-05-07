@@ -27,7 +27,9 @@ func NewService(cfg *domain.Config) *Service {
 		},
 	}
 
-	s.autobrrClient = s.newAutobrrClient()
+	if cfg != nil {
+		s.autobrrClient = s.newAutobrrClient()
+	}
 	return s
 }
 

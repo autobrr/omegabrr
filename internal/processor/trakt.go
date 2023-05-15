@@ -9,6 +9,7 @@ import (
 
 	"github.com/autobrr/omegabrr/internal/domain"
 	"github.com/autobrr/omegabrr/pkg/autobrr"
+	"github.com/pkg/errors"
 
 	"github.com/fatih/color"
 	"github.com/rs/zerolog/log"
@@ -104,8 +105,8 @@ func (s Service) trakt(ctx context.Context, cfg *domain.ListConfig, dryRun bool,
 
 		if !dryRun {
 			if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
-				l.Error().Err(err).Msgf("something went wrong updating filter: %v", filterID)
-				return fmt.Errorf("error updating filter: %v, %w", filterID, err)
+				l.Error().Err(err).Msgf("error updating filter: %v", filterID)
+				return errors.Wrapf(err, "error updating filter: %v", filterID)
 			}
 		}
 

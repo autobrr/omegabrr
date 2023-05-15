@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -8,6 +9,7 @@ import (
 	netHTTP "net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"time"
 
@@ -28,17 +30,30 @@ var (
 	commit  = ""
 )
 
-const usage = `omegabrr
-
-Turn your monitored shows from your arrs into autobrr filters, automagically!
+const usage = `omegabrr - Automagically turn your monitored titles from your arrs and lists into autobrr filters.
 
 Usage:
-    omegabrr generate-token	Generate API Token	Optionally call with --length <number>
-    omegabrr arr               	Run omegabrr arr once
-    omegabrr lists              Run omegabrr lists once
-    omegabrr run               	Run omegabrr service
-    omegabrr version           	Print version info
-    omegabrr help              	Show this help message
+  omegabrr [command] [flags]
+
+Commands:
+  arr            Run omegabrr arr once
+  lists          Run omegabrr lists once
+  run            Run omegabrr service on schedule
+  generate-token Generate an API Token (optionally call with --length <number>)
+  version        Print version info
+  help           Show this help message
+
+Flags:
+  -c, --config <path>  Path to configuration file (default is $OMEGABRR_CONFIG, or config.yaml in the default user config directory)
+  --dry-run            Dry-run without inserting filters (default false)
+  --length <number>    Length of the generated API token (default 16)
+
+Provide a configuration file using one of the following methods:
+1. Use the --config <path> or -c <path> flag.
+2. Place a config.yaml file in the default user configuration directory (e.g., ~/.config/omegabrr/).
+3. Set the OMEGABRR_CONFIG environment variable.
+
+For more information and examples, visit https://github.com/autobrr/omegabrr
 ` + "\n"
 
 func init() {
@@ -51,12 +66,28 @@ func main() {
 	var configPath string
 	var dryRun bool
 
-	pflag.StringVar(&configPath, "config", "", "path to configuration file")
+	pflag.StringVarP(&configPath, "config", "c", "", "path to configuration file")
 	pflag.BoolVar(&dryRun, "dry-run", false, "dry-run without inserting filters")
 
 	// Define and parse flags using pflag
 	length := pflag.Int("length", 16, "length of the generated API token")
 	pflag.Parse()
+
+	if configPath == "" {
+		configPath = os.Getenv("OMEGABRR_CONFIG")
+
+		if configPath == "" {
+			userConfigDir, err := os.UserConfigDir()
+			if err != nil {
+				log.Fatal().Err(err).Msg("failed to get user config directory")
+			}
+			defaultConfigPath := filepath.Join(userConfigDir, "omegabrr", "config.yaml")
+
+			if _, err := os.Stat(defaultConfigPath); err == nil {
+				configPath = defaultConfigPath
+			}
+		}
+	}
 
 	zerolog.TimeFieldFormat = time.RFC3339
 	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
@@ -108,8 +139,16 @@ func main() {
 		cfg := domain.NewConfig(configPath)
 
 		p := processor.NewService(cfg)
-		if err := p.Process(dryRun); err != nil {
-			log.Error().Err(err).Msgf("error during processing")
+		ctx := context.Background()
+		errors := p.ProcessArrs(ctx, dryRun)
+		if len(errors) == 0 {
+			log.Info().Msg("Run complete.")
+		} else {
+			log.Warn().Msg("Run complete, with errors.")
+			log.Warn().Msg("Errors encountered during processing:")
+			for _, err := range errors {
+				log.Warn().Msg(err)
+			}
 			os.Exit(1)
 		}
 
@@ -117,8 +156,16 @@ func main() {
 		cfg := domain.NewConfig(configPath)
 
 		p := processor.NewService(cfg)
-		if err := p.Process(dryRun); err != nil {
-			log.Error().Err(err).Msgf("error during processing")
+		ctx := context.Background()
+		errors := p.ProcessLists(ctx, dryRun)
+		if len(errors) == 0 {
+			log.Info().Msg("Run complete.")
+		} else {
+			log.Warn().Msg("Run complete, with errors.")
+			log.Warn().Msg("Errors encountered during processing:")
+			for _, err := range errors {
+				log.Warn().Msg(err)
+			}
 			os.Exit(1)
 		}
 
@@ -149,9 +196,32 @@ func main() {
 
 			time.Sleep(15 * time.Second)
 
-			if err := p.Process(false); err != nil {
-				log.Error().Err(err).Msgf("error during initial processing")
+			ctx := context.Background()
+
+			// Store processing errors for ProcessArrs and ProcessLists
+			var processingErrors []string
+
+			arrsErrors := p.ProcessArrs(ctx, false)
+			if len(arrsErrors) > 0 {
+				processingErrors = append(processingErrors, arrsErrors...)
 			}
+
+			listsErrors := p.ProcessLists(ctx, false)
+			if len(listsErrors) > 0 {
+				processingErrors = append(processingErrors, listsErrors...)
+			}
+
+			// Print the summary of potential errors
+			if len(processingErrors) == 0 {
+				log.Info().Msg("Run complete.")
+			} else {
+				log.Warn().Msg("Run complete, with errors.")
+				log.Warn().Msg("Errors encountered during processing:")
+				for _, errMsg := range processingErrors {
+					log.Warn().Msg(errMsg)
+				}
+			}
+
 		}()
 
 		for sig := range sigCh {

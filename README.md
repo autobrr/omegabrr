@@ -250,7 +250,11 @@ Run as a service and process on cron schedule. Defaults to every 6 hour `0 */6 *
 
 When run as a service it exposes an HTTP server as well. Generate an **API Token** (see instructions above) and add to your config.
 
-To refresh the filters you can make a **POST** or **GET** request to `http://localhost:7441/api/webhook/trigger`.
+To refresh the filters you can make a **POST** or **GET** request to the following:
+
+- `http://localhost:7441/api/webhook/trigger/arr`. - This will trigger all arr filters. (Use this in you arr instances)
+- `http://localhost:7441/api/webhook/trigger/lists`. - This will trigger all lists filters.
+- `http://localhost:7441/api/webhook/trigger`. - This will trigger all filters.
 
 The API Token can be set as either an HTTP header like `X-API-Token`, or be passed in the url as a query param like `?apikey=MY_NEW_LONG_SECURE_TOKEN`.
 

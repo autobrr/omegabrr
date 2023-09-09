@@ -62,7 +62,7 @@ clients:
       apikey: YOUR_API_KEY
       filters:
         - 69 # Change me
-      #matchRelease: false / true
+      matchRelease: true # needed as we grab site names
 
 lists:
   - name: Latest TV Shows

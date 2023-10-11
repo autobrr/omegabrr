@@ -64,7 +64,7 @@ func (s Service) ProcessArrs(ctx context.Context, dryRun bool) []string {
 				}
 
 			case domain.ArrTypeWhisparr:
-				if err := s.radarr(ctx, arrClient, dryRun, a); err != nil {
+				if err := s.sonarr(ctx, arrClient, dryRun, a); err != nil {
 					log.Error().Err(err).Str("type", "whisparr").Str("client", arrClient.Name).Msg("error while processing Whisparr, continuing with other clients")
 					processingErrors = append(processingErrors, fmt.Sprintf("Whisparr - %s: %v", arrClient.Name, err))
 				}

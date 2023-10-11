@@ -267,6 +267,7 @@ clients:
     #  type: whisparr
     #  host: http://localhost:6969
     #  apikey: API_KEY
+    #  matchRelease: true
     #  filters:
     #    - 69 # Change me
 

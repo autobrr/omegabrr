@@ -116,6 +116,10 @@ func (s Service) metacritic(ctx context.Context, cfg *domain.ListConfig, dryRun 
 
 		f := autobrr.UpdateFilter{Albums: joinedTitles, Artists: joinedArtists}
 
+		if cfg.MatchRelease {
+			f = autobrr.UpdateFilter{MatchReleases: joinedTitles}
+		}
+
 		if !dryRun {
 			if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
 				l.Error().Err(err).Msgf("error updating filter: %v", filterID)

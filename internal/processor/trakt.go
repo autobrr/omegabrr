@@ -103,6 +103,10 @@ func (s Service) trakt(ctx context.Context, cfg *domain.ListConfig, dryRun bool,
 
 		f := autobrr.UpdateFilter{Shows: strings.Join(filterTitles, ",")}
 
+		if cfg.MatchRelease {
+			f = autobrr.UpdateFilter{MatchReleases: joinedTitles}
+		}
+
 		if !dryRun {
 			if err := brr.UpdateFilterByID(ctx, filterID, f); err != nil {
 				l.Error().Err(err).Msgf("error updating filter: %v", filterID)

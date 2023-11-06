@@ -187,7 +187,7 @@ func main() {
 		}()
 
 		sigCh := make(chan os.Signal, 1)
-		signal.Notify(sigCh, syscall.SIGHUP, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGKILL, syscall.SIGTERM)
+		signal.Notify(sigCh, syscall.SIGHUP, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM)
 
 		schedulerService.Start()
 
@@ -225,19 +225,11 @@ func main() {
 		}()
 
 		for sig := range sigCh {
-			switch sig {
-			case syscall.SIGHUP:
-				log.Log().Msg("shutting down server sighup")
-				schedulerService.Stop()
-				os.Exit(0)
-			case syscall.SIGINT, syscall.SIGQUIT:
-				schedulerService.Stop()
-				os.Exit(0)
-			case syscall.SIGKILL, syscall.SIGTERM:
-				schedulerService.Stop()
-				os.Exit(0)
-			}
+			log.Info().Msgf("Received signal: %v", sig)
+			schedulerService.Stop()
+			os.Exit(0)
 		}
+
 	default:
 		pflag.Usage()
 		if cmd != "help" {

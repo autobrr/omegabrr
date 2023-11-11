@@ -119,8 +119,6 @@ func (s Service) processLidarr(ctx context.Context, cfg *domain.ArrConfig, logge
 				seenArtists[artist.ArtistName] = struct{}{}
 				logger.Debug().Msgf("Added artist: %s", artist.ArtistName) // Log when an artist is added
 			}
-		} else {
-			logger.Debug().Msgf("Artist not monitored: %s", artist.ArtistName) // Log if artist is not monitored
 		}
 	}
 

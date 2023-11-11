@@ -79,7 +79,9 @@ func NewTitleSlice() *Titles {
 }
 
 func (ts *Titles) Add(title string, matchRelease bool) {
+
 	if matchRelease {
+		title = strings.Trim(title, "?")
 		title = fmt.Sprintf("*%v*", title)
 	}
 

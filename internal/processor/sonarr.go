@@ -16,7 +16,14 @@ import (
 )
 
 func (s Service) sonarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool, brr *autobrr.Client) error {
-	l := log.With().Str("type", "sonarr").Str("client", cfg.Name).Logger()
+	var arrType string
+	if cfg.Type == domain.ArrTypeWhisparr {
+		arrType = "whisparr"
+	} else {
+		arrType = "sonarr"
+	}
+
+	l := log.With().Str("type", arrType).Str("client", cfg.Name).Logger()
 
 	l.Debug().Msgf("gathering titles...")
 

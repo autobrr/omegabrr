@@ -1,5 +1,5 @@
 # build app
-FROM golang:1.19-alpine3.16 AS app-builder
+FROM golang:1.21-alpine3.19 AS app-builder
 
 ARG VERSION=dev
 ARG REVISION=dev
@@ -33,7 +33,6 @@ VOLUME ["${CONFIG_DIR}"]
 
 # install packages
 RUN apk add --no-cache tzdata shadow bash curl wget jq grep sed coreutils findutils unzip p7zip ca-certificates
-
 
 COPY --from=app-builder /src/bin/omegabrr /usr/bin/
 

@@ -146,9 +146,9 @@ func main() {
 
 		if latest.Version.Equals(v) {
 			// latest version is the same as current version. It means current binary is up-to-date.
-			log.Info().Msgf("Current binary is the latest version", version)
+			log.Info().Msgf("Current binary is the latest version: %s", version)
 		} else {
-			log.Info().Msgf("Successfully updated to version: ", latest.Version)
+			log.Info().Msgf("Successfully updated to version: %s", latest.Version)
 		}
 		break
 

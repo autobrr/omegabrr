@@ -19,6 +19,8 @@ import (
 	"github.com/autobrr/omegabrr/internal/processor"
 	"github.com/autobrr/omegabrr/internal/scheduler"
 
+	"github.com/blang/semver"
+	"github.com/rhysd/go-github-selfupdate/selfupdate"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/rs/zerolog/pkgerrors"
@@ -41,6 +43,7 @@ Commands:
   run            Run omegabrr service on schedule
   generate-token Generate an API Token (optionally call with --length <number>)
   version        Print version info
+  update         Update omegabrr to latest version.
   help           Show this help message
 
 Flags:
@@ -127,6 +130,27 @@ func main() {
 			os.Exit(1)
 		}
 		fmt.Printf("Latest release: %v\n", rel.TagName)
+
+	case "update":
+		v, err := semver.ParseTolerant(version)
+		if err != nil {
+			log.Info().Msgf("could not parse version:", err)
+			return
+		}
+
+		latest, err := selfupdate.UpdateSelf(v, "autobrr/omegabrr")
+		if err != nil {
+			log.Info().Msgf("Binary update failed:", err)
+			return
+		}
+
+		if latest.Version.Equals(v) {
+			// latest version is the same as current version. It means current binary is up-to-date.
+			log.Info().Msgf("Current binary is the latest version", version)
+		} else {
+			log.Info().Msgf("Successfully updated to version: ", latest.Version)
+		}
+		break
 
 	case "generate-token":
 		key, err := apitoken.GenerateToken(*length)

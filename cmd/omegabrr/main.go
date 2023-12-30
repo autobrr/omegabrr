@@ -134,13 +134,13 @@ func main() {
 	case "update":
 		v, err := semver.ParseTolerant(version)
 		if err != nil {
-			log.Info().Msgf("could not parse version:", err)
+			log.Error().Err(err).Msg("could not parse version")
 			return
 		}
 
 		latest, err := selfupdate.UpdateSelf(v, "autobrr/omegabrr")
 		if err != nil {
-			log.Info().Msgf("Binary update failed:", err)
+			log.Error().Err(err).Msg("Binary update failed")
 			return
 		}
 

@@ -200,6 +200,14 @@ func Test_processTitle(t *testing.T) {
 			},
 			want: []string{"Whose?Line?Is?It?Anyway", "Whose?Line?Is?It?Anyway?", "Whose?Line?Is?It?Anyway*US*1932", "Whose?Line?Is?It?Anyway*US*1932?"},
 		},
+		{
+			name: "test_24",
+			args: args{
+				title:        "What If…?",
+				matchRelease: false,
+			},
+			want: []string{"What?If", "What?If*"},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

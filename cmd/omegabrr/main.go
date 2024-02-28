@@ -94,7 +94,7 @@ func main() {
 
 	switch cmd := pflag.Arg(0); cmd {
 	case "version":
-		fmt.Printf("Version: %v\nCommit: %v\n", buildinfo.Version, buildinfo.Commit)
+		fmt.Printf("Version: %v\nCommit: %v\nBuild date: %v\n", buildinfo.Version, buildinfo.Commit, buildinfo.Date)
 
 		// get the latest release tag from brr-api
 		client := &netHTTP.Client{

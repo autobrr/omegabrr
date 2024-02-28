@@ -6,7 +6,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/autobrr/omegabrr/internal/buildinfo"
 	netHTTP "net/http"
 	"os"
 	"os/signal"
@@ -15,6 +14,7 @@ import (
 	"time"
 
 	"github.com/autobrr/omegabrr/internal/apitoken"
+	"github.com/autobrr/omegabrr/internal/buildinfo"
 	"github.com/autobrr/omegabrr/internal/domain"
 	"github.com/autobrr/omegabrr/internal/http"
 	"github.com/autobrr/omegabrr/internal/processor"

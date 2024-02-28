@@ -41,6 +41,8 @@ func (s Service) trakt(ctx context.Context, cfg *domain.ListConfig, dryRun bool,
 		req.Header.Set(k, v)
 	}
 
+	setUserAgent(req)
+
 	resp, err := s.httpClient.Do(req)
 	if err != nil {
 		l.Error().Err(err).Msgf("failed to fetch titles from URL: %s", cfg.URL)

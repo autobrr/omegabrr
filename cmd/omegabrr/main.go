@@ -6,6 +6,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/autobrr/omegabrr/internal/buildinfo"
 	netHTTP "net/http"
 	"os"
 	"os/signal"
@@ -25,11 +26,6 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/rs/zerolog/pkgerrors"
 	"github.com/spf13/pflag"
-)
-
-var (
-	version = "dev"
-	commit  = ""
 )
 
 const usage = `omegabrr - Automagically turn your monitored titles from your arrs and lists into autobrr filters.
@@ -98,7 +94,7 @@ func main() {
 
 	switch cmd := pflag.Arg(0); cmd {
 	case "version":
-		fmt.Printf("Version: %v\nCommit: %v\n", version, commit)
+		fmt.Printf("Version: %v\nCommit: %v\n", buildinfo.Version, buildinfo.Commit)
 
 		// get the latest release tag from brr-api
 		client := &netHTTP.Client{
@@ -132,7 +128,7 @@ func main() {
 		fmt.Printf("Latest release: %v\n", rel.TagName)
 
 	case "update":
-		v, err := semver.ParseTolerant(version)
+		v, err := semver.ParseTolerant(buildinfo.Version)
 		if err != nil {
 			log.Error().Err(err).Msg("could not parse version")
 			return
@@ -146,7 +142,7 @@ func main() {
 
 		if latest.Version.Equals(v) {
 			// latest version is the same as current version. It means current binary is up-to-date.
-			log.Info().Msgf("Current binary is the latest version: %s", version)
+			log.Info().Msgf("Current binary is the latest version: %s", buildinfo.Version)
 		} else {
 			log.Info().Msgf("Successfully updated to version: %s", latest.Version)
 		}
@@ -196,7 +192,7 @@ func main() {
 	case "run":
 		cfg := domain.NewConfig(configPath)
 
-		log.Info().Msgf("starting omegabrr: %s", version)
+		log.Info().Msgf("starting omegabrr: %s", buildinfo.Version)
 		log.Info().Msgf("running on schedule: %v", cfg.Schedule)
 
 		p := processor.NewService(cfg)

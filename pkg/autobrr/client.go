@@ -5,15 +5,18 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httputil"
+	"runtime"
 	"strconv"
 	"time"
 
-	"github.com/rs/zerolog/log"
+	"github.com/autobrr/omegabrr/internal/buildinfo"
 
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 type Client struct {
@@ -76,6 +79,7 @@ func (c *Client) GetFilters(ctx context.Context) ([]Filter, error) {
 
 	req.SetBasicAuth(c.BasicUser, c.BasicPass)
 	req.Header.Add("X-API-Token", c.APIKey)
+	c.buildUserAgent(req)
 
 	res, err := c.client.Do(req)
 	if err != nil {
@@ -115,6 +119,7 @@ func (c *Client) UpdateFilterByID(ctx context.Context, filterID int, filter Upda
 
 	req.SetBasicAuth(c.BasicUser, c.BasicPass)
 	req.Header.Add("X-API-Token", c.APIKey)
+	c.buildUserAgent(req)
 
 	res, err := c.client.Do(req)
 	if err != nil {
@@ -134,6 +139,12 @@ func (c *Client) UpdateFilterByID(ctx context.Context, filterID int, filter Upda
 	}
 
 	return nil
+}
+
+func (c *Client) buildUserAgent(req *http.Request) {
+	agent := fmt.Sprintf("omegabrr/%s (%s %s)", buildinfo.Version, runtime.GOOS, runtime.GOARCH)
+
+	req.Header.Set("User-Agent", agent)
 }
 
 type Filter struct {

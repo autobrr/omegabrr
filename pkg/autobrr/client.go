@@ -6,7 +6,6 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"github.com/autobrr/omegabrr/internal/buildinfo"
 	"io"
 	"net/http"
 	"net/http/httputil"
@@ -14,9 +13,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/rs/zerolog/log"
+	"github.com/autobrr/omegabrr/internal/buildinfo"
 
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 type Client struct {

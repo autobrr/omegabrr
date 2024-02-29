@@ -19,7 +19,7 @@ COPY . ./
 #ENV GOOS=linux
 ENV CGO_ENABLED=0
 
-RUN go build -ldflags "-s -w -X buildinfo.Version=${VERSION} -X buildinfo.Commit=${REVISION} -X buildinfo.Date=${BUILDTIME}" -o bin/omegabrr cmd/omegabrr/main.go
+RUN go build -ldflags "-s -w -X github.com/autobrr/omegabrr/internal/buildinfo.Version=${VERSION} -X github.com/autobrr/omegabrr/internal/buildinfo.Commit=${REVISION} -X github.com/autobrr/omegabrr/internal/buildinfo.Date=${BUILDTIME}" -o bin/omegabrr cmd/omegabrr/main.go
 
 # build runner
 FROM alpine:latest

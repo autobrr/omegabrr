@@ -5,7 +5,7 @@ GIT_TAG := $(shell git tag --points-at HEAD 2> /dev/null | head -n 1)
 
 GO ?= go
 RM ?= rm
-GOFLAGS ?= "-X buildinfo.Commit=$(GIT_COMMIT) -X buildinfo.Version=$(GIT_TAG)"
+GOFLAGS ?= "-X github.com/autobrr/omegabrr/internal/buildinfo.Commit=$(GIT_COMMIT) -X github.com/autobrr/omegabrr/internal/buildinfo.Version=$(GIT_TAG)"
 PREFIX ?= /usr/local
 BINDIR ?= bin
 

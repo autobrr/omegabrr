@@ -30,6 +30,8 @@ builds:
         goarch: arm64
     main: ./cmd/omegabrr/main.go
     binary: omegabrr
+    ldflags:
+      - -s -w -X github.com/autobrr/omegabrr/internal/buildinfo.Version=v{{.Version}} -X github.com/autobrr/omegabrr/internal/buildinfo.Commit={{.Commit}} -X github.com/autobrr/omegabrr/internal/buildinfo.Date={{.Date}} -X github.com/autobrr/omegabrr/internal/buildinfo.BuiltBy=goreleaser'
 
 archives:
   - id: omegabrr

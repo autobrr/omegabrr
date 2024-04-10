@@ -176,10 +176,7 @@ jobs:
       fail-fast: true
       matrix:
         platform:
-          #- linux/386
           - linux/amd64
-          #- linux/arm/v6
-          #- linux/arm/v7
           - linux/arm64
     steps:
       - name: Checkout
@@ -201,6 +198,7 @@ jobs:
           images: ${{ env.REGISTRY_IMAGE }}-distroless
           tags: |
             type=semver,pattern={{version}},prefix=v
+            type=semver,pattern={{major}}.{{minor}},prefix=v
             type=ref,event=branch
             type=ref,event=pr
           flavor: |
@@ -231,6 +229,22 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           provenance: false
+
+      - name: Export image digest
+        id: digest-prep
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.docker_build.outputs.digest }}"
+          echo "manifest-hash=${digest#sha256:}" >> "$GITHUB_OUTPUT"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - name: Upload image digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-digests-${{ steps.digest-prep.outputs.manifest-hash }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
 
   docker-merge:
     name: Publish Docker multi-arch manifest

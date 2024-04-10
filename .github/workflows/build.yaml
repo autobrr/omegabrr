@@ -241,7 +241,7 @@ jobs:
       - name: Upload image digest
         uses: actions/upload-artifact@v4
         with:
-          name: docker-digests-distroless-${{ steps.digest-prep.outputs.manifest-hash }}
+          name: docker-distroless-digests-${{ steps.digest-prep.outputs.manifest-hash }}
           path: /tmp/digests/*
           if-no-files-found: error
           retention-days: 1
@@ -257,6 +257,52 @@ jobs:
         with:
           path: /tmp/digests
           pattern: docker-digests-*
+          merge-multiple: true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY_IMAGE }}
+          tags: |
+            type=semver,pattern={{version}},prefix=v
+            type=semver,pattern={{major}}.{{minor}},prefix=v
+            type=ref,event=branch
+            type=ref,event=pr
+          flavor: |
+            latest=auto
+
+      - name: Create manifest list and push
+        working-directory: /tmp/digests
+        run: |
+          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' *)
+
+      - name: Inspect image
+        run: |
+          docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}:${{ steps.meta.outputs.version }}
+
+  docker-distroless-merge:
+    name: Publish Docker multi-arch manifest
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name != 'pull_request' }}
+    runs-on: ubuntu-latest
+    needs: [docker, test]
+    steps:
+      - name: Download image digests
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/digests
+          pattern: docker-distroless-digests-*
           merge-multiple: true
 
       - name: Set up Docker Buildx

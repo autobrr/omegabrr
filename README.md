@@ -112,6 +112,12 @@ lists:
     url: https://api.autobrr.com/lists/metacritic/upcoming-albums
     filters:
       - 20 # Change me
+
+  - name: Steam Wishlist
+    type: steam
+    url: https://store.steampowered.com/wishlist/id/USERNAME/wishlistdata
+    filters:
+      - 20 # Change me
 ```
 
 If you're trying to reach radarr or sonarr hosted on swizzin from some other location, you need to do it like this with basic auth:

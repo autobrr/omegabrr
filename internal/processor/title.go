@@ -21,7 +21,7 @@ func processTitle(title string, matchRelease bool) []string {
 	// Regex patterns
 	// https://www.regular-expressions.info/unicode.html#category
 	// https://www.ncbi.nlm.nih.gov/staff/beck/charents/hex.html
-	replaceRegexp := regexp.MustCompile(`[\p{P}\p{Z}\x{00C0}-\x{017E}]`)
+	replaceRegexp := regexp.MustCompile(`[\p{P}\p{Z}\x{00C0}-\x{017E}\x{00AE}]`)
 	questionmarkRegexp := regexp.MustCompile(`[?]{2,}`)
 	regionCodeRegexp := regexp.MustCompile(`\(.+\)$`)
 	parenthesesEndRegexp := regexp.MustCompile(`\)$`)

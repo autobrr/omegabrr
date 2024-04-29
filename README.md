@@ -2,6 +2,16 @@
 
 Omegabrr transforms items monitored by arrs or lists into autobrr filters. Useful for automating your filters for monitored media or racing criteria.
 
+## Table of Contents
+- [Config](#config)
+  - [Tags](#tags)
+  - [Lists](#lists)
+- [Commands](#commands)
+- [Service](#service)
+  - [Docker Compose](#docker-compose)
+  - [Distroless alternative](#distroless-docker-images)
+  - [Systemd Setup](#systemd)
+
 ## Config
 
 You can set multiple filters per arr. Find the filter ID by going into the webui and get the ID from the url like `http://localhost:7474/filters/10` where `10` is the filter ID.
@@ -272,6 +282,12 @@ Check the `docker-compose.yml` example.
 2. Set the `volume` so it matches your system. To run from the same path as the `docker-compose` first create a config dir like `mkdir config`, and place this `./config:/config` in the compose file. This will create a default config on the first run.
 
 If you have custom networks then make sure to add those, so it can communicate with autobrr, sonarr and radarr.
+
+### Distroless Docker Images
+
+For users who prioritize container security, we offer alternative Docker images built on [Distroless](https://github.com/GoogleContainerTools/distroless). Specifically the `distroless/static-debian12:nonroot` base image.
+
+Distroless images do not contain a package manager or shell, thereby reducing the potential attack surface and making them a more secure option. These stripped-back images contain only the application and its runtime dependencies. 
 
 ### Systemd
 

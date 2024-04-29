@@ -1,0 +1,39 @@
+# build app
+FROM --platform=$BUILDPLATFORM golang:1.22-alpine3.19 AS app-builder
+#RUN apk add --no-cache git tzdata
+
+ENV SERVICE=omegabrr
+
+WORKDIR /src
+
+# Cache Go modules
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . ./
+
+ARG VERSION=main
+ARG REVISION=main
+ARG BUILDTIME
+ARG TARGETOS TARGETARCH TARGETVARIANT
+
+RUN --network=none --mount=target=. \
+export GOOS=$TARGETOS; \
+export GOARCH=$TARGETARCH; \
+echo $GOARCH $GOOS; \
+go build -ldflags "-s -w -X github.com/autobrr/omegabrr/internal/buildinfo.Version=${VERSION} -X github.com/autobrr/omegabrr/internal/buildinfo.Commit=${REVISION} -X github.com/autobrr/omegabrr/internal/buildinfo.Date=${BUILDTIME}" -o /out/bin/omegabrr cmd/omegabrr/main.go
+
+# build runner
+FROM gcr.io/distroless/static-debian12:nonroot
+
+LABEL org.opencontainers.image.source = "https://github.com/autobrr/omegabrr"
+LABEL org.opencontainers.image.licenses = "MIT"
+LABEL org.opencontainers.image.base.name="gcr.io/distroless/static-debian12:nonroot"
+
+COPY --from=app-builder /out/bin/omegabrr /usr/local/bin/
+
+WORKDIR /config
+
+EXPOSE 7441
+
+ENTRYPOINT ["omegabrr", "run", "--config", "/config/config.yaml"]

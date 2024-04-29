@@ -3,6 +3,7 @@
 dist
 .dev
 .DS_Store
+config/
 
 # Binaries for programs and plugins
 *.exe

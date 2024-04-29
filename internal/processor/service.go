@@ -127,6 +127,13 @@ func (s Service) ProcessLists(ctx context.Context, dryRun bool) []string {
 					log.Error().Err(err).Str("type", "plaintext").Str("client", listsClient.Name).Msg("error while processing Plaintext list, continuing with other lists")
 					processingErrors = append(processingErrors, fmt.Sprintf("Plaintext - %s: %v", listsClient.Name, err))
 				}
+
+			case domain.ListTypeSteam:
+				if err := s.steam(ctx, listsClient, dryRun, a); err != nil {
+					log.Error().Err(err).Str("type", "steam").Str("client", listsClient.Name).Msg("error while processing Steam wishlist, continuing with other lists")
+					processingErrors = append(processingErrors, fmt.Sprintf("Steam - %s: %v", listsClient.Name, err))
+				}
+
 			}
 		}
 	}

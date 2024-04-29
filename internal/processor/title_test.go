@@ -216,6 +216,16 @@ func Test_processTitle(t *testing.T) {
 			},
 			want: []string{"Sh?gun*2024?", "Sh?gun*2024", "Sh?gun"},
 		},
+		{
+			name: "test_26",
+			args: args{
+				title:        "Pinball FX3 - Bethesda® Pinball",
+				matchRelease: false,
+			},
+			want: []string{
+				"Pinball?FX3*Bethesda*Pinball",
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

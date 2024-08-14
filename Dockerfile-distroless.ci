@@ -26,8 +26,8 @@ go build -ldflags "-s -w -X github.com/autobrr/omegabrr/internal/buildinfo.Versi
 # build runner
 FROM gcr.io/distroless/static-debian12:nonroot
 
-LABEL org.opencontainers.image.source = "https://github.com/autobrr/omegabrr"
-LABEL org.opencontainers.image.licenses = "MIT"
+LABEL org.opencontainers.image.source="https://github.com/autobrr/omegabrr"
+LABEL org.opencontainers.image.licenses="MIT"
 LABEL org.opencontainers.image.base.name="gcr.io/distroless/static-debian12:nonroot"
 
 COPY --from=app-builder /out/bin/omegabrr /usr/local/bin/

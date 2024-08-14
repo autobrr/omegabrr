@@ -2,6 +2,7 @@ package processor
 
 import (
 	"context"
+	"sort"
 	"strings"
 	"time"
 
@@ -137,6 +138,7 @@ func (s Service) processSonarr(ctx context.Context, cfg *domain.ArrConfig, logge
 		}
 	}
 
+	sort.Strings(titles)
 	logger.Debug().Msgf("from a total of %d shows we found %d monitored and created %d release titles", len(shows), monitoredTitles, len(titles))
 
 	return titles, nil

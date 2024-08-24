@@ -7,8 +7,10 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/autobrr/omegabrr/internal/buildinfo"
 	"github.com/autobrr/omegabrr/internal/domain"
 	"github.com/autobrr/omegabrr/pkg/autobrr"
+
 	"github.com/rs/zerolog/log"
 )
 
@@ -33,7 +35,7 @@ func (s Service) steam(ctx context.Context, cfg *domain.ListConfig, dryRun bool,
 		req.Header.Set(k, v)
 	}
 
-	setUserAgent(req)
+	buildinfo.AttachUserAgentHeader(req)
 
 	resp, err := s.httpClient.Do(req)
 	if err != nil {

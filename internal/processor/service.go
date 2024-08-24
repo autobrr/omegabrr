@@ -2,7 +2,6 @@ package processor
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -30,63 +29,62 @@ func NewService(cfg *domain.Config) *Service {
 	if cfg != nil {
 		s.autobrrClient = s.newAutobrrClient()
 	}
+
 	return s
 }
 
-func (s Service) newAutobrrClient() *autobrr.Client {
+func (s *Service) newAutobrrClient() *autobrr.Client {
 	if s.cfg.Clients.Autobrr == nil {
-		log.Fatal().Msg("must supply omegabrr configuration!")
+		log.Fatal().Msg("must supply autobrr client configuration!")
 		return nil
 	}
 
-	a := autobrr.NewClient(s.cfg.Clients.Autobrr.Host, s.cfg.Clients.Autobrr.Apikey)
+	client := autobrr.NewClient(s.cfg.Clients.Autobrr.Host, s.cfg.Clients.Autobrr.Apikey)
 	if s.cfg.Clients.Autobrr.BasicAuth != nil {
-		a.SetBasicAuth(s.cfg.Clients.Autobrr.BasicAuth.User, s.cfg.Clients.Autobrr.BasicAuth.Pass)
+		client.SetBasicAuth(s.cfg.Clients.Autobrr.BasicAuth.User, s.cfg.Clients.Autobrr.BasicAuth.Pass)
 	}
 
-	return a
+	return client
 }
 
-func (s Service) ProcessArrs(ctx context.Context, dryRun bool) []string {
-	var processingErrors []string
+func (s *Service) ProcessArrs(ctx context.Context, dryRun bool) []error {
+	if s.cfg.Clients.Arr == nil {
+		return nil
+	}
 
-	a := s.autobrrClient
+	var processingErrors []error
 
-	if s.cfg.Clients.Arr != nil {
-		for _, arrClient := range s.cfg.Clients.Arr {
-			arrClient := arrClient
+	for _, arrClient := range s.cfg.Clients.Arr {
+		arrClient := arrClient
 
-			switch arrClient.Type {
-			case domain.ArrTypeRadarr:
-				if err := s.radarr(ctx, arrClient, dryRun, a); err != nil {
-					log.Error().Err(err).Str("type", "radarr").Str("client", arrClient.Name).Msg("error while processing Radarr, continuing with other clients")
-					processingErrors = append(processingErrors, fmt.Sprintf("Radarr - %s: %v", arrClient.Name, err))
-				}
+		log.Debug().Msgf("run processing for %s - %s", arrClient.Type, arrClient.Name)
 
-			case domain.ArrTypeWhisparr:
-				if err := s.sonarr(ctx, arrClient, dryRun, a); err != nil {
-					log.Error().Err(err).Str("type", "whisparr").Str("client", arrClient.Name).Msg("error while processing Whisparr, continuing with other clients")
-					processingErrors = append(processingErrors, fmt.Sprintf("Whisparr - %s: %v", arrClient.Name, err))
-				}
+		var err error
 
-			case domain.ArrTypeSonarr:
-				if err := s.sonarr(ctx, arrClient, dryRun, a); err != nil {
-					log.Error().Err(err).Str("type", "sonarr").Str("client", arrClient.Name).Msg("error while processing Sonarr, continuing with other clients")
-					processingErrors = append(processingErrors, fmt.Sprintf("Sonarr - %s: %v", arrClient.Name, err))
-				}
+		switch arrClient.Type {
+		case domain.ArrTypeRadarr:
+			err = s.radarr(ctx, arrClient, dryRun, s.autobrrClient)
 
-			case domain.ArrTypeReadarr:
-				if err := s.readarr(ctx, arrClient, dryRun, a); err != nil {
-					log.Error().Err(err).Str("type", "readarr").Str("client", arrClient.Name).Msg("error while processing Readarr, continuing with other clients")
-					processingErrors = append(processingErrors, fmt.Sprintf("Readarr - %s: %v", arrClient.Name, err))
-				}
+		case domain.ArrTypeWhisparr:
+			err = s.sonarr(ctx, arrClient, dryRun, s.autobrrClient)
 
-			case domain.ArrTypeLidarr:
-				if err := s.lidarr(ctx, arrClient, dryRun, a); err != nil {
-					log.Error().Err(err).Str("type", "lidarr").Str("client", arrClient.Name).Msg("error while processing Lidarr, continuing with other clients")
-					processingErrors = append(processingErrors, fmt.Sprintf("Lidarr - %s: %v", arrClient.Name, err))
-				}
-			}
+		case domain.ArrTypeSonarr:
+			err = s.sonarr(ctx, arrClient, dryRun, s.autobrrClient)
+
+		case domain.ArrTypeReadarr:
+			err = s.readarr(ctx, arrClient, dryRun, s.autobrrClient)
+
+		case domain.ArrTypeLidarr:
+			err = s.lidarr(ctx, arrClient, dryRun, s.autobrrClient)
+
+		default:
+			err = errors.Errorf("unsupported arr client type: %s", arrClient.Type)
+		}
+
+		if err != nil {
+			log.Error().Err(err).Str("type", string(arrClient.Type)).Str("client", arrClient.Name).Msgf("error while processing %s, continuing with other clients", arrClient.Type)
+
+			processingErrors = append(processingErrors, errors.Wrapf(err, "%s - %s", arrClient.Type, arrClient.Name))
 		}
 	}
 
@@ -94,40 +92,38 @@ func (s Service) ProcessArrs(ctx context.Context, dryRun bool) []string {
 
 }
 
-func (s Service) ProcessLists(ctx context.Context, dryRun bool) []string {
-	var processingErrors []string
+func (s *Service) ProcessLists(ctx context.Context, dryRun bool) []error {
+	if s.cfg.Lists == nil {
+		return nil
+	}
 
-	a := s.autobrrClient
+	var processingErrors []error
 
-	if s.cfg.Lists != nil {
-		for _, listsClient := range s.cfg.Lists {
-			listsClient := listsClient
+	for _, listsClient := range s.cfg.Lists {
+		listsClient := listsClient
 
-			switch listsClient.Type {
-			case domain.ListTypeTrakt:
-				if err := s.trakt(ctx, listsClient, dryRun, a); err != nil {
-					log.Error().Err(err).Str("type", "trakt").Str("client", listsClient.Name).Msg("error while processing Trakt list, continuing with other lists")
-					processingErrors = append(processingErrors, fmt.Sprintf("Trakt - %s: %v", listsClient.Name, err))
-				}
+		log.Debug().Msgf("run processing for list %s - %s", listsClient.Type, listsClient.Name)
 
-			case domain.ListTypeMdblist:
-				if err := s.mdblist(ctx, listsClient, dryRun, a); err != nil {
-					log.Error().Err(err).Str("type", "mdblist").Str("client", listsClient.Name).Msg("error while processing Mdblist, continuing with other lists")
-					processingErrors = append(processingErrors, fmt.Sprintf("Mdblist - %s: %v", listsClient.Name, err))
-				}
+		var err error
 
-			case domain.ListTypeMetacritic:
-				if err := s.metacritic(ctx, listsClient, dryRun, a); err != nil {
-					log.Error().Err(err).Str("type", "metacritic").Str("client", listsClient.Name).Msg("error while processing Metacritic, continuing with other lists")
-					processingErrors = append(processingErrors, fmt.Sprintf("Metacritic - %s: %v", listsClient.Name, err))
-				}
+		switch listsClient.Type {
+		case domain.ListTypeTrakt:
+			err = s.trakt(ctx, listsClient, dryRun, s.autobrrClient)
 
-			case domain.ListTypePlaintext:
-				if err := s.plaintext(ctx, listsClient, dryRun, a); err != nil {
-					log.Error().Err(err).Str("type", "plaintext").Str("client", listsClient.Name).Msg("error while processing Plaintext list, continuing with other lists")
-					processingErrors = append(processingErrors, fmt.Sprintf("Plaintext - %s: %v", listsClient.Name, err))
-				}
-			}
+		case domain.ListTypeMdblist:
+			err = s.mdblist(ctx, listsClient, dryRun, s.autobrrClient)
+
+		case domain.ListTypeMetacritic:
+			err = s.metacritic(ctx, listsClient, dryRun, s.autobrrClient)
+
+		case domain.ListTypePlaintext:
+			err = s.plaintext(ctx, listsClient, dryRun, s.autobrrClient)
+		}
+
+		if err != nil {
+			log.Error().Err(err).Str("type", string(listsClient.Type)).Str("client", listsClient.Name).Msgf("error while processing %s list, continuing with other lists", listsClient.Type)
+
+			processingErrors = append(processingErrors, errors.Wrapf(err, "%s - %s", listsClient.Type, listsClient.Name))
 		}
 	}
 
@@ -135,10 +131,9 @@ func (s Service) ProcessLists(ctx context.Context, dryRun bool) []string {
 
 }
 
-func (s Service) GetFilters(ctx context.Context) ([]autobrr.Filter, error) {
+func (s *Service) GetFilters(ctx context.Context) ([]autobrr.Filter, error) {
 	if s.autobrrClient == nil {
-		log.Fatal().Msg("must supply omegabrr configuration!")
-		return nil, errors.New("must supply omegabrr configuration")
+		return nil, errors.New("no autobrr client found in config")
 	}
 
 	filters, err := s.autobrrClient.GetFilters(ctx)

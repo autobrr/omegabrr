@@ -5,11 +5,9 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"net/http/httputil"
-	"runtime"
 	"strconv"
 	"time"
 
@@ -79,7 +77,7 @@ func (c *Client) GetFilters(ctx context.Context) ([]Filter, error) {
 
 	req.SetBasicAuth(c.BasicUser, c.BasicPass)
 	req.Header.Add("X-API-Token", c.APIKey)
-	c.buildUserAgent(req)
+	buildinfo.AttachUserAgentHeader(req)
 
 	res, err := c.client.Do(req)
 	if err != nil {
@@ -87,7 +85,7 @@ func (c *Client) GetFilters(ctx context.Context) ([]Filter, error) {
 	}
 
 	if res.StatusCode != http.StatusOK {
-		return nil, errors.New("something went wrong")
+		return nil, errors.New("something went wrong, could not get filters")
 	}
 
 	body, err := io.ReadAll(res.Body)
@@ -119,7 +117,7 @@ func (c *Client) UpdateFilterByID(ctx context.Context, filterID int, filter Upda
 
 	req.SetBasicAuth(c.BasicUser, c.BasicPass)
 	req.Header.Add("X-API-Token", c.APIKey)
-	c.buildUserAgent(req)
+	buildinfo.AttachUserAgentHeader(req)
 
 	res, err := c.client.Do(req)
 	if err != nil {
@@ -139,12 +137,6 @@ func (c *Client) UpdateFilterByID(ctx context.Context, filterID int, filter Upda
 	}
 
 	return nil
-}
-
-func (c *Client) buildUserAgent(req *http.Request) {
-	agent := fmt.Sprintf("omegabrr/%s (%s %s)", buildinfo.Version, runtime.GOOS, runtime.GOARCH)
-
-	req.Header.Set("User-Agent", agent)
 }
 
 type Filter struct {

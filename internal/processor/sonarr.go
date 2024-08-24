@@ -2,6 +2,7 @@ package processor
 
 import (
 	"context"
+	"sort"
 	"strings"
 	"time"
 
@@ -96,7 +97,7 @@ func (s *Service) processSonarr(ctx context.Context, cfg *domain.ArrConfig, logg
 
 	logger.Debug().Msgf("found %d shows to process", len(shows))
 
-	var titles []string
+	titleSet := make(map[string]struct{})
 	var monitoredTitles int
 
 	for _, show := range shows {
@@ -128,16 +129,28 @@ func (s *Service) processSonarr(ctx context.Context, cfg *domain.ArrConfig, logg
 		//titles = append(titles, rls.MustNormalize(s.Title))
 		//titles = append(titles, rls.MustClean(s.Title))
 
-		titles = append(titles, processTitle(s.Title, cfg.MatchRelease)...)
+		titles := processTitle(s.Title, cfg.MatchRelease)
+		for _, title := range titles {
+			titleSet[title] = struct{}{}
+		}
 
 		if !cfg.ExcludeAlternateTitles {
 			for _, title := range s.AlternateTitles {
-				titles = append(titles, processTitle(title.Title, cfg.MatchRelease)...)
+				altTitles := processTitle(title.Title, cfg.MatchRelease)
+				for _, altTitle := range altTitles {
+					titleSet[altTitle] = struct{}{}
+				}
 			}
 		}
 	}
 
-	logger.Debug().Msgf("from a total of %d shows we found %d monitored and created %d release titles", len(shows), monitoredTitles, len(titles))
+	uniqueTitles := make([]string, 0, len(titleSet))
+	for title := range titleSet {
+		uniqueTitles = append(uniqueTitles, title)
+	}
 
-	return titles, nil
+	sort.Strings(uniqueTitles)
+	logger.Debug().Msgf("from a total of %d shows we found %d monitored and created %d release titles", len(shows), monitoredTitles, len(uniqueTitles))
+
+	return uniqueTitles, nil
 }

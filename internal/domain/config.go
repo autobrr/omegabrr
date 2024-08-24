@@ -38,6 +38,7 @@ var (
 	ListTypeMdblist    ListType = "mdblist"
 	ListTypeMetacritic ListType = "metacritic"
 	ListTypePlaintext  ListType = "plaintext"
+	ListTypeSteam      ListType = "steam"
 )
 
 type ArrConfig struct {
@@ -317,6 +318,12 @@ lists:
   #- name: Upcoming Albums
   #  type: metacritic
   #  url: https://api.autobrr.com/lists/metacritic/upcoming-albums
+  #  filters:
+  #    - 20 # Change me
+
+  #- name: Steam Wishlist
+  #  type: steam
+  #  url: https://store.steampowered.com/wishlist/id/USERNAME/wishlistdata
   #  filters:
   #    - 20 # Change me
 `

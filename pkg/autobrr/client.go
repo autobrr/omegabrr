@@ -5,9 +5,12 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httputil"
+	"net/url"
+	"runtime"
 	"strconv"
 	"time"
 
@@ -70,14 +73,15 @@ func (c *Client) Test(ctx context.Context) error {
 }
 
 func (c *Client) GetFilters(ctx context.Context) ([]Filter, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.Host+"/api/filters", nil)
+	reqUrl, err := url.JoinPath(c.Host, "/api/filters")
 	if err != nil {
 		return nil, err
 	}
 
-	req.SetBasicAuth(c.BasicUser, c.BasicPass)
-	req.Header.Add("X-API-Token", c.APIKey)
-	buildinfo.AttachUserAgentHeader(req)
+	req, err := c.newRequest(ctx, http.MethodGet, reqUrl, nil)
+	if err != nil {
+		return nil, err
+	}
 
 	res, err := c.client.Do(req)
 	if err != nil {
@@ -110,14 +114,15 @@ func (c *Client) UpdateFilterByID(ctx context.Context, filterID int, filter Upda
 		return err
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, c.Host+"/api/filters/"+id, bytes.NewBuffer(body))
+	reqUrl, err := url.JoinPath(c.Host, "/api/filters/", id)
 	if err != nil {
 		return err
 	}
 
-	req.SetBasicAuth(c.BasicUser, c.BasicPass)
-	req.Header.Add("X-API-Token", c.APIKey)
-	buildinfo.AttachUserAgentHeader(req)
+	req, err := c.newRequest(ctx, http.MethodPatch, reqUrl, bytes.NewBuffer(body))
+	if err != nil {
+		return err
+	}
 
 	res, err := c.client.Do(req)
 	if err != nil {
@@ -137,6 +142,25 @@ func (c *Client) UpdateFilterByID(ctx context.Context, filterID int, filter Upda
 	}
 
 	return nil
+}
+
+func (c *Client) newRequest(ctx context.Context, method string, url string, body io.Reader) (*http.Request, error) {
+	req, err := http.NewRequestWithContext(ctx, method, url, body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.SetBasicAuth(c.BasicUser, c.BasicPass)
+	req.Header.Add("X-API-Token", c.APIKey)
+	buildinfo.AttachUserAgentHeader(req)
+
+	return req, nil
+}
+
+func (c *Client) buildUserAgent(req *http.Request) {
+	agent := fmt.Sprintf("omegabrr/%s (%s %s)", buildinfo.Version, runtime.GOOS, runtime.GOARCH)
+
+	req.Header.Set("User-Agent", agent)
 }
 
 type Filter struct {

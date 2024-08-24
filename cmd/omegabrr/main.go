@@ -78,15 +78,30 @@ func main() {
 	if configPath == "" {
 		configPath = os.Getenv("OMEGABRR_CONFIG")
 
-		if configPath == "" {
+		if _, err := os.Stat(configPath); err != nil {
 			userConfigDir, err := os.UserConfigDir()
 			if err != nil {
-				log.Fatal().Err(err).Msg("failed to get user config directory")
+				log.Error().Err(err).Msg("failed to get user config directory")
 			}
-			defaultConfigPath := filepath.Join(userConfigDir, "omegabrr", "config.yaml")
 
-			if _, err := os.Stat(defaultConfigPath); err == nil {
-				configPath = defaultConfigPath
+			base := []string{filepath.Join(userConfigDir, "omegabrr"), "/config"}
+			configs := []string{"config.yaml", "config.yml"}
+
+			configPath = ""
+			for _, b := range base {
+				for _, c := range configs {
+					p := filepath.Join(b, c)
+					if _, err := os.Stat(p); err != nil {
+						continue
+					}
+
+					configPath = p
+					break
+				}
+
+				if configPath != "" {
+					break
+				}
 			}
 		}
 	}

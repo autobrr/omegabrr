@@ -2,6 +2,7 @@ package processor
 
 import (
 	"context"
+	"sort"
 	"strings"
 	"time"
 
@@ -89,7 +90,7 @@ func (s *Service) processRadarr(ctx context.Context, cfg *domain.ArrConfig, logg
 
 	logger.Debug().Msgf("found %d movies to process", len(movies))
 
-	var titles []string
+	titleSet := make(map[string]struct{})
 	var monitoredTitles int
 
 	for _, movie := range movies {
@@ -119,20 +120,22 @@ func (s *Service) processRadarr(ctx context.Context, cfg *domain.ArrConfig, logg
 		monitoredTitles++
 
 		// Taking the international title and the original title and appending them to the titles array.
-		titlesMap := make(map[string]bool) // Initialize a map to keep track of unique titles.
-		t := m.Title
-		ot := m.OriginalTitle
-
-		for _, title := range []string{t, ot} {
-			if title != "" && !titlesMap[title] {
-				titlesMap[title] = true
-				titles = append(titles, processTitle(title, cfg.MatchRelease)...)
+		for _, title := range []string{m.Title, m.OriginalTitle} {
+			if title != "" {
+				for _, t := range processTitle(title, cfg.MatchRelease) {
+					titleSet[t] = struct{}{}
+				}
 			}
 		}
-
 	}
 
-	logger.Debug().Msgf("from a total of %d movies we found %d monitored and created %d release titles", len(movies), monitoredTitles, len(titles))
+	uniqueTitles := make([]string, 0, len(titleSet))
+	for title := range titleSet {
+		uniqueTitles = append(uniqueTitles, title)
+	}
 
-	return titles, nil
+	sort.Strings(uniqueTitles)
+	logger.Debug().Msgf("from a total of %d movies we found %d monitored and created %d release titles", len(movies), monitoredTitles, len(uniqueTitles))
+
+	return uniqueTitles, nil
 }

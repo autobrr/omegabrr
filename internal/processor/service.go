@@ -118,6 +118,9 @@ func (s *Service) ProcessLists(ctx context.Context, dryRun bool) []error {
 
 		case domain.ListTypePlaintext:
 			err = s.plaintext(ctx, listsClient, dryRun, s.autobrrClient)
+
+		case domain.ListTypeSteam:
+			err = s.steam(ctx, listsClient, dryRun, s.autobrrClient)
 		}
 
 		if err != nil {

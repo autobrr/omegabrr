@@ -21,7 +21,7 @@ func (j *RunProcessorJob) Run() {
 	if len(arrsErrors) > 0 {
 		j.Log.Error().Msg("Errors encountered during processing Arrs:")
 		for _, errMsg := range arrsErrors {
-			j.Log.Error().Msg(errMsg)
+			j.Log.Error().Err(errMsg).Msg(errMsg.Error())
 		}
 	}
 
@@ -29,7 +29,7 @@ func (j *RunProcessorJob) Run() {
 	if len(listsErrors) > 0 {
 		j.Log.Error().Msg("Errors encountered during processing Lists:")
 		for _, errMsg := range listsErrors {
-			j.Log.Error().Msg(errMsg)
+			j.Log.Error().Err(errMsg).Msg(errMsg.Error())
 		}
 	}
 }

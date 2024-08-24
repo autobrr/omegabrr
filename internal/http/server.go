@@ -19,14 +19,14 @@ type Server struct {
 	processorService *processor.Service
 }
 
-func NewServer(config *domain.Config, processorService *processor.Service) Server {
-	return Server{
+func NewServer(config *domain.Config, processorService *processor.Service) *Server {
+	return &Server{
 		cfg:              config,
 		processorService: processorService,
 	}
 }
 
-func (s Server) Open() error {
+func (s *Server) Open() error {
 	addr := fmt.Sprintf("%v:%v", s.cfg.Server.Host, s.cfg.Server.Port)
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
@@ -40,7 +40,7 @@ func (s Server) Open() error {
 	return server.Serve(listener)
 }
 
-func (s Server) Handler() http.Handler {
+func (s *Server) Handler() http.Handler {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)

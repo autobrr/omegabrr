@@ -8,15 +8,15 @@ import (
 
 	"github.com/autobrr/omegabrr/internal/domain"
 	"github.com/autobrr/omegabrr/pkg/autobrr"
-	"github.com/pkg/errors"
 
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"golift.io/starr"
 	"golift.io/starr/sonarr"
 )
 
-func (s Service) sonarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool, brr *autobrr.Client) error {
+func (s *Service) sonarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool, brr *autobrr.Client) error {
 	var arrType string
 	if cfg.Type == domain.ArrTypeWhisparr {
 		arrType = "whisparr"
@@ -67,7 +67,7 @@ func (s Service) sonarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool,
 	return nil
 }
 
-func (s Service) processSonarr(ctx context.Context, cfg *domain.ArrConfig, logger *zerolog.Logger) ([]string, error) {
+func (s *Service) processSonarr(ctx context.Context, cfg *domain.ArrConfig, logger *zerolog.Logger) ([]string, error) {
 	c := starr.New(cfg.Apikey, cfg.Host, 60*time.Second)
 
 	if cfg.BasicAuth != nil {

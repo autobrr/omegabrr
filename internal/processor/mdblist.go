@@ -7,14 +7,16 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/autobrr/omegabrr/internal/buildinfo"
 	"github.com/autobrr/omegabrr/internal/domain"
 	"github.com/autobrr/omegabrr/pkg/autobrr"
+
 	"github.com/fatih/color"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
 
-func (s Service) mdblist(ctx context.Context, cfg *domain.ListConfig, dryRun bool, brr *autobrr.Client) error {
+func (s *Service) mdblist(ctx context.Context, cfg *domain.ListConfig, dryRun bool, brr *autobrr.Client) error {
 	l := log.With().Str("type", "mdblist").Str("client", cfg.Name).Logger()
 
 	if cfg.URL == "" {
@@ -38,7 +40,7 @@ func (s Service) mdblist(ctx context.Context, cfg *domain.ListConfig, dryRun boo
 		req.Header.Set(k, v)
 	}
 
-	setUserAgent(req)
+	buildinfo.AttachUserAgentHeader(req)
 
 	resp, err := s.httpClient.Do(req)
 	if err != nil {

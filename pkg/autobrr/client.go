@@ -89,7 +89,7 @@ func (c *Client) GetFilters(ctx context.Context) ([]Filter, error) {
 	}
 
 	if res.StatusCode != http.StatusOK {
-		return nil, errors.New("something went wrong")
+		return nil, errors.New("something went wrong, could not get filters")
 	}
 
 	body, err := io.ReadAll(res.Body)
@@ -152,7 +152,7 @@ func (c *Client) newRequest(ctx context.Context, method string, url string, body
 
 	req.SetBasicAuth(c.BasicUser, c.BasicPass)
 	req.Header.Add("X-API-Token", c.APIKey)
-	c.buildUserAgent(req)
+	buildinfo.AttachUserAgentHeader(req)
 
 	return req, nil
 }

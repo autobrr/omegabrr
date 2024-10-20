@@ -12,6 +12,7 @@ on:
 env:
   REGISTRY: ghcr.io
   REGISTRY_IMAGE: ghcr.io/${{ github.repository }}
+  GO_VERSION: '1.23'
 
 permissions:
   contents: write
@@ -30,7 +31,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22.0'
+          go-version: ${{ env.GO_VERSION }}
           cache: true
 
       - name: Test
@@ -55,7 +56,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22.0'
+          go-version: ${{ env.GO_VERSION }}
           cache: true
 
       - name: Run GoReleaser build

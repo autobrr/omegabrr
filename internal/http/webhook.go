@@ -22,7 +22,7 @@ func newWebhookHandler(cfg *domain.Config, processorSvc *processor.Service) *web
 	}
 }
 
-func (h webhookHandler) Routes(r chi.Router) {
+func (h *webhookHandler) Routes(r chi.Router) {
 	r.Get("/trigger", h.run)
 	r.Post("/trigger", h.run)
 	r.Get("/trigger/arr", h.arr)
@@ -31,30 +31,34 @@ func (h webhookHandler) Routes(r chi.Router) {
 	r.Post("/trigger/lists", h.lists)
 }
 
-func (h webhookHandler) run(w http.ResponseWriter, r *http.Request) {
+func (h *webhookHandler) run(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+
 	errArrs := h.processorService.ProcessArrs(ctx, false)
 	errLists := h.processorService.ProcessLists(ctx, false)
 
 	if errArrs != nil || errLists != nil {
 		render.NoContent(w, r)
-	} else {
-		render.Status(r, http.StatusOK)
+		return
 	}
-}
 
-func (h webhookHandler) arr(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	if err := h.processorService.ProcessArrs(ctx, false); err != nil {
-		render.NoContent(w, r)
-	}
 	render.Status(r, http.StatusOK)
 }
 
-func (h webhookHandler) lists(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	if err := h.processorService.ProcessLists(ctx, false); err != nil {
+func (h *webhookHandler) arr(w http.ResponseWriter, r *http.Request) {
+	if err := h.processorService.ProcessArrs(r.Context(), false); err != nil {
 		render.NoContent(w, r)
+		return
 	}
+
+	render.Status(r, http.StatusOK)
+}
+
+func (h *webhookHandler) lists(w http.ResponseWriter, r *http.Request) {
+	if err := h.processorService.ProcessLists(r.Context(), false); err != nil {
+		render.NoContent(w, r)
+		return
+	}
+
 	render.Status(r, http.StatusOK)
 }

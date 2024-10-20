@@ -13,16 +13,16 @@ func newHealthHandler() *healthHandler {
 	return &healthHandler{}
 }
 
-func (h healthHandler) Routes(r chi.Router) {
+func (h *healthHandler) Routes(r chi.Router) {
 	r.Get("/liveness", h.handleLiveness)
 	r.Get("/readiness", h.handleReadiness)
 }
 
-func (h healthHandler) handleLiveness(w http.ResponseWriter, r *http.Request) {
+func (h *healthHandler) handleLiveness(w http.ResponseWriter, r *http.Request) {
 	writeHealthy(w, r)
 }
 
-func (h healthHandler) handleReadiness(w http.ResponseWriter, r *http.Request) {
+func (h *healthHandler) handleReadiness(w http.ResponseWriter, r *http.Request) {
 	writeHealthy(w, r)
 }
 

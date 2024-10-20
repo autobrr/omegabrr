@@ -10,23 +10,24 @@ import (
 )
 
 type processorHandler struct {
-	ProcessorService *processor.Service
+	processorService *processor.Service
 }
 
 func newProcessorHandler(processorSvc *processor.Service) *processorHandler {
 	return &processorHandler{
-		ProcessorService: processorSvc,
+		processorService: processorSvc,
 	}
 }
 
-func (h processorHandler) Routes(r chi.Router) {
+func (h *processorHandler) Routes(r chi.Router) {
 	r.Get("/filters", h.getFilters)
 }
 
-func (h processorHandler) getFilters(w http.ResponseWriter, r *http.Request) {
-	filters, err := h.ProcessorService.GetFilters(r.Context())
+func (h *processorHandler) getFilters(w http.ResponseWriter, r *http.Request) {
+	filters, err := h.processorService.GetFilters(r.Context())
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
+		return
 	}
 
 	render.JSON(w, r, filters)

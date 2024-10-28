@@ -49,6 +49,7 @@ func (s Server) Handler() http.Handler {
 	r.Use(middleware.Logger)
 
 	r.Route("/api/healthz", newHealthHandler().Routes)
+	r.Route("/api/version", newVersionHandler().Routes)
 
 	r.Group(func(r chi.Router) {
 		r.Use(s.isAuthenticated)

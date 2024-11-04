@@ -6,14 +6,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/autobrr/omegabrr/internal/domain"
-	"github.com/autobrr/omegabrr/pkg/autobrr"
 	"github.com/pkg/errors"
-
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"golift.io/starr"
 	"golift.io/starr/radarr"
+
+	"github.com/autobrr/omegabrr/internal/domain"
+	"github.com/autobrr/omegabrr/pkg/autobrr"
 )
 
 func (s Service) radarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool, brr *autobrr.Client) error {
@@ -91,13 +91,12 @@ func (s Service) processRadarr(ctx context.Context, cfg *domain.ArrConfig, logge
 	logger.Debug().Msgf("found %d movies to process", len(movies))
 
 	titleSet := make(map[string]struct{})
-	var monitoredTitles int
+	var processedTitles int
 
 	for _, movie := range movies {
 		m := movie
 
-		// only want monitored
-		if !m.Monitored {
+		if !s.shouldProcessItem(m.Monitored, cfg) {
 			continue
 		}
 
@@ -116,8 +115,7 @@ func (s Service) processRadarr(ctx context.Context, cfg *domain.ArrConfig, logge
 			}
 		}
 
-		// increment monitored titles
-		monitoredTitles++
+		processedTitles++
 
 		// Taking the international title and the original title and appending them to the titles array.
 		for _, title := range []string{m.Title, m.OriginalTitle} {
@@ -135,7 +133,7 @@ func (s Service) processRadarr(ctx context.Context, cfg *domain.ArrConfig, logge
 	}
 
 	sort.Strings(uniqueTitles)
-	logger.Debug().Msgf("from a total of %d movies we found %d monitored and created %d release titles", len(movies), monitoredTitles, len(uniqueTitles))
+	logger.Debug().Msgf("from a total of %d movies we found %d titles and created %d release titles", len(movies), processedTitles, len(uniqueTitles))
 
 	return uniqueTitles, nil
 }

@@ -6,13 +6,13 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/autobrr/omegabrr/internal/apitoken"
-
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/file"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
+
+	"github.com/autobrr/omegabrr/internal/apitoken"
 )
 
 type BasicAuth struct {
@@ -52,6 +52,7 @@ type ArrConfig struct {
 	TagsExclude            []string   `koanf:"tagsExclude"`
 	MatchRelease           bool       `koanf:"matchRelease"`
 	ExcludeAlternateTitles bool       `koanf:"excludeAlternateTitles"`
+	IncludeUnmonitored     bool       `koanf:"includeUnmonitored"`
 }
 
 type ArrType string
@@ -234,6 +235,7 @@ clients:
     #  apikey: API_KEY
     #  filters:
     #    - 15 # Change me
+    #  includeUnmonitored: false # Set to true to include unmonitored items
 
     #- name: radarr4k
     #  type: radarr
@@ -241,6 +243,7 @@ clients:
     #  apikey: API_KEY
     #  filters:
     #    - 16 # Change me
+    #  includeUnmonitored: false # Set to true to include unmonitored items
 
     #- name: sonarr
     #  type: sonarr
@@ -248,6 +251,7 @@ clients:
     #  apikey: API_KEY
     #  filters:
     #    - 14 # Change me
+    #  includeUnmonitored: false # Set to true to include unmonitored items
     #  #excludeAlternateTitles: true # defaults to false
 
     #- name: readarr
@@ -256,6 +260,7 @@ clients:
     #  apikey: API_KEY
     #  filters:
     #    - 18 # Change me
+    #  includeUnmonitored: false # Set to true to include unmonitored items
 
     #- name: lidarr
     #  type: lidarr
@@ -263,6 +268,7 @@ clients:
     #  apikey: API_KEY
     #  filters:
     #    - 32 # Change me
+    #  includeUnmonitored: false # Set to true to include unmonitored items
 
     #- name: whisparr
     #  type: whisparr
@@ -271,6 +277,7 @@ clients:
     #  matchRelease: true
     #  filters:
     #    - 69 # Change me
+    #  includeUnmonitored: false # Set to true to include unmonitored items
 
 lists:
   #- name: Latest TV Shows

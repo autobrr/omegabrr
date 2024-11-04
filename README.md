@@ -3,6 +3,7 @@
 Omegabrr transforms items monitored by arrs or lists into autobrr filters. Useful for automating your filters for monitored media or racing criteria.
 
 ## Table of Contents
+
 - [Config](#config)
   - [Tags](#tags)
   - [Lists](#lists)
@@ -36,6 +37,7 @@ clients:
       filters:
         - 15 # Change me
       #matchRelease: false / true
+      #includeUnmonitored: false # Set to true to include unmonitored items
 
     - name: sonarr
       type: sonarr
@@ -50,6 +52,7 @@ clients:
         - 14 # Change me
       #matchRelease: false / true
       #excludeAlternateTitles: false/ true # only works for Sonarr and defaults to false
+      #includeUnmonitored: false # Set to true to include unmonitored items
 
     - name: lidarr
       type: lidarr
@@ -104,7 +107,7 @@ lists:
     url: https://api.autobrr.com/lists/trakt/popular-tv
     filters:
       - 25 # Change me
-  
+
   - name: StevenLu
     type: trakt
     url: https://api.autobrr.com/lists/stevenlu
@@ -133,27 +136,27 @@ lists:
 If you're trying to reach radarr or sonarr hosted on swizzin from some other location, you need to do it like this with basic auth:
 
 ```yaml
-  arr:
-    - name: radarr
-      type: radarr
-      host: https://domain.com/radarr
-      apikey: YOUR_API_KEY
-      basicAuth:
-        user: username
-        pass: password
-      filters:
-        - 15 # Change me
+arr:
+  - name: radarr
+    type: radarr
+    host: https://domain.com/radarr
+    apikey: YOUR_API_KEY
+    basicAuth:
+      user: username
+      pass: password
+    filters:
+      - 15 # Change me
 ```
 
 Same goes for autobrr if it's behind basic auth.
 
 ```yaml
-  autobrr:
-    host: http://localhost:7474
-    apikey: YOUR_API_KEY
-    basicAuth:
-      user: username
-      pass: password
+autobrr:
+  host: http://localhost:7474
+  apikey: YOUR_API_KEY
+  basicAuth:
+    user: username
+    pass: password
 ```
 
 ### Tags
@@ -188,7 +191,7 @@ If you want to exclude certain tags, you can use the `tagsExclude`.
 
 ### Lists
 
-Formerly known as regbrr and maintained by community members is now integrated into omegabrr! We now maintain the lists of media. 
+Formerly known as regbrr and maintained by community members is now integrated into omegabrr! We now maintain the lists of media.
 
 **Trakt**
 
@@ -214,6 +217,10 @@ Readarr will only use the `Match releases` field for now, so setting `matchRelea
 ## Exclude alternative titles from Sonarr
 
 You can drop alternate show titles from being added by setting `excludeAlternateTitles: true` for Sonarr in your config.
+
+### Include Unmonitored Items
+
+By default, omegabrr only processes monitored items. You can include unmonitored items by setting `includeUnmonitored: true` in your arr configuration. This is particularly useful in cross-seed scenarios where you want to match against all items.
 
 ## Plaintext lists specific options
 
@@ -242,6 +249,7 @@ server:
   port: 7441
   apiToken: MY_NEW_LONG_SECURE_TOKEN
 ```
+
 Call with `omegabrr generate-token`
 If you are using docker `docker exec omegabrr omegabrr generate-token`
 Optionally call with `--length <number>`for a custom length.
@@ -276,7 +284,7 @@ The API Token can be set as either an HTTP header like `X-API-Token`, or be pass
 
 ### Docker compose
 
-Check the `docker-compose.yml` example. 
+Check the `docker-compose.yml` example.
 
 1. Set `user: 1000:1000` with your user id you can get with the `id` command, or remove to run as **root**.
 2. Set the `volume` so it matches your system. To run from the same path as the `docker-compose` first create a config dir like `mkdir config`, and place this `./config:/config` in the compose file. This will create a default config on the first run.
@@ -287,13 +295,13 @@ If you have custom networks then make sure to add those, so it can communicate w
 
 For users who prioritize container security, we offer alternative Docker images built on [Distroless](https://github.com/GoogleContainerTools/distroless). Specifically the `distroless/static-debian12:nonroot` base image.
 
-Distroless images do not contain a package manager or shell, thereby reducing the potential attack surface and making them a more secure option. These stripped-back images contain only the application and its runtime dependencies. 
+Distroless images do not contain a package manager or shell, thereby reducing the potential attack surface and making them a more secure option. These stripped-back images contain only the application and its runtime dependencies.
 
 ### Systemd
 
 On Linux-based systems it is recommended to run omegabrr as a systemd service.
 
-Download the [latest binary](https://github.com/autobrr/omegabrr/releases/latest) for your system and place it in `/usr/local/bin`. 
+Download the [latest binary](https://github.com/autobrr/omegabrr/releases/latest) for your system and place it in `/usr/local/bin`.
 
 Example: Download binary
 

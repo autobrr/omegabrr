@@ -260,7 +260,6 @@ clients:
     #  apikey: API_KEY
     #  filters:
     #    - 18 # Change me
-    #  includeUnmonitored: false # Set to true to include unmonitored items
 
     #- name: lidarr
     #  type: lidarr
@@ -268,7 +267,6 @@ clients:
     #  apikey: API_KEY
     #  filters:
     #    - 32 # Change me
-    #  includeUnmonitored: false # Set to true to include unmonitored items
 
     #- name: whisparr
     #  type: whisparr
@@ -277,7 +275,6 @@ clients:
     #  matchRelease: true
     #  filters:
     #    - 69 # Change me
-    #  includeUnmonitored: false # Set to true to include unmonitored items
 
 lists:
   #- name: Latest TV Shows

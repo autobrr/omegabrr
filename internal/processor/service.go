@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/pkg/errors"
-	"github.com/rs/zerolog/log"
-
 	"github.com/autobrr/omegabrr/internal/domain"
 	"github.com/autobrr/omegabrr/pkg/autobrr"
+
+	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 type Service struct {

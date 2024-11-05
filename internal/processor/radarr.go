@@ -6,14 +6,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/autobrr/omegabrr/internal/domain"
+	"github.com/autobrr/omegabrr/pkg/autobrr"
+
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"golift.io/starr"
 	"golift.io/starr/radarr"
-
-	"github.com/autobrr/omegabrr/internal/domain"
-	"github.com/autobrr/omegabrr/pkg/autobrr"
 )
 
 func (s Service) radarr(ctx context.Context, cfg *domain.ArrConfig, dryRun bool, brr *autobrr.Client) error {

@@ -6,13 +6,13 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/autobrr/omegabrr/internal/apitoken"
+
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/file"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
-
-	"github.com/autobrr/omegabrr/internal/apitoken"
 )
 
 type BasicAuth struct {

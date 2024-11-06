@@ -8,8 +8,8 @@ import (
 
 	"github.com/autobrr/omegabrr/internal/domain"
 	"github.com/autobrr/omegabrr/pkg/autobrr"
-	"github.com/pkg/errors"
 
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"golift.io/starr"
@@ -98,44 +98,39 @@ func (s Service) processSonarr(ctx context.Context, cfg *domain.ArrConfig, logge
 	logger.Debug().Msgf("found %d shows to process", len(shows))
 
 	titleSet := make(map[string]struct{})
-	var monitoredTitles int
+	var processedTitles int
 
 	for _, show := range shows {
-		s := show
+		series := show
 
-		// only want monitored
-		if !s.Monitored {
+		if !s.shouldProcessItem(series.Monitored, cfg) {
 			continue
 		}
 
 		if len(cfg.TagsInclude) > 0 {
-			if len(s.Tags) == 0 {
+			if len(series.Tags) == 0 {
 				continue
 			}
-			if !containsTag(tags, s.Tags, cfg.TagsInclude) {
+			if !containsTag(tags, series.Tags, cfg.TagsInclude) {
 				continue
 			}
 		}
 
 		if len(cfg.TagsExclude) > 0 {
-			if containsTag(tags, s.Tags, cfg.TagsExclude) {
+			if containsTag(tags, series.Tags, cfg.TagsExclude) {
 				continue
 			}
 		}
 
-		// increment monitored titles
-		monitoredTitles++
+		processedTitles++
 
-		//titles = append(titles, rls.MustNormalize(s.Title))
-		//titles = append(titles, rls.MustClean(s.Title))
-
-		titles := processTitle(s.Title, cfg.MatchRelease)
+		titles := processTitle(series.Title, cfg.MatchRelease)
 		for _, title := range titles {
 			titleSet[title] = struct{}{}
 		}
 
 		if !cfg.ExcludeAlternateTitles {
-			for _, title := range s.AlternateTitles {
+			for _, title := range series.AlternateTitles {
 				altTitles := processTitle(title.Title, cfg.MatchRelease)
 				for _, altTitle := range altTitles {
 					titleSet[altTitle] = struct{}{}
@@ -150,7 +145,7 @@ func (s Service) processSonarr(ctx context.Context, cfg *domain.ArrConfig, logge
 	}
 
 	sort.Strings(uniqueTitles)
-	logger.Debug().Msgf("from a total of %d shows we found %d monitored and created %d release titles", len(shows), monitoredTitles, len(uniqueTitles))
+	logger.Debug().Msgf("from a total of %d shows we found %d titles and created %d release titles", len(shows), processedTitles, len(uniqueTitles))
 
 	return uniqueTitles, nil
 }

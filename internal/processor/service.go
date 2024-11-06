@@ -47,6 +47,14 @@ func (s Service) newAutobrrClient() *autobrr.Client {
 	return a
 }
 
+// shouldProcessItem determines if an item should be processed based on its monitored status and configuration
+func (s Service) shouldProcessItem(monitored bool, arrConfig *domain.ArrConfig) bool {
+	if arrConfig.IncludeUnmonitored {
+		return true
+	}
+	return monitored
+}
+
 func (s Service) ProcessArrs(ctx context.Context, dryRun bool) []string {
 	var processingErrors []string
 
@@ -91,7 +99,6 @@ func (s Service) ProcessArrs(ctx context.Context, dryRun bool) []string {
 	}
 
 	return processingErrors
-
 }
 
 func (s Service) ProcessLists(ctx context.Context, dryRun bool) []string {
@@ -133,13 +140,11 @@ func (s Service) ProcessLists(ctx context.Context, dryRun bool) []string {
 					log.Error().Err(err).Str("type", "steam").Str("client", listsClient.Name).Msg("error while processing Steam wishlist, continuing with other lists")
 					processingErrors = append(processingErrors, fmt.Sprintf("Steam - %s: %v", listsClient.Name, err))
 				}
-
 			}
 		}
 	}
 
 	return processingErrors
-
 }
 
 func (s Service) GetFilters(ctx context.Context) ([]autobrr.Filter, error) {

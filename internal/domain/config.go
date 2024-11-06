@@ -52,6 +52,7 @@ type ArrConfig struct {
 	TagsExclude            []string   `koanf:"tagsExclude"`
 	MatchRelease           bool       `koanf:"matchRelease"`
 	ExcludeAlternateTitles bool       `koanf:"excludeAlternateTitles"`
+	IncludeUnmonitored     bool       `koanf:"includeUnmonitored"`
 }
 
 type ArrType string
@@ -234,6 +235,7 @@ clients:
     #  apikey: API_KEY
     #  filters:
     #    - 15 # Change me
+    #  includeUnmonitored: false # Set to true to include unmonitored items
 
     #- name: radarr4k
     #  type: radarr
@@ -241,6 +243,7 @@ clients:
     #  apikey: API_KEY
     #  filters:
     #    - 16 # Change me
+    #  includeUnmonitored: false # Set to true to include unmonitored items
 
     #- name: sonarr
     #  type: sonarr
@@ -248,6 +251,7 @@ clients:
     #  apikey: API_KEY
     #  filters:
     #    - 14 # Change me
+    #  includeUnmonitored: false # Set to true to include unmonitored items
     #  #excludeAlternateTitles: true # defaults to false
 
     #- name: readarr

@@ -24,7 +24,7 @@ server:
   host: 0.0.0.0
   port: 7441
   apiToken: GENERATED_TOKEN
-schedule: "0 */6 * * *"
+schedule: "@every 6h"
 clients:
   autobrr:
     host: http://localhost:7474

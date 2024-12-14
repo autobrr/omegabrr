@@ -1,0 +1,346 @@
+{
+	"type": "object",
+	"properties": {
+		"server": {
+			"type": "object",
+			"properties": {
+				"host": {
+					"type": "string"
+				},
+				"port": {
+					"type": "integer"
+				},
+				"apiToken": {
+					"type": "string",
+					"minLength": 32
+				},
+				"basicAuth": {
+					"type": "object",
+					"properties": {
+						"user": {
+							"type": "string"
+						},
+						"pass": {
+							"type": "string"
+						}
+					},
+					"required": [
+						"user",
+						"pass"
+					]
+				}
+			},
+			"required": [
+				"host",
+				"port"
+			],
+			"oneOf": [
+				{
+					"required": [
+						"apiToken"
+					]
+				},
+				{
+					"required": [
+						"basicAuth"
+					]
+				}
+			]
+		},
+		"schedule": {
+			"type": "string",
+			"pattern": "((((\\d+,)+\\d+|(\\d+(\/|-|#)\\d+)|\\d+L?|\\*(\/\\d+)?|L(-\\d+)?|\\?|[A-Z]{3}(-[A-Z]{3})?) ?){5,7})$|(@(annually|yearly|monthly|weekly|daily|hourly|reboot|midnight))|(@every (\\d+(ns|us|µs|ms|s|m|h))+)"
+		},
+		"clients": {
+			"type": "object",
+			"properties": {
+				"autobrr": {
+					"type": "object",
+					"properties": {
+						"host": {
+							"type": "string"
+						},
+						"apikey": {
+							"type": "string",
+							"minLength": 32,
+							"maxLength": 32
+						}
+					},
+					"required": [
+						"host",
+						"apikey"
+					]
+				},
+				"arr": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"name": {
+								"type": "string"
+							},
+							"type": {
+								"enum": [
+									"radarr",
+									"whisparr",
+									"sonarr",
+									"readarr",
+									"lidarr"
+								]
+							},
+							"host": {
+								"type": "string"
+							},
+							"apikey": {
+								"type": "string",
+								"minLength": 32,
+								"maxLength": 32
+							},
+							"filters": {
+								"type": "array",
+								"items": {
+									"type": "integer"
+								}
+							},
+							"matchRelease": {
+								"type": "boolean"
+							},
+							"basicAuth": {
+								"type": "object",
+								"properties": {
+									"user": {
+										"type": "string"
+									},
+									"pass": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"user",
+									"pass"
+								]
+							}
+						},
+						"required": [
+							"name",
+							"type",
+							"host",
+							"apikey",
+							"filters"
+						],
+						"if": {
+							"properties": {
+								"type": {
+									"enum": [
+										"radarr",
+										"sonarr"
+									]
+								}
+							}
+						},
+						"then": {
+							"properties": {
+								"tagsInclude": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								},
+								"tagsExclude": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								}
+							},
+							"if": {
+								"properties": {
+									"type": {
+										"const": "sonarr"
+									}
+								}
+							},
+							"then": {
+								"properties": {
+									"excludeAlternateTitles": {
+										"type": "boolean"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"additionalProperties": false,
+			"required": [
+				"autobrr"
+			]
+		},
+		"lists": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"type": {
+						"enum": [
+							"trakt",
+							"mdblist",
+							"metacritic",
+							"plaintext",
+							"steam"
+						]
+					},
+					"url": {
+						"type": "string",
+						"pattern": "^https?://.*$"
+					},
+					"filters": {
+						"type": "array",
+						"items": {
+							"type": "integer"
+						}
+					},
+					"headers": {
+						"type": "object",
+						"properties": {
+							"trakt-api-key": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"trakt-api-key"
+						]
+					}
+				},
+				"required": [
+					"name",
+					"type",
+					"url",
+					"filters"
+				],
+				"if": {
+					"properties": {
+						"type": {
+							"const": "trakt"
+						}
+					}
+				},
+				"then": {
+					"properties": {
+						"url": {
+							"anyOf": [
+								{
+									"const": "https://api.autobrr.com/lists/trakt/popular-tv"
+								},
+								{
+									"const": "https://api.autobrr.com/lists/trakt/anticipated-tv"
+								},
+								{
+									"const": "https://api.autobrr.com/lists/trakt/upcoming-movies"
+								},
+								{
+									"const": "https://api.autobrr.com/lists/trakt/upcoming-bluray"
+								},
+								{
+									"const": "https://api.autobrr.com/lists/stevenlu"
+								},
+								{
+									"pattern": "^https?://api.trakt.tv/.*$"
+								}
+							]
+						}
+					},
+					"if": {
+						"properties": {
+							"url": {
+								"pattern": "^https?://api.trakt.tv/.*$"
+							}
+						}
+					},
+					"then": {
+						"required": [
+							"headers"
+						]
+					}
+				},
+				"else": {
+					"if": {
+						"properties": {
+							"type": {
+								"const": "mdblist"
+							}
+						}
+					},
+					"then": {
+						"properties": {
+							"url": {
+								"pattern": "^https?://mdblist.com/lists/\\w+/\\w+/json$"
+							}
+						}
+					},
+					"else": {
+						"if": {
+							"properties": {
+								"type": {
+									"const": "metacritic"
+								}
+							}
+						},
+						"then": {
+							"properties": {
+								"url": {
+									"enum": [
+										"https://api.autobrr.com/lists/metacritic/upcoming-albums",
+										"https://api.autobrr.com/lists/metacritic/new-albums"
+									]
+								}
+							}
+						},
+						"else": {
+							"if": {
+								"properties": {
+									"type": {
+										"const": "plaintext"
+									}
+								}
+							},
+							"then": {
+								"properties": {
+									"matchRelease": {
+										"type": "boolean"
+									},
+									"album": {
+										"type": "boolean"
+									}
+								}
+							},
+							"else": {
+								"if": {
+									"properties": {
+										"type": {
+											"const": "steam"
+										}
+									}
+								},
+								"then": {
+									"properties": {
+										"url": {
+											"pattern": "^https?://store.steampowered.com/wishlist/id/\\w+/wishlistdata$"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"required": [
+		"server",
+		"clients"
+	]
+}

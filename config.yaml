@@ -1,9 +1,10 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/omegabrr/omegabrr/refs/heads/main/config-schema.json
 ---
 server:
   host: 0.0.0.0
   port: 7441
   apiToken: ""
-schedule: "0 */6 * * *" # every 6th hour
+schedule: "@every 6h" # every 6 hours
 clients:
   autobrr:
     host: http://localhost:7474

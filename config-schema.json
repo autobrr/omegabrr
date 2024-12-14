@@ -12,8 +12,7 @@
 				},
 				"apiKey": {
 					"type": "string",
-					"minLength": 16,
-					"maxLength": 16
+					"minLength": 32
 				},
 				"basicAuth": {
 					"type": "object",

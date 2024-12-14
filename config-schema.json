@@ -169,109 +169,150 @@
 							}
 						}
 					}
-				},
-				"lists": {
-					"type": "array",
-					"items": {
+				}
+			},
+			"required": [
+				"autobrr"
+			]
+		},
+		"lists": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"type": {
+						"enum": [
+							"trakt",
+							"mdblist",
+							"metacritic",
+							"plaintext",
+							"steam"
+						]
+					},
+					"url": {
+						"type": "string",
+						"pattern": "^https?://.*$"
+					},
+					"filters": {
+						"type": "array",
+						"items": {
+							"type": "integer"
+						}
+					},
+					"headers": {
 						"type": "object",
 						"properties": {
-							"name": {
+							"trakt-api-key": {
 								"type": "string"
-							},
-							"type": {
-								"enum": [
-									"trakt",
-									"mdblist",
-									"metacritic",
-									"plaintext",
-									"steam"
-								]
-							},
-							"url": {
-								"type": "string",
-								"pattern": "^https?://.*$"
-							},
-							"filters": {
-								"type": "array",
-								"items": {
-									"type": "integer"
-								}
-							},
-							"headers": {
-								"type": "object",
-								"properties": {
-									"trakt-api-key": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"trakt-api-key"
-								]
 							}
 						},
 						"required": [
-							"name",
-							"type",
-							"url",
-							"filters"
-						],
+							"trakt-api-key"
+						]
+					}
+				},
+				"required": [
+					"name",
+					"type",
+					"url",
+					"filters"
+				],
+				"if": {
+					"properties": {
+						"type": {
+							"const": "trakt"
+						}
+					}
+				},
+				"then": {
+					"properties": {
+						"url": {
+							"anyOf": [
+								{
+									"const": "https://api.autobrr.com/lists/trakt/popular-tv"
+								},
+								{
+									"const": "https://api.autobrr.com/lists/trakt/anticipated-tv"
+								},
+								{
+									"const": "https://api.autobrr.com/lists/trakt/upcoming-movies"
+								},
+								{
+									"const": "https://api.autobrr.com/lists/trakt/upcoming-bluray"
+								},
+								{
+									"const": "https://api.autobrr.com/lists/stevenlu"
+								},
+								{
+									"pattern": "^https?://api.trakt.tv/.*$"
+								}
+							]
+						}
+					},
+					"if": {
+						"properties": {
+							"url": {
+								"pattern": "^https?://api.trakt.tv/.*$"
+							}
+						}
+					},
+					"then": {
+						"required": [
+							"headers"
+						]
+					}
+				},
+				"else": {
+					"if": {
+						"properties": {
+							"type": {
+								"const": "mdblist"
+							}
+						}
+					},
+					"then": {
+						"properties": {
+							"url": {
+								"pattern": "^https?://mdblist.com/lists/\\w+/\\w+/json$"
+							}
+						}
+					},
+					"else": {
 						"if": {
 							"properties": {
 								"type": {
-									"const": "trakt"
+									"const": "metacritic"
 								}
 							}
 						},
 						"then": {
 							"properties": {
 								"url": {
-									"anyOf": [
-										{
-											"const": "https://api.autobrr.com/lists/trakt/popular-tv"
-										},
-										{
-											"const": "https://api.autobrr.com/lists/trakt/anticipated-tv"
-										},
-										{
-											"const": "https://api.autobrr.com/lists/trakt/upcoming-movies"
-										},
-										{
-											"const": "https://api.autobrr.com/lists/trakt/upcoming-bluray"
-										},
-										{
-											"const": "https://api.autobrr.com/lists/stevenlu"
-										},
-										{
-											"pattern": "^https?://api.trakt.tv/.*$"
-										}
+									"enum": [
+										"https://api.autobrr.com/lists/metacritic/upcoming-albums",
+										"https://api.autobrr.com/lists/metacritic/new-albums"
 									]
 								}
-							},
-							"if": {
-								"properties": {
-									"url": {
-										"pattern": "^https?://api.trakt.tv/.*$"
-									}
-								}
-							},
-							"then": {
-								"required": [
-									"headers"
-								]
 							}
 						},
 						"else": {
 							"if": {
 								"properties": {
 									"type": {
-										"const": "mdblist"
+										"const": "plaintext"
 									}
 								}
 							},
 							"then": {
 								"properties": {
-									"url": {
-										"pattern": "^https?://mdblist.com/lists/\\w+/\\w+/json$"
+									"matchRelease": {
+										"type": "boolean"
+									},
+									"album": {
+										"type": "boolean"
 									}
 								}
 							},
@@ -279,52 +320,14 @@
 								"if": {
 									"properties": {
 										"type": {
-											"const": "metacritic"
+											"const": "steam"
 										}
 									}
 								},
 								"then": {
 									"properties": {
 										"url": {
-											"enum": [
-												"https://api.autobrr.com/lists/metacritic/upcoming-albums",
-												"https://api.autobrr.com/lists/metacritic/new-albums"
-											]
-										}
-									}
-								},
-								"else": {
-									"if": {
-										"properties": {
-											"type": {
-												"const": "plaintext"
-											}
-										}
-									},
-									"then": {
-										"properties": {
-											"matchRelease": {
-												"type": "boolean"
-											},
-											"album": {
-												"type": "boolean"
-											}
-										}
-									},
-									"else": {
-										"if": {
-											"properties": {
-												"type": {
-													"const": "steam"
-												}
-											}
-										},
-										"then": {
-											"properties": {
-												"url": {
-													"pattern": "^https?://store.steampowered.com/wishlist/id/\\w+/wishlistdata$"
-												}
-											}
+											"pattern": "^https?://store.steampowered.com/wishlist/id/\\w+/wishlistdata$"
 										}
 									}
 								}
@@ -332,10 +335,7 @@
 						}
 					}
 				}
-			},
-			"required": [
-				"autobrr"
-			]
+			}
 		}
 	},
 	"required": [

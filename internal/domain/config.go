@@ -10,7 +10,7 @@ import (
 
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"
-	"github.com/knadh/koanf/providers/file"
+	"github.com/knadh/koanf/providers/rawbytes"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
@@ -123,7 +123,20 @@ func NewConfig(configPath string) *Config {
 			}
 		}
 
-		if err := k.Load(file.Provider(configPath), yaml.Parser()); err != nil {
+		content, err := os.ReadFile(configPath)
+		if err != nil {
+			log.Fatal().
+				Err(err).
+				Str("service", "config").
+				Msgf("failed reading %q", configPath)
+		}
+
+		// expand env vars
+		expandedContent := os.ExpandEnv(string(content))
+		provider := rawbytes.Provider([]byte(expandedContent))
+
+		// load
+		if err := k.Load(provider, yaml.Parser()); err != nil {
 			log.Fatal().
 				Err(err).
 				Str("service", "config").

@@ -49,7 +49,7 @@
 		},
 		"schedule": {
 			"type": "string",
-			"pattern": "((((\d+,)+\d+|(\d+(\/|-|#)\d+)|\d+L?|\*(\/\d+)?|L(-\d+)?|\?|[A-Z]{3}(-[A-Z]{3})?) ?){5,7})$|(@(annually|yearly|monthly|weekly|daily|hourly|reboot|midnight))|(@every (\d+(ns|us|µs|ms|s|m|h))+)"
+			"pattern": "((((\\d+,)+\\d+|(\\d+(\/|-|#)\\d+)|\\d+L?|\\*(\/\\d+)?|L(-\\d+)?|\\?|[A-Z]{3}(-[A-Z]{3})?) ?){5,7})$|(@(annually|yearly|monthly|weekly|daily|hourly|reboot|midnight))|(@every (\\d+(ns|us|µs|ms|s|m|h))+)"
 		},
 		"clients": {
 			"type": "object",

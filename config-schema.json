@@ -61,7 +61,9 @@
 							"type": "string"
 						},
 						"apikey": {
-							"type": "string"
+							"type": "string",
+							"minLength": 32,
+							"maxLength": 32
 						}
 					},
 					"required": [

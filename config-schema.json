@@ -171,6 +171,7 @@
 					}
 				}
 			},
+			"additionalProperties": false,
 			"required": [
 				"autobrr"
 			]

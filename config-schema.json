@@ -37,7 +37,7 @@
 			"oneOf": [
 				{
 					"required": [
-						"apiKey"
+						"apiToken"
 					]
 				},
 				{

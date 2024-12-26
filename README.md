@@ -1,5 +1,8 @@
 # OMEGABRR
 
+> [!WARNING]  
+> As of 2024-12-26 the omegabrr functionality has been implemented in autobrr and this service is immediately deprecated and unsupported.
+
 Omegabrr transforms items monitored by arrs or lists into autobrr filters. Useful for automating your filters for monitored media or racing criteria.
 
 ## Table of Contents
